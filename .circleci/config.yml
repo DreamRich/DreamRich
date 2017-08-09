@@ -1,0 +1,20 @@
+## Customize the test machine
+machine:
+
+  timezone:
+    America/Sao_Paulo
+
+  python:
+    version:
+        3.6
+
+  environment:
+      # environment variables here
+
+dependencies:
+  pre:
+    - pip3 install -r requirements.txt
+
+test:
+  override:
+        - python manage.py test
