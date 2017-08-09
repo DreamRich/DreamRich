@@ -9,9 +9,13 @@ class ProfitTest(TestCase):
   WALLET_PROFITABILITY_TARGET = 1.1
   INCOME_TAX = 0.1750
 
+  PROFIT_ANNUAL = 0.0431
   PROFIT_NET = 0.012
   PROFIT_NET_SUGGESTED = 0.0326
 
+  def test_annual(self):
+    profit_annual = Profit.annual(self.CDI, self.IPCA)
+    self.assertAlmostEqual(profit_annual, self.PROFIT_ANNUAL, 4)
 
   def test_net_annual(self):
     profit_net_annual = Profit.net_annual(self.NET_PROFITABILITY, self.IPCA)
