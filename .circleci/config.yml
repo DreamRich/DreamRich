@@ -24,8 +24,16 @@ jobs:
             . venv/bin/activate
             cd DreamRich
             pylint --load-plugins pylint_django DreamRich
+      - run:
+          command: |
+            . venv/bin/activate
             radon cc ../DreamRich
-            python manage.py test
+      - run:
+          command: |
+            . venv/bin/activate
+            cd DreamRich
+            coverage run manage.py test
+            coverage report
       - store_artifacts:
           path: test-reports/
           destination: tr1
