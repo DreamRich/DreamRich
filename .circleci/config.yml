@@ -1,20 +1,28 @@
-## Customize the test machine
-machine:
+version: 2
 
-  timezone:
-    America/Sao_Paulo
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6
 
-  python:
-    version:
-        3.6
+    steps:
+      - checkout
 
-  environment:
-      # environment variables here
-
-dependencies:
-  pre:
-    - pip3 install -r requirements.txt
-
-test:
-  override:
-        - python manage.py test
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          command: |
+            . venv/bin/activate
+            python DreamRich/manage.py test
+      - store_artifacts:
+          path: test-reports/
+          destination: tr1
