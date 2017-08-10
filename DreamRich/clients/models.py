@@ -24,7 +24,6 @@ class Address(models.Model):
 	number = models.IntegerField()
 	complement = models.CharField(max_length = 20)
 
-
 class Client(models.Model):
 	name = models.CharField(max_length = 100)
 	birthday = models.DateField('Data de nascimento')
@@ -60,7 +59,6 @@ class RegularCosts(models.Model):
 	drugstore = models.DecimalField(decimal_places = 2, max_digits = 8)
 	extras = models.DecimalField(decimal_places = 2, max_digits = 8)
 
-
 class Dependent(models.Model):
 	client = models.ForeignKey(Client, on_delete = models.CASCADE)
 	birthday = models.DateField('Data de nascimento')
@@ -72,5 +70,3 @@ class BankAccount(models.Model):
 
 	def __str__(self):
 		return str(agency) + ' ' + str(account)
-
-
