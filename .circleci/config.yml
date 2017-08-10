@@ -22,7 +22,10 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            python DreamRich/manage.py test
+            cd DreamRich
+            pylint --load-plugins pylint_django DreamRich
+            radon cc ../DreamRich
+            python manage.py test
       - store_artifacts:
           path: test-reports/
           destination: tr1
