@@ -24,6 +24,7 @@ class Address(models.Model):
 	number = models.IntegerField()
 	complement = models.CharField(max_length = 20)
 
+
 class Client(models.Model):
 	name = models.CharField(max_length = 100)
 	birthday = models.DateField('Data de nascimento')
@@ -37,6 +38,29 @@ class Client(models.Model):
 	def __str__(self):
 		return self.name
 
+class RegularCosts(models.Model):
+	client = models.ForeignKey(Client, on_delete = models.CASCADE)
+
+	home = models.DecimalField(decimal_places = 2, max_digits = 8)
+	electricity_bill = models.DecimalField(decimal_places = 2, max_digits = 8)
+	gym = models.DecimalField(decimal_places = 2, max_digits = 8)
+	taxes = models.DecimalField(decimal_places = 2, max_digits = 8)
+	car_gas = models.DecimalField(decimal_places = 2, max_digits = 8)
+	insurance = models.DecimalField(decimal_places = 2, max_digits = 8)
+	cellphone = models.DecimalField(decimal_places = 2, max_digits = 8)
+	health_insurance = models.DecimalField(decimal_places = 2, max_digits = 8)
+	supermarket = models.DecimalField(decimal_places = 2, max_digits = 8)
+	housekeeper = models.DecimalField(decimal_places = 2, max_digits = 8)
+	beauty = models.DecimalField(decimal_places = 2, max_digits = 8)
+	internet = models.DecimalField(decimal_places = 2, max_digits = 8)
+	netflix = models.DecimalField(decimal_places = 2, max_digits = 8)
+	recreation = models.DecimalField(decimal_places = 2, max_digits = 8)
+	meals = models.DecimalField(decimal_places = 2, max_digits = 8)
+	appointments = models.DecimalField(decimal_places = 2, max_digits = 8) # consultas
+	drugstore = models.DecimalField(decimal_places = 2, max_digits = 8)
+	extras = models.DecimalField(decimal_places = 2, max_digits = 8)
+
+
 class Dependent(models.Model):
 	client = models.ForeignKey(Client, on_delete = models.CASCADE)
 	birthday = models.DateField('Data de nascimento')
@@ -48,4 +72,5 @@ class BankAccount(models.Model):
 
 	def __str__(self):
 		return str(agency) + ' ' + str(account)
+
 
