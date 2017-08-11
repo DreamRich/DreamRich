@@ -1,6 +1,6 @@
 # DreamRich
 
-[![CircleCI](https://circleci.com/gh/DreamRich/DreamRich/tree/master.svg?style=shield)](https://circleci.com/gh/DreamRich/DreamRich/tree/master)
+[![CircleCI](https://circleci.com/gh/DreamRich/DreamRich.svg?style=shield)](https://circleci.com/gh/DreamRich/DreamRich)
 
 ## Install
 
