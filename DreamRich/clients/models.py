@@ -3,26 +3,36 @@ from django.utils import timezone
 from django.db import models
 
 class Country(models.Model):
-	country_name = models.CharField(max_length = 30)
+	name = models.CharField(max_length = 30)
 
 	def __str__(self):
-		return self.country_name
+		return self.name
 
 class State(models.Model):
-	state_name = models.CharField(max_length = 30)
+	name = models.CharField(max_length = 30)
 	country = models.ForeignKey(Country, on_delete = models.CASCADE)
 
+	def __str__(self):
+		return self.name
+
 class City(models.Model):
-	city_name = models.CharField(max_length = 58)
+	name = models.CharField(max_length = 58)
 	state = models.ForeignKey(State, on_delete = models.CASCADE)
+
+	def __str__(self):
+		return self.name
 
 class Address(models.Model):
 	city = models.ForeignKey(City, on_delete = models.CASCADE)
-	type_of_address = models.CharField(max_length = 10) # work or residential
+	type_of_address = models.CharField(max_length = 20) # work or residential
 	neighborhood = models.CharField(max_length = 20)
 	detail = models.CharField(max_length = 50)
 	number = models.IntegerField()
 	complement = models.CharField(max_length = 20)
+
+	def __str__(self):
+		return self.detail
+
 
 class Client(models.Model):
 	name = models.CharField(max_length = 100)
@@ -59,6 +69,14 @@ class RegularCosts(models.Model):
 	drugstore = models.DecimalField(decimal_places = 2, max_digits = 8)
 	extras = models.DecimalField(decimal_places = 2, max_digits = 8)
 
+	@property
+	def total(self):
+		total = self.home + self.electricity_bill + self.gym + self.taxes + self.car_gas + self.insurance + self.cellphone + self.health_insurance + self.supermarket + self.housekeeper + self.beauty + self.internet + self.netflix + self.recreation + self.meals + self.appointments + self.drugstore + self.extras
+		return total
+
+	def __str__(self): 
+		return total
+
 class Dependent(models.Model):
 	client = models.ForeignKey(Client, on_delete = models.CASCADE)
 	birthday = models.DateField('Data de nascimento')
@@ -70,3 +88,5 @@ class BankAccount(models.Model):
 
 	def __str__(self):
 		return str(agency) + ' ' + str(account)
+
+

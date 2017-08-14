@@ -1,0 +1,10 @@
+<h1>Lista de clientes</h1>
+{% if clients_list %}
+    <ul>
+    {% for client in clients_list %}
+        <li><a href="{% url 'clients:show' client.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Não há clientes registrados</p>
+{% endif %}
