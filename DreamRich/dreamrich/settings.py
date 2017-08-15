@@ -31,7 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 LOCAL_APPS = [
-    'dreamrich'
+    'dreamrich',
+    'client'
 ]
 
 INSTALLED_APPS = [
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'rest_framework',
+    'rest_framework.authtoken',
 ] + LOCAL_APPS
 
 MIDDLEWARE = [
