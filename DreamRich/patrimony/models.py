@@ -35,8 +35,8 @@ class Income(models.Model):
 
 class Patrimony(models.Model):
     fgts = models.DecimalField(decimal_places = 2, max_digits = 8)
-    active = models.ForeignKey(Active, on_delete=models.CASCADE)
-    arrearage = models.ForeignKey(Arrearage, on_delete=models.CASCADE)
+    active = models.ForeignKey(Active, on_delete=models.CASCADE, default=0)
+    arrearage = models.ForeignKey(Arrearage, on_delete=models.CASCADE, default=0)
     real_estate = models.ForeignKey(RealEstate, on_delete=models.CASCADE)
-    compant_participation = models.ForeignKey(CompanyParticipation, on_delete=models.CASCADE)
+    compant_participation = models.ForeignKey(CompanyParticipation, on_delete=models.CASCADE, default=0)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
