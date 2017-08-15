@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from . import views
 
-app_name = 'clients'
+app_name = 'client'
 urlpatterns = [
 
     # ex: /create/

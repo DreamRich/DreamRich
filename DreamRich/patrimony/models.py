@@ -79,3 +79,42 @@ class Income(models.Model):
     thirteenth = models.DecimalField(decimal_places = 2, max_digits = 8)
     vacation = models.DecimalField(decimal_places = 2, max_digits = 8)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+
+class Leftover(models.Model):
+    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+
+    @property
+    def leftover(self):
+        self.patrimony.current_monthly_income - self.patrimony.regularcost.total
+
+class RegularCost(models.Model):
+    patrimony = models.OneToOneField(Patrimony, on_delete = models.CASCADE, primary_key=True)
+
+    home = models.DecimalField(decimal_places = 2, max_digits = 8)
+    electricity_bill = models.DecimalField(decimal_places = 2, max_digits = 8)
+    gym = models.DecimalField(decimal_places = 2, max_digits = 8)
+    taxes = models.DecimalField(decimal_places = 2, max_digits = 8)
+    car_gas = models.DecimalField(decimal_places = 2, max_digits = 8)
+    insurance = models.DecimalField(decimal_places = 2, max_digits = 8)
+    cellphone = models.DecimalField(decimal_places = 2, max_digits = 8)
+    health_insurance = models.DecimalField(decimal_places = 2, max_digits = 8)
+    supermarket = models.DecimalField(decimal_places = 2, max_digits = 8)
+    housekeeper = models.DecimalField(decimal_places = 2, max_digits = 8)
+    beauty = models.DecimalField(decimal_places = 2, max_digits = 8)
+    internet = models.DecimalField(decimal_places = 2, max_digits = 8)
+    netflix = models.DecimalField(decimal_places = 2, max_digits = 8)
+    recreation = models.DecimalField(decimal_places = 2, max_digits = 8)
+    meals = models.DecimalField(decimal_places = 2, max_digits = 8)
+    appointments = models.DecimalField(decimal_places = 2, max_digits = 8) # consultas
+    drugstore = models.DecimalField(decimal_places = 2, max_digits = 8)
+    extras = models.DecimalField(decimal_places = 2, max_digits = 8)
+
+    @property
+    def total(self):
+        total_regular_cost = self.home + self.electricity_bill + self.gym + self.taxes \
+        + self.car_gas + self.insurance + self.cellphone + self.health_insurance \
+        + self.supermarket + self.housekeeper + self.beauty + self.internet \
+        + self.netflix + self.recreation + self.meals + self.appointments \
+        + self.drugstore + self.extras
+
+        return total_regular_cost
