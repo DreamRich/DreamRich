@@ -28,7 +28,7 @@ jobs:
           command: |
             . venv/bin/activate
             cd DreamRich
-            pylint --load-plugins pylint_django DreamRich
+            pylint --load-plugins pylint_django dreamrich
       - run:
           command: |
             . venv/bin/activate
