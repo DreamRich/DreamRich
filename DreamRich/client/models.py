@@ -1,64 +1,9 @@
-    from django.db import models
-
-
-class Country(models.Model):
-
-    name = models.CharField(
-        max_length=30
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class State(models.Model):
-
-    name = models.CharField(
-        max_length=30
-    )
-
-    country = models.ForeignKey(
-        Country,
-        on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class City(models.Model):
-
-    name = models.CharField(
-        max_length=58
-    )
-
-    state = models.ForeignKey(
-        State,
-        on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.name
+from django.db import models
 
 
 class Address(models.Model):
 
-    city = models.ForeignKey(
-        City,
-        on_delete=models.CASCADE
-    )
-
-    type_of_address = models.CharField(
-        max_length=20
-    )  # work or residential
-
-    neighborhood = models.CharField(
-        max_length=20
-    )
-
-    detail = models.CharField(
-        max_length=50
-    )
+    cep = models.PositiveIntegerField()
 
     number = models.IntegerField()
 
@@ -67,13 +12,21 @@ class Address(models.Model):
     )
 
     def __str__(self):
-        return self.detail
+        return "cep: {}, nº: {}".format(self.cep, self.number)
 
 
 class Client(models.Model):
 
     name = models.CharField(
         max_length=100
+    )
+
+    id_document = models.ImageField(
+        upload_to='public/id_documents'
+    )
+
+    proof_of_address = models.ImageField(
+        upload_to='public/proof_of_address'
     )
 
     birthday = models.DateField(
@@ -96,11 +49,6 @@ class Client(models.Model):
 
     address = models.ManyToManyField(
         Address
-    )
-
-    hometown = models.ForeignKey(
-        City,
-        on_delete=models.PROTECT
     )
 
     def __str__(self):
