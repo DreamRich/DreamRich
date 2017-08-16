@@ -4,25 +4,25 @@ import random
 
 from . import models
 
-class CountryFactory(factory.Factory):
+class CountryFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.Country
 
 	name = factory.Sequence(lambda n: 'country%s' % n)
 
-class StateFactory(factory.Factory):
+class StateFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.State
 
 	name = factory.Sequence(lambda n: 'state%s' % n)
 
-class CityFactory(factory.Factory):
+class CityFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.City
 
 	name = factory.Sequence(lambda n: 'city%s' % n)
 
-class AddressFactory(factory.Factory):
+class AddressFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.Address
 
@@ -33,7 +33,7 @@ class AddressFactory(factory.Factory):
 	number = 1
 	complement = factory.Sequence(lambda n: 'complement%s' % n)
 
-class ClientFactory(factory.Factory):
+class ClientFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.Client
 
@@ -46,14 +46,14 @@ class ClientFactory(factory.Factory):
 	address = factory.SubFactory(AddressFactory)
 	hometown = factory.SubFactory(CityFactory)
 
-class Dependent(factory.Factory):
+class Dependent(factory.DjangoModelFactory):
 	class Meta:
 		model = models.Dependent
 
 	client = factory.SubFactory(ClientFactory)
 	birthday = factory.LazyFunction(datetime.datetime.now)
 
-class BankAccount(factory.Factory):
+class BankAccount(factory.DjangoModelFactory):
 	class Meta:
 		model = models.BankAccount
 
