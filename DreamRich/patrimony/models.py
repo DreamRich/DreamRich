@@ -26,6 +26,8 @@ class Patrimony(models.Model):
         total_equipment = self.equipment_set.all().aggregate(Sum('value'))
         total = total_company_participation['value__sum'] + total_equipment['value__sum'] + self.fgts
 
+        return total
+
     @property
     def current_monthly_income(self):
         total_value_monthly = self.income_set.all().aggregate(Sum('value_monthly'))
