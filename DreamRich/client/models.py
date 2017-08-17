@@ -51,6 +51,10 @@ class Client(models.Model):
         Address
     )
 
+    hometown = models.CharField(
+        max_length=50        
+    )
+
     def __str__(self):
         return self.name
 
@@ -59,6 +63,7 @@ class Dependent(models.Model):
 
     client = models.ForeignKey(
         Client,
+        related_name='dependents',
         on_delete=models.CASCADE
     )
 
