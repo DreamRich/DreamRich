@@ -40,6 +40,7 @@ class Patrimony(models.Model):
         total_thirteenth_monthly = total_thirteenth / 12
 
         total = total_value_monthly + total_vacation_monthly + total_thirteenth_monthly
+        total = round(total,2)
 
         return total
 
