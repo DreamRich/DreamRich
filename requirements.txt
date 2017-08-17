@@ -25,3 +25,4 @@ pytz==2017.2
 radon==2.0.2
 six==1.10.0
 wrapt==1.10.10
+djangorestframework-jwt==1.11.0

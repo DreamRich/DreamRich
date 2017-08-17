@@ -1,10 +1,7 @@
 from django.conf.urls import url
-from client.views import ExampleView, UserViewSet
-from rest_framework.routers import DefaultRouter
+from rest_framework_jwt.views import obtain_jwt_token
 
-router = DefaultRouter()
-router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    url(r'^auth/', ExampleView.as_view()),
-]+router.urls
+    url(r'^auth/', obtain_jwt_token),
+]
