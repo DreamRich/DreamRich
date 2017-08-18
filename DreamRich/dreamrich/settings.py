@@ -103,6 +103,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Shell Plus
+SHELL_PLUS_PRE_IMPORTS = [
+("client.factories", ("*"))
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

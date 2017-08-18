@@ -36,12 +36,12 @@ class AddressFactory(factory.DjangoModelFactory):
 	complement = factory.Sequence(lambda n: 'complement%s' % n)
 
 class ClientFactory(factory.DjangoModelFactory):
+
 	class Meta:
 		model = models.Client
 
 	name = factory.Faker('name')
-	id_document = factory.django.ImageField(color='green')
-	proof_of_address = factory.django.ImageField(color='blue')
+	surname = factory.Faker('name')
 	birthday = factory.LazyFunction(datetime.datetime.now)
 	profession = factory.Sequence(lambda n: 'profession%s' % n)
 	telephone = factory.Sequence(lambda n: 'tel%s' % n)
@@ -60,12 +60,27 @@ class ClientFactory(factory.DjangoModelFactory):
 			for address in extracted:
 				self.addresses.add(address)
 
+class ActiveClientFactory(ClientFactory):
+
+	class Meta:
+		model = models.ActiveClient
+
+	id_document = factory.django.ImageField(color='green')
+	proof_of_address = factory.django.ImageField(color='blue')
+	spouse = factory.SubFactory(ClientFactory)
+	
+
+
 class Dependent(factory.DjangoModelFactory):
 	class Meta:
 		model = models.Dependent
 
-	client = factory.SubFactory(ClientFactory)
+	name = factory.Faker('name')
+	surname = factory.Faker('name')
+
 	birthday = factory.LazyFunction(datetime.datetime.now)
+
+	client = factory.SubFactory(ClientFactory)
 
 class BankAccount(factory.DjangoModelFactory):
 	class Meta:

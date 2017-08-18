@@ -58,7 +58,9 @@ class Address(models.Model):
         max_length=50
     )
 
-    cep = models.CharField(max_length=9)
+    cep = models.CharField(
+        max_length=9
+    )
 
     number = models.IntegerField()
 
@@ -98,16 +100,15 @@ class Client(models.Model):
         max_length=50
     )
 
-    address = models.ManyToManyField(
-        Address
-    )
-
     hometown = models.ForeignKey(City, on_delete=models.CASCADE)
-
     cpf = models.CharField(max_length=14, validators=[validators.validate_CPF])
 
     def __str__(self):
         return "name: {} cpf: {}".format(self.name, self.cpf)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Client, self).save()
 
 
 class ActiveClient(Client):
@@ -120,18 +121,15 @@ class ActiveClient(Client):
         upload_to='public/proof_of_address'
     )
 
-
-class Spouse(Client):
-
-    active_clients = models.ForeignKey(
-        ActiveClient,
-        related_name='spouse'
+    spouse = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='client_spouse'
     )
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(self.__class__, self).save()
-
+    address = models.ManyToManyField(
+        Address
+    )
 
 class Dependent(models.Model):
 
@@ -141,10 +139,6 @@ class Dependent(models.Model):
 
     surname = models.CharField(
         max_length=50
-    )
-
-    birthday = models.DateField(
-        'Data de nascimento'
     )
 
     birthday = models.DateField(
