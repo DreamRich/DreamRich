@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'client',
     'patrimony',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
