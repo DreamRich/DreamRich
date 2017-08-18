@@ -1,8 +1,11 @@
 from rest_framework import serializers
 from client.models import (
     Address,
+    ActiveClient,
     BankAccount,
-    Client,
+    State,
+    Country,
+    Spouse,
     Dependent
 )
 
@@ -12,9 +15,33 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = [
+            'city',
+            'type_of_address',
+            'neighborhood',
+            'detail',
             'cep',
             'number',
             'complement'
+        ]
+
+
+class StateSerializer(serializers.ModelSerializer):
+    address = AddressSerializer(many=True)
+
+    class Meta:
+        model = State
+        fields = ['name']
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    state_addresses = StateSerializer(many=True)
+
+    class Meta:
+        model = Country
+        fields = [
+            'name',
+            'state',
+            'state_acronym'
         ]
 
 
@@ -28,34 +55,53 @@ class DependentSerializer(serializers.ModelSerializer):
         ]
 
 
-class ClientSerializer(serializers.ModelSerializer):
-    id_document = serializers.ImageField(read_only=True)
-    proof_of_address = serializers.ImageField(read_only=True)
-    dependents = DependentSerializer(many=True)
+class BankAccountSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Client
+        model = BankAccount
+        fields = [
+            'agency',
+            'account'
+        ]
+
+
+class SpouseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Spouse
         fields = [
             'name',
-            'id_document',
-            'proof_of_address',
             'birthday',
             'profession',
             'cpf',
             'telephone',
             'email',
-            'address',
-            'dependents',
             'hometown'
         ]
 
 
-class BankAcoountSerializer(serializers.ModelSerializer):
+class ActiveClientSerializer(serializers.ModelSerializer):
+    id_document = serializers.ImageField(read_only=True)
+    proof_of_address = serializers.ImageField(read_only=True)
+    dependents = DependentSerializer(many=True)
+    client_addresses = AddressSerializer(many=True)
+    bankAccount = BankAccountSerializer()
+    spouse = SpouseSerializer()
 
     class Meta:
-        model = BankAccount
+        model = ActiveClient
         fields = [
-            'client',
-            'agency',
-            'account'
+            'name',
+            'birthday',
+            'profession',
+            'cpf',
+            'telephone',
+            'email',
+            'hometown',
+            'id_document',
+            'proof_of_address',
+            'spouse',
+            'dependents',
+            'client_addresses',
+            'bankAccount'
         ]
