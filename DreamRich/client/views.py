@@ -11,8 +11,8 @@ class AuthView(APIView):
         """Method to change the password value"""
 
         try:
-            user = get_object_or_404(User, pk=request.data.get('userid'))
             data = request.data
+            user =User.objects.get(pk=data.get('userid'))
 
             if data.get('new_password') != data.get('new_password_confirmation'):
                 return Response(dumps({'detail': 'different password'}), status=400)
@@ -25,7 +25,7 @@ class AuthView(APIView):
             return Response(dumps({'detail': 'invalid password'}), status=400)
 
         except User.DoesNotExist:
-            return Response(dumps({'detal': 'user not found'}), status=404)
+            return Response(dumps({'detail': 'user not found'}), status=404)
 
     def get(self, request, email=None):
         """Reset password sending in e-mail"""
