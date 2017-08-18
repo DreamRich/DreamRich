@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from . import validators
 
 class Country(models.Model):
@@ -113,6 +114,8 @@ class Client(models.Model):
 
 class ActiveClient(Client):
 
+    login = models.OneToOneField(User, null=True, blank=True)
+
     id_document = models.ImageField(
         upload_to='public/id_documents'
     )
@@ -130,6 +133,15 @@ class ActiveClient(Client):
     address = models.ManyToManyField(
         Address
     )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        if not self.pk:
+            self.login,check = User.objects.get_or_create(username=self.cpf)
+            self.login.set_password('123456')
+            self.login.save()
+        super(ActiveClient, self).save(*args, **kwargs)
+        
 
 class Dependent(models.Model):
 

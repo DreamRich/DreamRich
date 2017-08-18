@@ -1,9 +1,23 @@
 import datetime
 import factory.fuzzy
 import random
+from client.validators import validate_CPF
+from faker import Factory
 
 from . import models
+fake = Factory.create('pt_BR')
 
+
+def gen_cpf(factory):
+	cpf = ""
+	while cpf == "":
+		try:
+			cpf = validate_CPF(fake.cpf())
+		except:
+			pass
+	return cpf
+
+	
 class CountryFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.Country
@@ -47,7 +61,7 @@ class ClientFactory(factory.DjangoModelFactory):
 	telephone = factory.Sequence(lambda n: 'tel%s' % n)
 	email = factory.Sequence(lambda n: '%s@gmail.com' % n)
 	hometown = factory.SubFactory(CityFactory)
-	cpf = '775.214.611-00'
+	cpf = factory.LazyAttribute(gen_cpf)
 
 	@factory.post_generation
 	def addresses(self, create, extracted, **kwargs):
