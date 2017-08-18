@@ -1,28 +1,36 @@
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from rest_framework import viewsets
-from client.serializer import UserSerializer
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from json import dumps
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    """
-    A viewset for viewing and editing user instances.
-    """
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+class AuthView(APIView):
 
+    def post(self, request):
+        """Method to change the password value"""
 
-class ExampleView(APIView):
+        try:
+            user = get_object_or_404(User, pk=request.data.get('userid'))
+            data = request.data
 
-    def get(self, request, format=None):
-        content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
-        }
-        return Response(content)
+            if data.get('new_password') != data.get('new_password_confirmation'):
+                return Response(dumps({'detail': 'different password'}), status=400)
+
+            elif user.check_password(data.get('password')):
+                user.set_password(data.get('new_password'))
+                user.save()
+                return Response(dumps({'detail': 'password changed'}), status=200)
+
+            return Response(dumps({'detail': 'invalid password'}), status=400)
+
+        except User.DoesNotExist:
+            return Response(dumps({'detal': 'user not found'}), status=404)
+
+    def get(self, request, email=None):
+        """Reset password sending in e-mail"""
+        user = get_object_or_404(User, email=request.GET.get('email'))
+        # send e-mail
+        print(user)
+        import json
+        return Response(json.dumps({'user': user.username}), status=200)
