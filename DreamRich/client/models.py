@@ -157,8 +157,8 @@ class Dependent(models.Model):
         'Data de nascimento'
     )
 
-    client = models.ForeignKey(
-        Client,
+    active_client = models.ForeignKey(
+        ActiveClient,
         related_name='dependents',
         on_delete=models.CASCADE
     )
@@ -166,8 +166,8 @@ class Dependent(models.Model):
 
 class BankAccount(models.Model):
 
-    client = models.OneToOneField(
-        Client,
+    active_client = models.OneToOneField(
+        ActiveClient,
         on_delete=models.CASCADE
     )  # 1-to-1
 
