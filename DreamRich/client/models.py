@@ -18,15 +18,11 @@ class Address(models.Model):
 class Client(models.Model):
 
     name = models.CharField(
-        max_length=100
+        max_length=30
     )
 
-    id_document = models.ImageField(
-        upload_to='public/id_documents'
-    )
-
-    proof_of_address = models.ImageField(
-        upload_to='public/proof_of_address'
+    surname = models.CharField(
+        max_length=50
     )
 
     birthday = models.DateField(
@@ -47,28 +43,59 @@ class Client(models.Model):
 
     email = models.EmailField()
 
+    hometown = models.CharField(
+        max_length=50
+    )
+
     address = models.ManyToManyField(
         Address
     )
 
-    hometown = models.CharField(
-        max_length=50        
+    def __str__(self):
+        return "name: {} cpf: {}".format(self.name, self.cpf)
+
+
+class ActiveClient(Client):
+
+    id_document = models.ImageField(
+        upload_to='public/id_documents'
     )
 
-    def __str__(self):
-        return self.name
+    proof_of_address = models.ImageField(
+        upload_to='public/proof_of_address'
+    )
+
+
+class Spouse(Client):
+
+    active_clients = models.ForeignKey(
+        ActiveClient,
+        related_name='spouse'
+    )
 
 
 class Dependent(models.Model):
+
+    name = models.CharField(
+        max_length=30
+    )
+
+    surname = models.CharField(
+        max_length=50
+    )
+
+    birthday = models.DateField(
+        'Data de nascimento'
+    )
+
+    birthday = models.DateField(
+        'Data de nascimento'
+    )
 
     client = models.ForeignKey(
         Client,
         related_name='dependents',
         on_delete=models.CASCADE
-    )
-
-    birthday = models.DateField(
-        'Data de nascimento'
     )
 
 
