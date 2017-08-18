@@ -2,22 +2,27 @@ from django.db import models
 from django.contrib.auth.models import User
 from . import validators
 
+
 class Country(models.Model):
- 
+
     name = models.CharField(
         max_length=30
     )
 
+    state_acronym = models.CharField(
+        max_length=2
+    )
+
     def __str__(self):
         return self.name
- 
- 
+
+
 class State(models.Model):
- 
+
     name = models.CharField(
         max_length=30
     )
- 
+
     country = models.ForeignKey(
         Country,
         on_delete=models.CASCADE
@@ -25,55 +30,12 @@ class State(models.Model):
 
     def __str__(self):
         return self.name
- 
- 
-class City(models.Model):
-    name = models.CharField(
-        max_length=58
-    )
- 
-    state = models.ForeignKey(
-        State,
-        on_delete=models.CASCADE
-    )
- 
-    def __str__(self):
-        return self.name
-
-class Address(models.Model):
-
-    city = models.ForeignKey(
-        City,
-        on_delete=models.CASCADE
-    )
-
-    type_of_address = models.CharField(
-        max_length=20
-    )  # work or residential
-
-    neighborhood = models.CharField(
-        max_length=20
-    )
-
-    detail = models.CharField(
-        max_length=50
-    )
-
-    cep = models.CharField(
-        max_length=9
-    )
-
-    number = models.IntegerField()
-
-    complement = models.CharField(
-        max_length=20
-    )
-
-    def __str__(self):
-        return "cep: {}, nº: {}".format(self.cep, self.number)
 
 
 class Client(models.Model):
+
+    class Meta:
+        abstract = True
 
     name = models.CharField(
         max_length=30
@@ -97,12 +59,14 @@ class Client(models.Model):
 
     email = models.EmailField()
 
+    cpf = models.CharField(
+        max_length=14,
+        validators=[validators.validate_CPF]
+    )
+
     hometown = models.CharField(
         max_length=50
     )
-
-    hometown = models.ForeignKey(City, on_delete=models.CASCADE)
-    cpf = models.CharField(max_length=14, validators=[validators.validate_CPF])
 
     def __str__(self):
         return "name: {} cpf: {}".format(self.name, self.cpf)
@@ -124,15 +88,14 @@ class ActiveClient(Client):
         upload_to='public/proof_of_address'
     )
 
+
+class Spouse(Client):
     spouse = models.ForeignKey(
-        Client,
+        ActiveClient,
         on_delete=models.CASCADE,
-        related_name='client_spouse'
+        related_name='spouse'
     )
 
-    address = models.ManyToManyField(
-        Address
-    )
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -157,8 +120,8 @@ class Dependent(models.Model):
         'Data de nascimento'
     )
 
-    client = models.ForeignKey(
-        Client,
+    active_client = models.ForeignKey(
+        ActiveClient,
         related_name='dependents',
         on_delete=models.CASCADE
     )
@@ -166,8 +129,8 @@ class Dependent(models.Model):
 
 class BankAccount(models.Model):
 
-    client = models.OneToOneField(
-        Client,
+    active_client = models.OneToOneField(
+        ActiveClient,
         on_delete=models.CASCADE
     )  # 1-to-1
 
@@ -181,3 +144,49 @@ class BankAccount(models.Model):
 
     def __str__(self):
         return str(self.agency) + ' ' + str(self.account)
+
+
+class Address(models.Model):
+
+    type_of_address = models.CharField(
+        max_length=20
+    )  # work or residential
+
+    neighborhood = models.CharField(
+        max_length=20
+    )
+
+    detail = models.CharField(
+        max_length=50
+    )
+
+    cep = models.CharField(
+        max_length=9
+    )
+
+    number = models.IntegerField()
+
+    complement = models.CharField(
+        max_length=20
+    )
+
+    client = models.ManyToManyField(
+        ActiveClient
+    )
+
+    city = models.CharField(
+        max_length=50
+    )
+
+    state = models.ForeignKey(
+        State,
+        related_name='state_addresses'
+    )
+
+    client = models.ForeignKey(
+        ActiveClient,
+        related_name='client_addresses'
+    )
+
+    def __str__(self):
+        return "cep: {}, nº: {}".format(self.cep, self.number)
