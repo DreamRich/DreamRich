@@ -1,18 +1,10 @@
 from django.conf.urls import url
 from rest_framework import routers
-
-from . import views
+from client.views import ActiveClientViewSet
 
 app_name = 'client'
-urlpatterns = [
 
-    # ex: /create/
-    url(r'^create?/$', views.create, name='create'),
+router = routers.DefaultRouter()
+router.register(r'', ActiveClientViewSet)
 
-    # ex: /1/
-    url(r'^(?P<client_id>[0-9]+)?/$', views.show, name='show'),
-
-    # ex: /list/
-    url(r'^$', views.list, name='list'),
-
-]
+urlpatterns = router.urls
