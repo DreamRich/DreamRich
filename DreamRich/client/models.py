@@ -1,9 +1,64 @@
 from django.db import models
+from . import validators
 
+class Country(models.Model):
+ 
+    name = models.CharField(
+        max_length=30
+    )
+
+    def __str__(self):
+        return self.name
+ 
+ 
+class State(models.Model):
+ 
+    name = models.CharField(
+        max_length=30
+    )
+ 
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.name
+ 
+ 
+class City(models.Model):
+    name = models.CharField(
+        max_length=58
+    )
+ 
+    state = models.ForeignKey(
+        State,
+        on_delete=models.CASCADE
+    )
+ 
+    def __str__(self):
+        return self.name
 
 class Address(models.Model):
 
-    cep = models.PositiveIntegerField()
+    city = models.ForeignKey(
+        City,
+        on_delete=models.CASCADE
+    )
+
+    type_of_address = models.CharField(
+        max_length=20
+    )  # work or residential
+
+    neighborhood = models.CharField(
+        max_length=20
+    )
+
+    detail = models.CharField(
+        max_length=50
+    )
+
+    cep = models.CharField(max_length=9)
 
     number = models.IntegerField()
 
@@ -37,10 +92,6 @@ class Client(models.Model):
         max_length=200
     )
 
-    cpf = models.CharField(
-        max_length=14
-    )  # max_length considering '.' and '-'
-
     telephone = models.CharField(
         max_length=19
     )  # considering +55
@@ -51,8 +102,16 @@ class Client(models.Model):
         Address
     )
 
+    hometown = models.ForeignKey(City, on_delete=models.CASCADE)
+
+    cpf = models.CharField(max_length=14, validators=[validators.validate_CPF])
+
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(self.__class__, self).save()
 
 
 class Dependent(models.Model):

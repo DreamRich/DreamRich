@@ -15,12 +15,14 @@ class StateFactory(factory.DjangoModelFactory):
 		model = models.State
 
 	name = factory.Sequence(lambda n: 'state%s' % n)
+	country = factory.SubFactory(CountryFactory)
 
 class CityFactory(factory.DjangoModelFactory):
 	class Meta:
 		model = models.City
 
 	name = factory.Sequence(lambda n: 'city%s' % n)
+	state = factory.SubFactory(StateFactory)
 
 class AddressFactory(factory.DjangoModelFactory):
 	class Meta:
@@ -38,13 +40,25 @@ class ClientFactory(factory.DjangoModelFactory):
 		model = models.Client
 
 	name = factory.Faker('name')
+	id_document = factory.django.ImageField(color='green')
+	proof_of_address = factory.django.ImageField(color='blue')
 	birthday = factory.LazyFunction(datetime.datetime.now)
 	profession = factory.Sequence(lambda n: 'profession%s' % n)
-	cpf = factory.Sequence(lambda n: '%s' % n)
 	telephone = factory.Sequence(lambda n: 'tel%s' % n)
 	email = factory.Sequence(lambda n: '%s@gmail.com' % n)
-	address = factory.SubFactory(AddressFactory)
 	hometown = factory.SubFactory(CityFactory)
+	cpf = '775.214.611-00'
+
+	@factory.post_generation
+	def addresses(self, create, extracted, **kwargs):
+		if not create:
+			# Simple build, do nothing.
+			return
+
+		if extracted:
+			# A list of groups were passed in, use them
+			for address in extracted:
+				self.addresses.add(address)
 
 class Dependent(factory.DjangoModelFactory):
 	class Meta:
