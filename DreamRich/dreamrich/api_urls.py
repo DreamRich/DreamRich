@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from rest_framework import routers
 
-app_name = 'DreamRich'
+app_name = 'dreamrich'
 
 router = routers.DefaultRouter()
 
