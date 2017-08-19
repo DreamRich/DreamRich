@@ -25,6 +25,16 @@ SECRET_KEY = '8w5==8=#m-m1(qb@z!ki)gxp9%lp3+*4gfdovg0k&1xz-iygqe'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# EMAIL Settings (Obs: is necessary export a environment variable EMAILPWD
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'marcelohpf@gmail.com'
+EMAIL_HOST_PASSWORD = os.environ["EMAILPWD"]
+DEFAULT_FROM_EMAIL = 'marcelohpf@gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
 ALLOWED_HOSTS = []
 
 
