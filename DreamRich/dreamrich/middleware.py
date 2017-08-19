@@ -1,4 +1,4 @@
-from DreamRich import settings
+from dreamrich import settings
 
 
 class CorsMiddleware:

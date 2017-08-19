@@ -3,6 +3,11 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from json import dumps
 from django.core.mail import EmailMessage
+from rest_framework import viewsets
+from .models import *
+from client.serializers import (
+    ActiveClientSerializer
+)
 
 
 class AuthView(APIView):
@@ -52,3 +57,8 @@ class AuthView(APIView):
 
         else:
             return Response(dumps({'detail': 'user not found'}), status=404)
+
+
+class ActiveClientViewSet(viewsets.ModelViewSet):
+    serializer_class = ActiveClientSerializer
+    queryset = ActiveClient.objects.all()
