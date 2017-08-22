@@ -43,7 +43,8 @@ ALLOWED_HOSTS = []
 LOCAL_APPS = [
     'dreamrich',
     'client',
-    'patrimony'
+    'patrimony',
+    'employee',
 ]
 
 DEFAULT_APPS = [
@@ -59,6 +60,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'rolepermissions',
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -163,3 +165,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ROLEPERMISSIONS_MODULE = 'dreamrich.roles'

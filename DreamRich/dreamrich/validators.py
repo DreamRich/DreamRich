@@ -55,4 +55,3 @@ def validate_CPF(value):
         raise ValidationError(error_messages['invalid'])
 
     return orig_value
-

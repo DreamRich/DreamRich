@@ -1,6 +1,6 @@
 import datetime
 import factory.fuzzy
-from client.validators import validate_CPF
+from dreamrich.validators import validate_CPF
 from django.contrib.auth.models import User
 from faker import Factory
 from . import models
