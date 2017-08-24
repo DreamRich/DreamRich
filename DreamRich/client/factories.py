@@ -1,6 +1,6 @@
 import datetime
 import factory.fuzzy
-from dreamrich.validators import validate_CPF
+from lib.factories import gen_cpf
 from django.contrib.auth.models import User
 from faker import Factory
 from . import models
@@ -17,20 +17,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
     is_staff = True
     is_superuser = True
-
-
-fake = Factory.create('pt_BR')
-
-
-def gen_cpf(factory):
-    cpf = ""
-    while cpf == "":
-        try:
-            cpf = validate_CPF(fake.cpf())
-        except:
-            pass
-    return cpf
-
 
 class CountryFactory(factory.DjangoModelFactory):
 

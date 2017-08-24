@@ -144,7 +144,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Shell Plus
 SHELL_PLUS_PRE_IMPORTS = [
-    ("client.factories", ("*"))
+    ("client.factories", ("*")),
+    ("employee.factories", ("*")),
 ]
 
 # Internationalization
