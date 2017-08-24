@@ -58,6 +58,7 @@ class AddressFactory(factory.DjangoModelFactory):
     type_of_address = factory.Sequence(lambda n: 'type%s' % n)
     neighborhood = factory.Sequence(lambda n: 'neighborhood%s' % n)
     detail = factory.Sequence(lambda n: 'detail%s' % n)
+    state = factory.SubFactory(StateFactory)
     number = 1
     complement = factory.Sequence(lambda n: 'complement%s' % n)
 
@@ -75,6 +76,7 @@ class ClientFactory(factory.DjangoModelFactory):
     email = factory.Sequence(lambda n: '%s@gmail.com' % n)
     hometown = factory.Faker('word')
     cpf = factory.LazyAttribute(gen_cpf)
+    address = factory.RelatedFactory(AddressFactory)
 
     @factory.post_generation
     def addresses(self, create, extracted, **kwargs):
@@ -107,13 +109,14 @@ class BankAccountFactory(factory.DjangoModelFactory):
     account = factory.Sequence(lambda n: '%s' % n)
 
 
-class ActiveClientFactory(ClientFactory):
+class ActiveClientMainFactory(ClientFactory):
 
     class Meta:
         model = models.ActiveClient
 
     id_document = factory.django.ImageField(color='green')
     proof_of_address = factory.django.ImageField(color='blue')
-    spouse = factory.SubFactory(ClientFactory)
-    bank_account = factory.RelatedFactory(BankAccountFactory, "active_client")
+    client_bank_account = factory.RelatedFactory(BankAccountFactory,
+                                                 'active_client')
+    spouse = factory.RelatedFactory(ClientFactory, 'active_spouse')
     dependent = factory.RelatedFactory(DependentFactory, "active_client")

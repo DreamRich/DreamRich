@@ -9,10 +9,10 @@ class Command(BaseCommand):
         for app in LOCAL_APPS:
             try:
                 self.stdout.write("Load app({}) module".format(app))
-                app_module = __import__("{}.factory".format(app)).factory
+                app_module = __import__("{}.factories".format(app)).factories
                 self.stdout.write("{} has factories :) ".format(app))
                 for name, obj in inspect.getmembers(app_module):
-                    if inspect.isclass(obj) and name.find('Factory') != -1:
+                    if inspect.isclass(obj) and name.find('MainFactory') != -1:
                         self.stdout.write("Creating objects to {}".format(app))
                         for n in range(kwargs['loop']):
                             getattr(obj, 'create')()
