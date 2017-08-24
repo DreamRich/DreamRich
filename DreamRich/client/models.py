@@ -9,7 +9,7 @@ class Country(models.Model):
         max_length=30
     )
 
-    state_acronym = models.CharField(
+    abbreviation = models.CharField(
         max_length=2
     )
 
@@ -23,8 +23,13 @@ class State(models.Model):
         max_length=30
     )
 
+    abbreviation = models.CharField(
+        max_length=2
+    )
+
     country = models.ForeignKey(
         Country,
+        related_name='country_states',
         on_delete=models.CASCADE
     )
 
@@ -65,6 +70,14 @@ class Client(models.Model):
         max_length=50
     )
 
+    active_spouse = models.OneToOneField(
+        'ActiveClient',
+        on_delete=models.CASCADE,
+        related_name='spouse',
+        null=True,
+        blank=True
+    )
+
     def __str__(self):
         return "name: {} cpf: {}".format(self.name, self.cpf)
 
@@ -83,12 +96,6 @@ class ActiveClient(Client):
 
     proof_of_address = models.ImageField(
         upload_to='public/proof_of_address'
-    )
-
-    spouse = models.ForeignKey(
-        Client,
-        on_delete=models.CASCADE,
-        related_name='active_spouse'
     )
 
     def save(self, *args, **kwargs):
@@ -127,8 +134,9 @@ class BankAccount(models.Model):
 
     active_client = models.OneToOneField(
         ActiveClient,
+        related_name='client_bank_account',
         on_delete=models.CASCADE
-    )  # 1-to-1
+    )
 
     agency = models.CharField(
         max_length=6
@@ -167,7 +175,8 @@ class Address(models.Model):
     )
 
     client = models.ManyToManyField(
-        ActiveClient
+        ActiveClient,
+        related_name='client_address'
     )
 
     city = models.CharField(
@@ -177,11 +186,6 @@ class Address(models.Model):
     state = models.ForeignKey(
         State,
         related_name='state_addresses'
-    )
-
-    client = models.ForeignKey(
-        ActiveClient,
-        related_name='client_addresses'
     )
 
     def __str__(self):
