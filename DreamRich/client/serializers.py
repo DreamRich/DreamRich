@@ -83,14 +83,13 @@ class ClientSerializer(serializers.ModelSerializer):
 
 
 class ActiveClientSerializer(serializers.ModelSerializer):
-    dependents = DependentSerializer(many=True)
-    client_address = AddressSerializer(many=True)
+    dependents = DependentSerializer(many=True, read_only=True)
+    client_address = AddressSerializer(many=True, read_only=True)
+    spouse = ClientSerializer(read_only=True)
+    client_bank_account = BankAccountSerializer(read_only=True)
 
-    id_document = serializers.ImageField(read_only=True)
-    proof_of_address = serializers.ImageField(read_only=True)
-    client_bank_account = BankAccountSerializer()
-
-    spouse = ClientSerializer()
+    id_document = serializers.ImageField()
+    proof_of_address = serializers.ImageField()
 
     class Meta:
 
