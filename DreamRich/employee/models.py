@@ -1,5 +1,5 @@
 from django.db import models
-from dreamrich import validators
+from dreamrich import validators, roles
 from client.models import ActiveClient
 from django.contrib.auth.models import User
 
