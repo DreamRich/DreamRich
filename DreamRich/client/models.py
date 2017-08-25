@@ -37,7 +37,7 @@ class State(models.Model):
         return self.name
 
 
-class Client(models.Model):
+class Client(User):
 
     name = models.CharField(
         max_length=30
@@ -58,8 +58,6 @@ class Client(models.Model):
     telephone = models.CharField(
         max_length=19
     )  # considering +55
-
-    email = models.EmailField()
 
     cpf = models.CharField(
         max_length=14,
@@ -82,13 +80,13 @@ class Client(models.Model):
         return "name: {} cpf: {}".format(self.name, self.cpf)
 
     def save(self, *args, **kwargs):
+        if not self.pk:
+            self.set_password(self.password)
         self.full_clean()
         return super(Client, self).save()
 
 
 class ActiveClient(Client):
-
-    login = models.OneToOneField(User, null=True, blank=True)
 
     id_document = models.ImageField(
         upload_to='public/id_documents'
@@ -99,12 +97,10 @@ class ActiveClient(Client):
     )
 
     def save(self, *args, **kwargs):
-        self.full_clean()
-
         if not self.pk:
-            self.login, check = User.objects.get_or_create(username=self.cpf)
-            self.login.set_password('123456')
-            self.login.save()
+            self.set_password(self.password)
+        self.username = self.cpf
+        self.full_clean()
 
         super(ActiveClient, self).save(*args, **kwargs)
 

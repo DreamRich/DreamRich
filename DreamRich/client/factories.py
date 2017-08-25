@@ -6,18 +6,6 @@ from faker import Factory
 from . import models
 
 
-class UserFactory(factory.django.DjangoModelFactory):
-
-    class Meta:
-        model = User
-
-    username = factory.Faker('word')
-    password = factory.PostGenerationMethodCall('set_password',
-                                                'default123')
-    email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
-    is_staff = True
-    is_superuser = True
-
 class CountryFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -59,7 +47,10 @@ class ClientFactory(factory.DjangoModelFactory):
     birthday = factory.LazyFunction(datetime.datetime.now)
     profession = factory.Sequence(lambda n: 'profession%s' % n)
     telephone = factory.Sequence(lambda n: 'tel%s' % n)
-    email = factory.Sequence(lambda n: '%s@gmail.com' % n)
+    username = factory.Faker('word')
+    password = factory.PostGenerationMethodCall('set_password',
+                                                'default123')
+    email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
     hometown = factory.Faker('word')
     cpf = factory.LazyAttribute(gen_cpf)
     address = factory.RelatedFactory(AddressFactory)
