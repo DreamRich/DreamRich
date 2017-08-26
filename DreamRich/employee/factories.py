@@ -1,12 +1,9 @@
-import datetime
 import factory.fuzzy
-from django.contrib.auth.models import User
 from lib.factories import gen_cpf
-from faker import Factory
 from employee.models import Employee, FinancialAdviser
 
 
-class EmployeeFactory(factory.django.DjangoModelFactory):
+class EmployeeMainFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Employee
@@ -16,7 +13,8 @@ class EmployeeFactory(factory.django.DjangoModelFactory):
     cpf = factory.LazyAttribute(gen_cpf)
     username = factory.Faker('word')
 
-class FinancialAdviserFactory(factory.django.DjangoModelFactory):
+
+class FinancialAdviserMainFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FinancialAdviser

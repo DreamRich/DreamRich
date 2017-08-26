@@ -108,7 +108,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-    #    'rest_framework.permissions.IsAuthenticated',
+        #    'rest_framework.permissions.IsAuthenticated',
         "rest_framework.permissions.AllowAny",
     )
 }
@@ -145,7 +145,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Shell Plus
 SHELL_PLUS_PRE_IMPORTS = [
     ("client.factories", ("*")),
+    ("client.serializers", ("*")),
     ("employee.factories", ("*")),
+    ("employee.serializers", ("*")),
 ]
 
 # Internationalization
