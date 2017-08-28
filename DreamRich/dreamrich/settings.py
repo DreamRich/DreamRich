@@ -45,7 +45,7 @@ LOCAL_APPS = [
     'client',
     'patrimony',
     'employee',
-    'auth',
+    'dr_auth',
 ]
 
 DEFAULT_APPS = [
@@ -116,7 +116,7 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
-    'auth.utils.jwt_response_payload_handler',
+    'dr_auth.utils.jwt_response_payload_handler',
 }
 
 # Database
@@ -175,4 +175,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ROLEPERMISSIONS_MODULE = 'dreamrich.roles'
+ROLEPERMISSIONS_MODULE = 'dr_auth.roles'

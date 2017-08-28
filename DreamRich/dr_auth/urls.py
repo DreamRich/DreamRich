@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from auth.views import AuthView
+from dr_auth.views import AuthView
 from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
