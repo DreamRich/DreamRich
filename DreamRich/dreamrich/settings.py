@@ -45,6 +45,7 @@ LOCAL_APPS = [
     'client',
     'patrimony',
     'employee',
+    'auth',
 ]
 
 DEFAULT_APPS = [
@@ -103,7 +104,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
@@ -111,6 +112,11 @@ REST_FRAMEWORK = {
         #    'rest_framework.permissions.IsAuthenticated',
         "rest_framework.permissions.AllowAny",
     )
+}
+
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+    'auth.utils.jwt_response_payload_handler',
 }
 
 # Database

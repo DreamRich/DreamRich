@@ -5,5 +5,6 @@ urlpatterns = [
         url(r'^client/', include('client.urls')),
         url(r'^patrimony/', include('patrimony.urls')),
         url(r'^employee/', include('employee.urls')),
+        url(r'^auth/', include('auth.urls')),
     ]))
 ]
