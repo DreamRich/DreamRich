@@ -77,7 +77,6 @@ class ClientSerializer(serializers.ModelSerializer):
             'profession',
             'cpf',
             'telephone',
-            'email',
             'hometown'
         ]
 

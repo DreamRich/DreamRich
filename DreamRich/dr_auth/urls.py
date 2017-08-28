@@ -4,5 +4,5 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
     url(r'^$', obtain_jwt_token),
-    url(r'^password$', AuthView.as_view()),
+    url(r'^password/$', AuthView.as_view()),
 ]

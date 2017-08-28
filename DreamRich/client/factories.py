@@ -1,8 +1,6 @@
 import datetime
 import factory.fuzzy
 from lib.factories import gen_cpf
-from django.contrib.auth.models import User
-from faker import Factory
 from . import models
 
 
@@ -47,10 +45,6 @@ class ClientFactory(factory.DjangoModelFactory):
     birthday = factory.LazyFunction(datetime.datetime.now)
     profession = factory.Sequence(lambda n: 'profession%s' % n)
     telephone = factory.Sequence(lambda n: 'tel%s' % n)
-    username = factory.Faker('word')
-    password = factory.PostGenerationMethodCall('set_password',
-                                                'default123')
-    email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
     hometown = factory.Faker('word')
     cpf = factory.LazyAttribute(gen_cpf)
     address = factory.RelatedFactory(AddressFactory)
@@ -95,5 +89,11 @@ class ActiveClientMainFactory(ClientFactory):
     proof_of_address = factory.django.ImageField(color='blue')
     client_bank_account = factory.RelatedFactory(BankAccountFactory,
                                                  'active_client')
+
+    username = factory.Faker('word')
+    password = factory.PostGenerationMethodCall('set_password',
+                                                'default123')
+    email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
+
     spouse = factory.RelatedFactory(ClientFactory, 'active_spouse')
     dependent = factory.RelatedFactory(DependentFactory, "active_client")

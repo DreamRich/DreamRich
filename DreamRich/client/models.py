@@ -37,7 +37,10 @@ class State(models.Model):
         return self.name
 
 
-class Client(User):
+class ClientBase(models.Model):
+
+    class Meta:
+        abstract = True
 
     name = models.CharField(
         max_length=30
@@ -68,25 +71,11 @@ class Client(User):
         max_length=50
     )
 
-    active_spouse = models.OneToOneField(
-        'ActiveClient',
-        on_delete=models.CASCADE,
-        related_name='spouse',
-        null=True,
-        blank=True
-    )
-
     def __str__(self):
         return "name: {} cpf: {}".format(self.name, self.cpf)
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.set_password(self.password)
-        self.full_clean()
-        return super(Client, self).save()
 
-
-class ActiveClient(Client):
+class ActiveClient(ClientBase, User):
 
     id_document = models.ImageField(
         upload_to='public/id_documents'
@@ -103,6 +92,17 @@ class ActiveClient(Client):
         self.full_clean()
 
         super(ActiveClient, self).save(*args, **kwargs)
+
+
+class Client(ClientBase):
+
+    active_spouse = models.OneToOneField(
+        ActiveClient,
+        on_delete=models.CASCADE,
+        related_name='spouse',
+        null=True,
+        blank=True
+    )
 
 
 class Dependent(models.Model):
