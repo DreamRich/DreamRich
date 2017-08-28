@@ -19,5 +19,6 @@ class Employee(User):
     )
 
 
+
 class FinancialAdviser(Employee):
     clients = models.ManyToManyField(ActiveClient)
