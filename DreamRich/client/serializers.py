@@ -99,5 +99,6 @@ class ActiveClientSerializer(serializers.ModelSerializer):
             'id_document',
             'proof_of_address',
             'client_bank_account',
+            'permission',
             'spouse'
         ]

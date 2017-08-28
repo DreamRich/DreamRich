@@ -19,7 +19,7 @@ class Command(BaseCommand):
                             self.stdout.write(".", ending="")
             except AttributeError:
                 self.stderr.write("{} don't have factories :( ".format(app))
-            except ModuleNotFoundError:
+            except ImportError:
                 self.stderr.write("{} factory module not found D:".format(app))
 
     def add_arguments(self, parser):

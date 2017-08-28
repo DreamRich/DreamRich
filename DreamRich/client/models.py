@@ -1,4 +1,5 @@
 from django.db import models
+from rolepermissions.permissions import available_perm_status
 from django.contrib.auth.models import User
 from dreamrich import validators
 
@@ -84,6 +85,11 @@ class ActiveClient(ClientBase, User):
     proof_of_address = models.ImageField(
         upload_to='public/proof_of_address'
     )
+
+    @property
+    def permission(self):
+        return available_perm_status(self)
+
 
     def save(self, *args, **kwargs):
         if not self.pk:
