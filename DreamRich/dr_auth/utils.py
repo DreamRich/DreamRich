@@ -1,5 +1,7 @@
+from dr_auth.serializers import BaseUserSerializer
+
+
 def jwt_response_payload_handler(token, user=None, request=None):
-    return {
-        'token': token,
-        'roles': {'is_adm': True}
-    }
+    context = BaseUserSerializer(user.baseuser).data
+    context['token'] = token
+    return context

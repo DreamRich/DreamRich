@@ -10,8 +10,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
           'surname',
           'cpf',
           'email',
-          'permission',
-          'username',
         ]
 
 class FinancialAdviserSerializer(serializers.ModelSerializer):
@@ -22,7 +20,5 @@ class FinancialAdviserSerializer(serializers.ModelSerializer):
           'name',
           'surname',
           'cpf',
-          'permission',
           'email',
-          'username',
         ]

@@ -1,10 +1,10 @@
 from django.db import models
 from dreamrich import validators
 from client.models import ActiveClient
-from django.contrib.auth.models import User
+from dr_auth.models import BaseUser
 
 
-class Employee(User):
+class Employee(BaseUser):
     name = models.CharField(
         max_length=30
     )
@@ -17,7 +17,6 @@ class Employee(User):
         max_length=14,
         validators=[validators.validate_CPF]
     )
-
 
 
 class FinancialAdviser(Employee):

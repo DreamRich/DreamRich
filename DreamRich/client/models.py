@@ -1,6 +1,5 @@
 from django.db import models
-from rolepermissions.permissions import available_perm_status
-from django.contrib.auth.models import User
+from dr_auth.models import BaseUser
 from dreamrich import validators
 
 
@@ -76,7 +75,7 @@ class ClientBase(models.Model):
         return "name: {} cpf: {}".format(self.name, self.cpf)
 
 
-class ActiveClient(ClientBase, User):
+class ActiveClient(ClientBase, BaseUser):
 
     id_document = models.ImageField(
         upload_to='public/id_documents'
@@ -85,11 +84,6 @@ class ActiveClient(ClientBase, User):
     proof_of_address = models.ImageField(
         upload_to='public/proof_of_address'
     )
-
-    @property
-    def permission(self):
-        return available_perm_status(self)
-
 
     def save(self, *args, **kwargs):
         if not self.pk:
