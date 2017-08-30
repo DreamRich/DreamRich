@@ -1,9 +1,10 @@
 import factory.fuzzy
 from lib.factories import gen_cpf
 from employee.models import Employee, FinancialAdviser
+from dr_auth.factories import UserFactory
 
 
-class EmployeeMainFactory(factory.django.DjangoModelFactory):
+class EmployeeMainFactory(UserFactory):
 
     class Meta:
         model = Employee
@@ -11,18 +12,12 @@ class EmployeeMainFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('first_name')
     surname = factory.Faker('last_name')
     cpf = factory.LazyAttribute(gen_cpf)
-    username = factory.Faker('word')
 
 
-class FinancialAdviserMainFactory(factory.django.DjangoModelFactory):
+class FinancialAdviserMainFactory(EmployeeMainFactory):
 
     class Meta:
         model = FinancialAdviser
-
-    name = factory.Faker('first_name')
-    surname = factory.Faker('last_name')
-    cpf = factory.LazyAttribute(gen_cpf)
-    username = factory.Faker('word')
 
     @factory.post_generation
     def clients(self, create, extracted, **kwargs):
