@@ -25,7 +25,10 @@ class ProfitTest(TestCase):
 
     def test_net_annual_suggested(self):
         profit_net_annual_suggested = Profit.net_annual_suggested(
-            self.CDI, self.WALLET_PROFITABILITY_TARGET, self.INCOME_TAX, self.IPCA)
+            self.CDI,
+            self.WALLET_PROFITABILITY_TARGET,
+            self.INCOME_TAX,
+            self.IPCA)
         self.assertAlmostEqual(
             profit_net_annual_suggested,
             self.PROFIT_NET_SUGGESTED,
