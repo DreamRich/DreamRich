@@ -13,6 +13,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.all()
 
+
 class FinancialAdviserViewSet(viewsets.ModelViewSet):
     serializer_class = FinancialAdviserSerializer
     queryset = FinancialAdviser.objects.all()

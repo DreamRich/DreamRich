@@ -12,7 +12,8 @@ class CorsMiddleware:
         return response
 
     def _set_allow_hosts_(self, response, origin):
-        if hasattr(settings, 'CORS_WHITELIST') and origin in settings.CORS_WHITELIST:
+        if hasattr(settings,
+                   'CORS_WHITELIST') and origin in settings.CORS_WHITELIST:
             response["Access-Control-Allow-Origin"] = origin
             response["Access-Control-Allow-Methods"] = "GET, OPTIONS, POST, PUT, DELETE"
             response["Access-Control-Max-Age"] = "1000"

@@ -13,7 +13,9 @@ class PatrimonyTest(TestCase):
         self.current_monthly_income_test = Decimal('1414.23')
 
     def test_current_net_investment(self):
-        self.assertEqual(self.current_net_investment_test, self.patrimony.current_net_investment)
+        self.assertEqual(
+            self.current_net_investment_test,
+            self.patrimony.current_net_investment)
 
     def test_current_property_investment(self):
         self.assertEqual(self.current_property_investment_test,
@@ -24,4 +26,6 @@ class PatrimonyTest(TestCase):
                          self.patrimony.possible_income_generation)
 
     def test_current_monthly_income(self):
-        self.assertEqual(self.current_monthly_income_test, self.patrimony.current_monthly_income)
+        self.assertEqual(
+            self.current_monthly_income_test,
+            self.patrimony.current_monthly_income)

@@ -2,7 +2,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
-from rest_framework_jwt.views import obtain_jwt_token
 from json import dumps
 
 
