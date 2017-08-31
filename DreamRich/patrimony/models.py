@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, When
+from django.db.models import Sum
 
 
 class Patrimony(models.Model):
@@ -23,7 +23,8 @@ class Patrimony(models.Model):
 
     @property
     def possible_income_generation(self):
-        total_company_participation = self.companyparticipation_set.all().aggregate(Sum('value'))
+        total_company_participation = self.companyparticipation_set.all(
+            ).aggregate(Sum('value'))
         total_equipment = self.equipment_set.all().aggregate(Sum('value'))
         total = total_company_participation['value__sum'] + \
             total_equipment['value__sum'] + self.fgts
@@ -32,7 +33,8 @@ class Patrimony(models.Model):
 
     @property
     def current_monthly_income(self):
-        total_value_monthly = self.income_set.all().aggregate(Sum('value_monthly'))
+        total_value_monthly = self.income_set.all().aggregate(
+            Sum('value_monthly'))
         total_value_monthly = total_value_monthly['value_monthly__sum']
         total_vacation = self.income_set.all().aggregate(Sum('vacation'))
         total_vacation = total_vacation['vacation__sum']
@@ -41,7 +43,8 @@ class Patrimony(models.Model):
         total_vacation_monthly = total_vacation / 12
         total_thirteenth_monthly = total_thirteenth / 12
 
-        total = total_value_monthly + total_vacation_monthly + total_thirteenth_monthly
+        total = total_value_monthly + total_vacation_monthly \
+                                    + total_thirteenth_monthly
         total = round(total, 2)
 
         return total
@@ -98,7 +101,8 @@ class Leftover(models.Model):
 
     @property
     def leftover(self):
-        self.patrimony.current_monthly_income - self.patrimony.regularcost.total
+        return (self.patrimony.current_monthly_income -
+                self.patrimony.regularcost.total)
 
 
 class RegularCost(models.Model):
@@ -129,9 +133,10 @@ class RegularCost(models.Model):
 
     @property
     def total(self):
-        total_regular_cost = self.home + self.electricity_bill + self.gym + self.taxes \
-            + self.car_gas + self.insurance + self.cellphone + self.health_insurance \
-            + self.supermarket + self.housekeeper + self.beauty + self.internet \
+        total_regular_cost = self.home + self.electricity_bill \
+            + self.gym + self.taxes + self.car_gas + self.insurance \
+            + self.cellphone + self.health_insurance + self.supermarket \
+            + self.housekeeper + self.beauty + self.internet \
             + self.netflix + self.recreation + self.meals + self.appointments \
             + self.drugstore + self.extras
 

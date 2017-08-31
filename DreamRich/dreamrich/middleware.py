@@ -15,7 +15,15 @@ class CorsMiddleware:
         if hasattr(settings,
                    'CORS_WHITELIST') and origin in settings.CORS_WHITELIST:
             response["Access-Control-Allow-Origin"] = origin
-            response["Access-Control-Allow-Methods"] = "GET, OPTIONS, POST, PUT, DELETE"
+            response["Access-Control-Allow-Methods"] = "\
+                         GET,\
+                         OPTIONS,\
+                         POST,\
+                         PUT,\
+                         DELETE"
             response["Access-Control-Max-Age"] = "1000"
-            response["Access-Control-Allow-Headers"] = "Content-Type, Accept, X-CSRFToken"
+            response["Access-Control-Allow-Headers"] = "\
+                         Content-Type,\
+                         Accept,\
+                         X-CSRFToken"
             response["Access-Control-Allow-Credentials"] = 'true'
