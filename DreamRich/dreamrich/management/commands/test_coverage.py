@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand
+# pylint: disable=unused-argument
 import os
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -12,6 +13,6 @@ class Command(BaseCommand):
         self.stdout.write("Generating html report")
         os.system("coverage html")
         path = os.path.realpath(".")
-        message = "Open the link in your browser\n\tfile:///{}/htmlcov/index.h"\
-            "tml".format(path)
+        message = "Open the link in your browser\n\tfile:///{}/\
+                   htmlcov/index.html".format(path)
         self.stdout.write(message)

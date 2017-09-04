@@ -1,5 +1,6 @@
+# pylint: skip-file
 """
-WSGI config for DreamRich project.
+WSGI config for dreamrich project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

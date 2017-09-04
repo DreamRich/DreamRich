@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand
+# pylint: disable=unused-argument
 import os
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -7,8 +8,10 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         path = os.path.realpath(".")
         self.stdout.write("Raw metrics analysis")
-        os.system(
-            "radon raw {} --exclude *__init__.py,*management,manage.py,*migrations".format(path))
+        os.system('{} {}'.format("radon raw {}".format(path),
+                                 " --exclude *__init__.py,*management,"
+                                 "manage.py,*migrations"))
         self.stdout.write("Analysis complexity")
-        os.system(
-            "radon cc {} --average --exclude *__init__.py,*management,manage.py,*migrations".format(path))
+        message = "radon cc {}".format(path)
+        os.system("{} {}".format(message, "--average --exclude *__init__.py,"
+                                 "*management,manage.py,*migrations"))

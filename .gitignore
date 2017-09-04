@@ -101,3 +101,7 @@ ENV/
 
 # swap files
 *.swp
+
+# production database
+
+db.sqlite3
