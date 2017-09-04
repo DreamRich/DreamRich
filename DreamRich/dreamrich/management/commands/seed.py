@@ -1,3 +1,4 @@
+# pylint: disable=unused-argument
 import inspect
 from django.core.management.base import BaseCommand
 from dreamrich.settings import LOCAL_APPS
@@ -14,9 +15,15 @@ class Command(BaseCommand):
                 for name, obj in inspect.getmembers(app_module):
                     if inspect.isclass(obj) and name.find('MainFactory') != -1:
                         self.stdout.write("Creating objects to {}".format(app))
-                        for n in range(kwargs['loop']):
-                            getattr(obj, 'create')()
-                            self.stdout.write(".", ending="")
+                        loop = 0
+                        while loop < kwargs['loop']:
+                            try:
+                                getattr(obj, 'create')()
+                                self.stdout.write(".", ending="")
+                            except Exception as error:
+                                print(error)
+
+                            loop += 1
             except AttributeError:
                 self.stderr.write("{} don't have factories :( ".format(app))
             except ImportError:

@@ -15,7 +15,7 @@ class Employee(BaseUser):
 
     cpf = models.CharField(
         max_length=14,
-        validators=[validators.validate_CPF]
+        validators=[validators.validate_cpf]
     )
 
 

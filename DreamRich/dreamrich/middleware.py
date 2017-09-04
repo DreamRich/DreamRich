@@ -8,10 +8,11 @@ class CorsMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        self._set_allow_hosts_(response, request.META.get('HTTP_ORIGIN'))
+        self.set_allow_hosts(response, request.META.get('HTTP_ORIGIN'))
         return response
 
-    def _set_allow_hosts_(self, response, origin):
+    @staticmethod
+    def set_allow_hosts(response, origin):
         if hasattr(settings,
                    'CORS_WHITELIST') and origin in settings.CORS_WHITELIST:
             response["Access-Control-Allow-Origin"] = origin
