@@ -44,7 +44,7 @@ class ClientFactory(factory.DjangoModelFactory):
     surname = factory.Faker('name')
     birthday = factory.LazyFunction(datetime.datetime.now)
     profession = factory.Sequence(lambda n: 'profession%s' % n)
-    telephone = factory.Sequence(lambda n: 'tel%s' % n)
+    telephone = factory.Sequence(lambda n: '1234467%s' % n)
     hometown = factory.Faker('word')
     cpf = factory.LazyAttribute(gen_cpf)
     address = factory.RelatedFactory(AddressFactory)
