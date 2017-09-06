@@ -28,7 +28,7 @@ class RealEstateFactory(factory.DjangoModelFactory):
 
     name = factory.Faker('first_name')
     value = round(Decimal(121.21), 2)
-    salable = True
+    salable = False
 
 
 class CompanyParticipationFactory(factory.DjangoModelFactory):
@@ -85,16 +85,6 @@ class MovablePropertyFactory(factory.DjangoModelFactory):
     value = round(Decimal(121.21), 2)
 
 
-class HauseFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.Hause
-
-    name = factory.Faker('first_name')
-    value = round(Decimal(121.21), 2)
-    home = False
-
-
 class RegularCostFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -137,4 +127,3 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     regular_cost = factory.RelatedFactory(RegularCostFactory, 'patrimony')
     movable_praperty = factory.RelatedFactory(MovablePropertyFactory,
                                               'patrimony')
-    hause = factory.RelatedFactory(HauseFactory, 'patrimony')

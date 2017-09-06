@@ -15,11 +15,11 @@ class Patrimony(models.Model):
 
     @property
     def current_property_investment(self):
-        salable_total = self.realestate_set.filter(
-            salable=True).aggregate(Sum('value'))
-        salable_total = salable_total['value__sum']
+        non_salable_total = self.realestate_set.filter(
+            salable=False).aggregate(Sum('value'))
+        non_salable_total = non_salable_total['value__sum']
 
-        return salable_total
+        return non_salable_total
 
     @property
     def possible_income_generation(self):
@@ -54,11 +54,11 @@ class Patrimony(models.Model):
         total_movable_property = self.movableproperty_set.all().aggregate(
             Sum('value'))
         total_movable_property = total_movable_property['value__sum']
-        total_hause = self.hause_set.all().aggregate(
-            Sum('value'))
-        total_hause = total_hause['value__sum']
+        salable_total = self.realestate_set.filter(
+            salable=True).aggregate(Sum('value'))
+        salable_total = salable_total['value__sum']
 
-        total = total_movable_property + total_hause
+        total = total_movable_property + salable_total
         return total
 
 
@@ -120,13 +120,6 @@ class Leftover(models.Model):
 class MovableProperty(models.Model):
     name = models.CharField(max_length=100)
     value = models.DecimalField(decimal_places=2, max_digits=8)
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
-
-
-class Hause(models.Model):
-    name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8)
-    home = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
