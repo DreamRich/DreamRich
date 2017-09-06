@@ -158,6 +158,7 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("client.serializers", ("*")),
     ("employee.factories", ("*")),
     ("employee.serializers", ("*")),
+    ("patrimony.factories", ("*")),
 ]
 
 # Internationalization

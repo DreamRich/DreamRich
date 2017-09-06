@@ -76,6 +76,25 @@ class LeftoverFactory(factory.DjangoModelFactory):
         model = models.Leftover
 
 
+class MovablePropertyFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.MovableProperty
+
+    name = factory.Faker('first_name')
+    value = round(Decimal(121.21), 2)
+
+
+class HauseFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.Hause
+
+    name = factory.Faker('first_name')
+    value = round(Decimal(121.21), 2)
+    home = False
+
+
 class RegularCostFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -116,3 +135,6 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     income = factory.RelatedFactory(IncomeFactory, 'patrimony')
     leftover = factory.RelatedFactory(LeftoverFactory, 'patrimony')
     regular_cost = factory.RelatedFactory(RegularCostFactory, 'patrimony')
+    movable_praperty = factory.RelatedFactory(MovablePropertyFactory,
+                                              'patrimony')
+    hause = factory.RelatedFactory(HauseFactory, 'patrimony')

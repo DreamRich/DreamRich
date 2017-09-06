@@ -49,6 +49,18 @@ class Patrimony(models.Model):
 
         return total
 
+    @property
+    def current_equity_ot_used_as_investments(self):
+        total_movable_property = self.movableproperty_set.all().aggregate(
+            Sum('value'))
+        total_movable_property = total_movable_property['value__sum']
+        total_hause = self.hause_set.all().aggregate(
+            Sum('value'))
+        total_hause = total_hause['value__sum']
+
+        total = total_movable_property + total_hause
+        return total
+
 
 class Active(models.Model):
     name = models.CharField(max_length=100)
@@ -105,6 +117,19 @@ class Leftover(models.Model):
                 self.patrimony.regularcost.total)
 
 
+class MovableProperty(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.DecimalField(decimal_places=2, max_digits=8)
+    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+
+
+class Hause(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.DecimalField(decimal_places=2, max_digits=8)
+    home = models.BooleanField()
+    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+
+
 class RegularCost(models.Model):
     patrimony = models.OneToOneField(
         Patrimony,
@@ -116,6 +141,7 @@ class RegularCost(models.Model):
     gym = models.DecimalField(decimal_places=2, max_digits=8)
     taxes = models.DecimalField(decimal_places=2, max_digits=8)
     car_gas = models.DecimalField(decimal_places=2, max_digits=8)
+
     insurance = models.DecimalField(decimal_places=2, max_digits=8)
     cellphone = models.DecimalField(decimal_places=2, max_digits=8)
     health_insurance = models.DecimalField(decimal_places=2, max_digits=8)
