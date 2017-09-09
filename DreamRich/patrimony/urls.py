@@ -11,6 +11,7 @@ from patrimony.views import (
     RegularCostViewSet,
 )
 
+
 app_name = 'patrimony'
 
 router = routers.DefaultRouter()

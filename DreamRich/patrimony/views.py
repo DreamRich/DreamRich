@@ -9,7 +9,6 @@ from patrimony.serializers import (
     LifeInsuranceSerializer,
     IncomeSerializer,
     RegularCostSerializer,
-
 )
 
 from patrimony.models import (
