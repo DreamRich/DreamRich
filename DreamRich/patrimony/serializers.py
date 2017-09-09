@@ -18,6 +18,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
         model = Patrimony
         fields = [
             'fgts',
+            'id',
         ]
 
 
