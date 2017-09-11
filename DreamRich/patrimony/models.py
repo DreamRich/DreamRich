@@ -78,6 +78,10 @@ class Patrimony(models.Model):
 
         return total_regular_cost
 
+    @property
+    def leftover(self):
+        return (self.current_monthly_income - self.regularcost.total)
+
 
 class Active(models.Model):
     name = models.CharField(max_length=100)
@@ -123,21 +127,6 @@ class Income(models.Model):
                                         default=0)
     thirteenth = models.DecimalField(decimal_places=2, max_digits=8)
     vacation = models.DecimalField(decimal_places=2, max_digits=8)
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
-
-
-class Leftover(models.Model):
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
-
-    @property
-    def leftover(self):
-        return (self.patrimony.current_monthly_income -
-                self.patrimony.regularcost.total)
-
-
-class MovableProperty(models.Model):
-    name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 

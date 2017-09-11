@@ -7,11 +7,18 @@ from patrimony.models import (
     Equipment,
     LifeInsurance,
     Income,
-    Leftover,
-    MovableProperty,
     RegularCost,
 )
 from rest_framework import serializers
+
+
+class PatrimonySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Patrimony
+        fields = [
+            'fgts',
+        ]
 
 
 class ActiveSerializer(serializers.ModelSerializer):
@@ -23,6 +30,25 @@ class ActiveSerializer(serializers.ModelSerializer):
             'value',
         ]
 
+class ArrearageSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Arrearage
+        fields = [
+            'name',
+            'value',
+        ]
+
+
+class RealEstateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RealEstate
+        fields = [
+            'name',
+            'value',
+            'salable',
+        ]
 
 class CompanyParticipationSerializer(serializers.ModelSerializer):
 
@@ -43,21 +69,47 @@ class EquipmentSerializer(serializers.ModelSerializer):
             'value',
         ]
 
-
-class RealEstateSerializer(serializers.ModelSerializer):
+class LifeInsuranceSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = RealEstate
+        model = LifeInsurance
         fields = [
             'name',
             'value',
-            'salable',
         ]
 
-class PatrimonySerializer(serializers.ModelSerializer):
+class IncomeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Patrimony
+        model = Income
         fields = [
-            'fgts',
+            'source',
+            'value_monthly',
+            'thirteenth',
+            'vacation',
+        ]
+
+class RegularCostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RegularCost
+        fields = [
+            'home',
+            'electricity_bill',
+            'gym',
+            'taxes',
+            'car_gas',
+            'insurance',
+            'cellphone',
+            'health_insurance',
+            'supermarket',
+            'housekeeper',
+            'beauty',
+            'internet',
+            'netflix',
+            'recreation',
+            'meals',
+            'appointments',
+            'drugstore',
+            'extras',
         ]
