@@ -49,14 +49,15 @@ def validate_cpf(value):
 
     return orig_value
 
+
 def validate_phonenumber(phone_number):
     for char in phone_number:
         if not char.isdigit():
-            raise ValidationError("Phone number must be number") 
-             
+            raise ValidationError("Phone number must be number")
+
 
 def validate_agency(agency):
-    #print("Entrouuu")
+    # print("Entrouuu")
     #agency = RegexValidator('\b\d{4}[-]?\d{1}\b', "Hashtag doesn't comply.")
     for char in phone_number:
         if not char.isdigit():

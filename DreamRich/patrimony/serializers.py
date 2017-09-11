@@ -30,8 +30,9 @@ class ActiveSerializer(serializers.ModelSerializer):
             'value',
         ]
 
+
 class ArrearageSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Arrearage
         fields = [
@@ -49,6 +50,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
             'value',
             'salable',
         ]
+
 
 class CompanyParticipationSerializer(serializers.ModelSerializer):
 
@@ -69,6 +71,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
             'value',
         ]
 
+
 class LifeInsuranceSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -77,6 +80,7 @@ class LifeInsuranceSerializer(serializers.ModelSerializer):
             'name',
             'value',
         ]
+
 
 class IncomeSerializer(serializers.ModelSerializer):
 
@@ -88,6 +92,7 @@ class IncomeSerializer(serializers.ModelSerializer):
             'thirteenth',
             'vacation',
         ]
+
 
 class RegularCostSerializer(serializers.ModelSerializer):
 
