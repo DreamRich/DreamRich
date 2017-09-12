@@ -1,7 +1,7 @@
 import re
-
 from django.core.validators import EMPTY_VALUES
 from django.forms import ValidationError
+from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 
 ERROR_MESSAGES = {
@@ -58,7 +58,5 @@ def validate_phonenumber(phone_number):
 
 def validate_agency(agency):
     # print("Entrouuu")
-    #agency = RegexValidator('\b\d{4}[-]?\d{1}\b', "Hashtag doesn't comply.")
-    for char in phone_number:
-        if not char.isdigit():
-            raise ValidationError("Phone number must be number")
+    agency = RegexValidator('\b\d{4}[-]?\d{1}\b', "Hashtag doesn't comply.")
+    print(agency)
