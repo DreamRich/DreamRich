@@ -94,6 +94,7 @@ class ActiveClientSerializer(serializers.ModelSerializer):
 
         model = ActiveClient
         fields = ClientSerializer.Meta.fields + [
+            'id',
             'client_address',
             'dependents',
             'id_document',

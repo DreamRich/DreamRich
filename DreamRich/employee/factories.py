@@ -9,8 +9,6 @@ class EmployeeMainFactory(UserFactory):
     class Meta:
         model = Employee
 
-    name = factory.Faker('first_name')
-    surname = factory.Faker('last_name')
     cpf = factory.LazyAttribute(gen_cpf)
 
 
