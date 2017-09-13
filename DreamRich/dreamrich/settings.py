@@ -46,6 +46,7 @@ LOCAL_APPS = [
     'patrimony',
     'employee',
     'dr_auth',
+    'goal',
 ]
 
 DEFAULT_APPS = [
