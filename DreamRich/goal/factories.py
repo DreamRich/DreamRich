@@ -31,5 +31,16 @@ class GoalFactory(factory.DjangoModelFactory):
     year_end = 2040
     periodicity = 1
     value = 22000
-    financial_indepedence = factory.SubFactory(FinancialIndependenceFactory)
+    financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_type = factory.SubFactory(GoalTypeFactory)
+
+
+class MainFactory():
+
+    @staticmethod
+    def create():
+        financial_independence = FinancialIndependenceFactory()
+        GoalFactory.create_batch(
+                5,
+                financial_independence=financial_independence,
+                )

@@ -20,6 +20,7 @@ class Goal(models.Model):
     year_end = models.PositiveSmallIntegerField()
     periodicity = models.PositiveSmallIntegerField()
     value = models.PositiveIntegerField()
-    financial_indepedence = models.ForeignKey(FinancialIndependence,
+    financial_independence = models.ForeignKey(FinancialIndependence,
                                               on_delete=models.CASCADE)
     goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
+
