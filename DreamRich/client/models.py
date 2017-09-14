@@ -102,8 +102,13 @@ class Client(ClientBase):
         on_delete=models.CASCADE,
         related_name='spouse',
         null=True,
-        blank=True
+        blank=True,
     )
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+			
+        super(Client, self).save(*args, **kwargs)
 
 
 class Dependent(models.Model):
@@ -147,6 +152,10 @@ class BankAccount(models.Model):
     def __str__(self):
         return str(self.agency) + ' ' + str(self.account)
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+			
+        super(BankAccount, self).save(*args, **kwargs)
 
 class Address(models.Model):
 
