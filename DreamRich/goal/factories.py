@@ -1,5 +1,7 @@
 import factory
 from . import models
+from financial_planning.factories  import FinancialPlanningFactory
+
 
 class FinancialIndependenceFactory(factory.DjangoModelFactory):
 
@@ -9,6 +11,7 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
+    financial_planning = factory.SubFactory(FinancialPlanningFactory)
 
 
 class GoalTypeFactory(factory.DjangoModelFactory):
@@ -31,16 +34,5 @@ class GoalFactory(factory.DjangoModelFactory):
     year_end = 2040
     periodicity = 1
     value = 22000
-    financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_type = factory.SubFactory(GoalTypeFactory)
-
-
-class MainFactory():
-
-    @staticmethod
-    def create():
-        financial_independence = FinancialIndependenceFactory()
-        GoalFactory.create_batch(
-                5,
-                financial_independence=financial_independence,
-                )
+    financial_planning = factory.SubFactory(FinancialPlanningFactory)
