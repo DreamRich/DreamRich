@@ -146,7 +146,8 @@ class BankAccount(models.Model):
     )  # BR pattern: '[4alg]-[1dig]'
 
     account = models.CharField(
-        max_length=10
+        max_length=13,
+        validators=[validators.validate_account]
     )  # BR pattern: '[8alg]-[1dig]'
 
     def __str__(self):

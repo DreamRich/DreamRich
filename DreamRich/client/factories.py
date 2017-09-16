@@ -44,7 +44,7 @@ class ClientFactory(factory.DjangoModelFactory):
     surname = factory.Faker('name')
     birthday = factory.LazyFunction(datetime.datetime.now)
     profession = factory.Sequence(lambda n: 'profession%s' % n)
-    telephone = factory.Sequence(lambda n: '1234467%s' % n)
+    telephone = factory.Sequence(lambda n: '(61) 91234-567%s' % n)
     hometown = factory.Faker('word')
     cpf = factory.LazyAttribute(gen_cpf)
     address = factory.RelatedFactory(AddressFactory)
@@ -76,8 +76,8 @@ class BankAccountFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.BankAccount
 
-    agency = factory.Sequence(lambda n: '%s' % n)
-    account = factory.Sequence(lambda n: '%s' % n)
+    agency = factory.Sequence(lambda n: '1234-%s' % n)
+    account = factory.Sequence(lambda n: '12345-%s' % n)
 
 
 class ActiveClientMainFactory(ClientFactory):
