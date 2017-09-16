@@ -10,6 +10,7 @@ class CountryFactory(factory.DjangoModelFactory):
         model = models.Country
 
     name = factory.Sequence(lambda n: 'country%s' % n)
+    abbreviation = factory.Sequence(lambda n: 'a%s' % n)
 
 
 class StateFactory(factory.DjangoModelFactory):
@@ -18,6 +19,7 @@ class StateFactory(factory.DjangoModelFactory):
         model = models.State
 
     name = factory.Sequence(lambda n: 'state%s' % n)
+    abbreviation = factory.Sequence(lambda n: 'a%s' % n)
     country = factory.SubFactory(CountryFactory)
 
 
@@ -30,6 +32,7 @@ class AddressFactory(factory.DjangoModelFactory):
     type_of_address = factory.Sequence(lambda n: 'type%s' % n)
     neighborhood = factory.Sequence(lambda n: 'neighborhood%s' % n)
     detail = factory.Sequence(lambda n: 'detail%s' % n)
+    cep = factory.Sequence(lambda n: '700000%s' % n)
     state = factory.SubFactory(StateFactory)
     number = 1
     complement = factory.Sequence(lambda n: 'complement%s' % n)

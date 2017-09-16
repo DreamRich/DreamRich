@@ -1,9 +1,9 @@
 from django.db import models
 from dr_auth.models import BaseUser
 from dreamrich import validators
+from dreamrich import models as base_models
 
-
-class Country(models.Model):
+class Country(base_models.BaseModel):
 
     name = models.CharField(
         max_length=30
@@ -17,7 +17,7 @@ class Country(models.Model):
         return self.name
 
 
-class State(models.Model):
+class State(base_models.BaseModel):
 
     name = models.CharField(
         max_length=30
@@ -37,7 +37,7 @@ class State(models.Model):
         return self.name
 
 
-class ClientBase(models.Model):
+class ClientBase(base_models.BaseModel):
 
     class Meta:
         abstract = True
@@ -104,14 +104,9 @@ class Client(ClientBase):
         null=True,
         blank=True,
     )
+
     
-    def save(self, *args, **kwargs):
-        self.full_clean()
-			
-        super(Client, self).save(*args, **kwargs)
-
-
-class Dependent(models.Model):
+class Dependent(base_models.BaseModel):
 
     name = models.CharField(
         max_length=30
@@ -132,7 +127,7 @@ class Dependent(models.Model):
     )
 
 
-class BankAccount(models.Model):
+class BankAccount(base_models.BaseModel):
 
     active_client = models.OneToOneField(
         ActiveClient,
@@ -153,12 +148,8 @@ class BankAccount(models.Model):
     def __str__(self):
         return str(self.agency) + ' ' + str(self.account)
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-			
-        super(BankAccount, self).save(*args, **kwargs)
 
-class Address(models.Model):
+class Address(base_models.BaseModel):
 
     type_of_address = models.CharField(
         max_length=20
