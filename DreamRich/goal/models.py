@@ -2,6 +2,7 @@
 All attributes of this file have the annual order of magnitude
 """
 from django.db import models
+import datetime
 
 
 class GoalType(models.Model):
@@ -12,7 +13,11 @@ class GoalManager(models.Model):
 
     @property
     def duration_goals(self):
-        duration_goals = self.financialplanning.financial_independence.age
+        age_of_independence = self.financialplanning.financial_independence.age
+        actual_year = datetime.datetime.now().year
+        birthday_year = self.financialplanning.active_client.birthday.year
+        actual_age = actual_year - birthday_year
+        duration_goals = age_of_independence - actual_age
 
         return duration_goals
 
