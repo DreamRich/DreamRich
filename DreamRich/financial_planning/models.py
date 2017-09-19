@@ -1,6 +1,13 @@
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
+from goal.models import GoalManager
+
+
+class FinancialIndependence(models.Model):
+    age = models.PositiveSmallIntegerField()
+    duration_of_usufruct = models.PositiveSmallIntegerField()
+    remain_patrimony = models.PositiveIntegerField()
 
 
 class FinancialPlanning(models.Model):
@@ -11,8 +18,17 @@ class FinancialPlanning(models.Model):
         primary_key=True,
     )
 
-    partimony = models.OneToOneField(
+    patrimony = models.OneToOneField(
         Patrimony,
         on_delete=models.CASCADE,
-        primary_key=True,
+    )
+
+    financial_independence = models.OneToOneField(
+        FinancialIndependence,
+        on_delete=models.CASCADE,
+    )
+
+    goal_manager = models.OneToOneField(
+        GoalManager,
+        on_delete=models.CASCADE,
     )
