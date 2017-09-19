@@ -39,10 +39,12 @@ class ClientFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.Client
+        exclude = ('now',)
 
     name = factory.Faker('name')
     surname = factory.Faker('name')
-    birthday = factory.LazyFunction(datetime.datetime.now)
+    birthday = factory.fuzzy.FuzzyNaiveDateTime(datetime.datetime(1964, 1, 1),
+                                                datetime.datetime(1987, 1, 1))
     profession = factory.Sequence(lambda n: 'profession%s' % n)
     telephone = factory.Sequence(lambda n: '1234467%s' % n)
     hometown = factory.Faker('word')
