@@ -1,5 +1,7 @@
-import factory
+from factory.fuzzy import FuzzyInteger
 from . import models
+import factory
+import datetime
 
 
 class GoalTypeFactory(factory.DjangoModelFactory):
@@ -20,10 +22,13 @@ class GoalFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.Goal
+        exclude = ('actual_year',)
 
     is_periodic = True
-    year_init = 2018
-    year_end = 2040
-    periodicity = 1
-    value = 22000
+    actual_year = datetime.datetime.now().year
+    year_init = FuzzyInteger(actual_year, actual_year + 10)
+    year_end = FuzzyInteger(actual_year + 11, actual_year + 30)
+    periodicity = FuzzyInteger(1,5)
+    value = FuzzyInteger(2000, 1000000)
     goal_type = factory.SubFactory(GoalTypeFactory)
+    goal_manager = factory.SubFactory(GoalManagerFactory)

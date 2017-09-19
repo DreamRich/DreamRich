@@ -43,7 +43,7 @@ class ClientFactory(factory.DjangoModelFactory):
 
     name = factory.Faker('name')
     surname = factory.Faker('name')
-    birthday = factory.fuzzy.FuzzyNaiveDateTime(datetime.datetime(1964, 1, 1),
+    birthday = factory.fuzzy.FuzzyNaiveDateTime(datetime.datetime(1967, 1, 1),
                                                 datetime.datetime(1987, 1, 1))
     profession = factory.Sequence(lambda n: 'profession%s' % n)
     telephone = factory.Sequence(lambda n: '1234467%s' % n)
