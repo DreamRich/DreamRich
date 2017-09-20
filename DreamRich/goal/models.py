@@ -29,7 +29,29 @@ class Goal(models.Model):
     periodicity = models.PositiveSmallIntegerField()
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
-            GoalManager,
+        GoalManager,
         on_delete=models.CASCADE
     )
     goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
+
+    @property
+    def flow(self):
+        actual_year = datetime.datetime.now().year
+        index_goal_init = self.year_init - actual_year
+        goal_array_flow = []
+        mod_period = 0
+
+        if self.is_periodic:
+            duration_goals = self.goal_manager.duration_goals
+
+            for index in range(duration_goals):
+                if index > index_goal_init:
+                    mod_period += 1
+                if index < index_goal_init:
+                    goal_array_flow.append(0)
+                elif mod_period % self.periodicity == 0:
+                    goal_array_flow.append(self.value)
+                else:
+                    goal_array_flow.append(0)
+
+        return goal_array_flow
