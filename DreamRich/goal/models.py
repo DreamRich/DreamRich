@@ -34,37 +34,36 @@ class Goal(models.Model):
     )
     goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
 
+    def generic_flow(self, index_goal_end, actual_year):
+
+        index_goal_init = self.year_init - actual_year
+        mod_period = 0
+        duration_goals = self.goal_manager.duration_goals
+        goal_array_flow = []
+        for index in range(duration_goals):
+            if index > index_goal_init:
+                mod_period += 1
+            if index < index_goal_init:
+                goal_array_flow.append(0)
+            elif mod_period % self.periodicity == 0 and index < index_goal_end:
+                goal_array_flow.append(self.value)
+            else:
+                goal_array_flow.append(0)
+
+        return goal_array_flow
+
     @property
     def flow(self):
         actual_year = datetime.datetime.now().year
-        index_goal_init = self.year_init - actual_year
         goal_array_flow = []
-        mod_period = 0
-        duration_goals = self.goal_manager.duration_goals
         index_goal_end = self.year_end - actual_year
 
         if self.has_end_date:
-
-            for index in range(duration_goals):
-                if index > index_goal_init:
-                    mod_period += 1
-                if index < index_goal_init:
-                    goal_array_flow.append(0)
-                elif mod_period % self.periodicity == 0:
-                    goal_array_flow.append(self.value)
-                else:
-                    goal_array_flow.append(0)
-
+            index_goal_end = self.goal_manager.duration_goals
+            goal_array_flow = self.generic_flow(index_goal_end, actual_year)
         else:
+            index_goal_end = self.year_end - actual_year
+            goal_array_flow = self.generic_flow(index_goal_end, actual_year)
 
-            for index in range(duration_goals):
-                if index > index_goal_init:
-                    mod_period += 1
-                if index < index_goal_init:
-                    goal_array_flow.append(0)
-                elif mod_period % self.periodicity == 0 and index < index_goal_end:
-                    goal_array_flow.append(self.value)
-                else:
-                    goal_array_flow.append(0)
 
         return goal_array_flow
