@@ -23,9 +23,9 @@ class GoalManager(models.Model):
 
 
 class Goal(models.Model):
-    is_periodic = models.BooleanField()
+    has_end_date = models.BooleanField()
     year_init = models.PositiveSmallIntegerField()
-    year_end = models.PositiveSmallIntegerField()
+    year_end = models.PositiveSmallIntegerField(null = True, blank=True)
     periodicity = models.PositiveSmallIntegerField()
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
@@ -40,9 +40,10 @@ class Goal(models.Model):
         index_goal_init = self.year_init - actual_year
         goal_array_flow = []
         mod_period = 0
+        duration_goals = self.goal_manager.duration_goals
+        index_goal_end = self.year_end - actual_year
 
-        if self.is_periodic:
-            duration_goals = self.goal_manager.duration_goals
+        if self.has_end_date:
 
             for index in range(duration_goals):
                 if index > index_goal_init:
@@ -50,6 +51,18 @@ class Goal(models.Model):
                 if index < index_goal_init:
                     goal_array_flow.append(0)
                 elif mod_period % self.periodicity == 0:
+                    goal_array_flow.append(self.value)
+                else:
+                    goal_array_flow.append(0)
+
+        else:
+
+            for index in range(duration_goals):
+                if index > index_goal_init:
+                    mod_period += 1
+                if index < index_goal_init:
+                    goal_array_flow.append(0)
+                elif mod_period % self.periodicity == 0 and index < index_goal_end:
                     goal_array_flow.append(self.value)
                 else:
                     goal_array_flow.append(0)

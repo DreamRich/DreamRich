@@ -24,7 +24,7 @@ class GoalFactory(factory.DjangoModelFactory):
         model = models.Goal
         exclude = ('actual_year',)
 
-    is_periodic = True
+    has_end_date = True
     actual_year = datetime.datetime.now().year
     year_init = FuzzyInteger(actual_year, actual_year + 10)
     year_end = FuzzyInteger(actual_year + 11, actual_year + 30)
