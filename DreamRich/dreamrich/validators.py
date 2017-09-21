@@ -59,6 +59,6 @@ def validate_phonenumber(phone_number):
 def validate_agency(agency):
     # print("Entrouuu")
     #agency = RegexValidator('\b\d{4}[-]?\d{1}\b', "Hashtag doesn't comply.")
-    for char in phone_number:
+    for char in agency:
         if not char.isdigit():
             raise ValidationError("Phone number must be number")

@@ -9,6 +9,7 @@ jobs:
       only:
         - master
         - devel
+        - unstable
 
     steps:
       - checkout
