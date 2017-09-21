@@ -21,6 +21,21 @@ class GoalManager(models.Model):
 
         return duration_goals
 
+    @property
+    def goals_flow_dic(self):
+
+        data = []
+        goals = list(self.goal_set.all())
+
+        for goal in goals:
+            goal_flow_dic = {}
+            goal_flow_dic['name'] = goal.goal_type.name
+            goal_flow_dic['data'] = goal.flow
+            data.append(goal_flow_dic)
+
+        return data
+
+
 
 class Goal(models.Model):
     has_end_date = models.BooleanField()
