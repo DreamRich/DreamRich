@@ -28,9 +28,10 @@ class GoalManager(models.Model):
         goals = list(self.goal_set.all())
 
         for goal in goals:
-            goal_flow_dic = {}
-            goal_flow_dic['name'] = goal.goal_type.name
-            goal_flow_dic['data'] = goal.flow
+            goal_flow_dic = {
+                    'name': goal.goal_type.name,
+                    'data': goal.flow,
+                    }
             data.append(goal_flow_dic)
 
         return data
@@ -73,7 +74,7 @@ class Goal(models.Model):
         goal_array_flow = []
         index_goal_end = self.year_end - actual_year
 
-        if self.has_end_date:
+        if not self.has_end_date:
             index_goal_end = self.goal_manager.duration_goals
             goal_array_flow = self.generic_flow(index_goal_end, actual_year)
         else:
