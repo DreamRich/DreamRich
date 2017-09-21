@@ -76,7 +76,7 @@ class ClientBase(base_models.BaseModel):
         return "name: {} cpf: {}".format(self.name, self.cpf)
 
 
-class ActiveClient(ClientBase, BaseUser):
+class ActiveClient(BaseUser, ClientBase):
 
     id_document = models.ImageField(
         upload_to='public/id_documents'
@@ -85,14 +85,6 @@ class ActiveClient(ClientBase, BaseUser):
     proof_of_address = models.ImageField(
         upload_to='public/proof_of_address'
     )
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.set_password(self.password)
-        self.username = self.cpf
-        self.full_clean()
-
-        super(ActiveClient, self).save(*args, **kwargs)
 
 
 class Client(ClientBase):
@@ -105,7 +97,7 @@ class Client(ClientBase):
         blank=True,
     )
 
-    
+
 class Dependent(base_models.BaseModel):
 
     name = models.CharField(

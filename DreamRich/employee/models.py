@@ -10,11 +10,6 @@ class Employee(BaseUser):
         validators=[validators.validate_cpf]
     )
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
- 
-        super(Employee, self).save(*args, **kwargs)
-
 class FinancialAdviser(Employee):
     clients = models.ManyToManyField(ActiveClient)
 
