@@ -19,20 +19,26 @@ class GoalTest(TestCase):
                                          periodicity = 3,
                                          value = 50000,
                                          goal_manager = self.goal_manager)
-        self.goal_hasnt_end_date = self.goal_has_end_date
-        self.goal_hasnt_end_date.year_end = 2031
-        self.goal_hasnt_end_date.has_end_date = False
+        self.goal_hasnt_end_date = GoalFactory(has_end_date = False,
+                                         year_init = 2021,
+                                         periodicity = 3,
+                                         value = 50000,
+                                         year_end = 2031,
+                                         goal_manager = self.goal_manager)
+        self.array_flow_withot_date = [0,0,0,0,50000,0,0,50000,0,0,50000,0,0,
+                                       50000,0,0,50000,0,0,50000]
+        self.array_flow_with_date = [0,0,0,0,50000,0,0,50000,0,0,50000,0,0,
+                                     50000,0,0,0,0,0,0]
+
 
     def test_duration_goals(self):
         self.assertEqual(
             self.goal_manager.duration_goals, 20)
 
-    def test_flow_has_end_date(self):
-        array_flow = [0,0,0,0,50000,0,0,50000,0,0,50000,0,0,50000,0,0,50000,
-                      0,0,50000]
-        self.assertEqual(array_flow, self.goal_has_end_date.flow)
+    def test_flow_hasnt_end_date(self):
+        self.assertEqual(self.array_flow_withot_date,
+                        self.goal_has_end_date.flow)
 
     def test_flow_has_end_date(self):
-        array_flow = [0,0,0,0,50000,0,0,50000,0,0,50000,0,0,50000,0,0,0,
-                      0,0,0]
-        self.assertEqual(array_flow, self.goal_hasnt_end_date.flow)
+        self.assertEqual(self.array_flow_with_date,
+                         self.goal_hasnt_end_date.flow)
