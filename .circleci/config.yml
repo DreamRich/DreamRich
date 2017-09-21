@@ -38,6 +38,8 @@ jobs:
           command: |
             . venv/bin/activate
             cd DreamRich
+            ./manage.py makemigrations
+            ./manage.py migrate
             coverage run manage.py test
             coverage report
       - store_artifacts:
