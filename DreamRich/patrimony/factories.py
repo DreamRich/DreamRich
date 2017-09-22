@@ -28,7 +28,7 @@ class RealEstateFactory(factory.DjangoModelFactory):
 
     name = factory.Faker('first_name')
     value = round(Decimal(121.21), 2)
-    salable = True
+    salable = False
 
 
 class CompanyParticipationFactory(factory.DjangoModelFactory):
@@ -70,12 +70,6 @@ class IncomeFactory(factory.DjangoModelFactory):
     vacation = round(Decimal(1212.2), 2)
 
 
-class LeftoverFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.Leftover
-
-
 class RegularCostFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -114,5 +108,4 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     equipment = factory.RelatedFactory(EquipmentFactory, 'patrimony')
     life_insurance = factory.RelatedFactory(LifeInsuranceFactory, 'patrimony')
     income = factory.RelatedFactory(IncomeFactory, 'patrimony')
-    leftover = factory.RelatedFactory(LeftoverFactory, 'patrimony')
     regular_cost = factory.RelatedFactory(RegularCostFactory, 'patrimony')

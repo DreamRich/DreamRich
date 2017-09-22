@@ -1,4 +1,5 @@
 import re
+
 from django.core.validators import EMPTY_VALUES
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -47,3 +48,17 @@ def validate_cpf(value):
         raise ValidationError(ERROR_MESSAGES['invalid'])
 
     return orig_value
+
+
+def validate_phonenumber(phone_number):
+    for char in phone_number:
+        if not char.isdigit():
+            raise ValidationError("Phone number must be number")
+
+
+def validate_agency(agency):
+    # print("Entrouuu")
+    #agency = RegexValidator('\b\d{4}[-]?\d{1}\b', "Hashtag doesn't comply.")
+    for char in agency:
+        if not char.isdigit():
+            raise ValidationError("Phone number must be number")

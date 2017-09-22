@@ -59,7 +59,8 @@ class ClientBase(models.Model):
     )
 
     telephone = models.CharField(
-        max_length=19
+        max_length=19,
+        validators=[validators.validate_phonenumber]
     )  # considering +55
 
     cpf = models.CharField(
@@ -116,7 +117,7 @@ class Dependent(models.Model):
     )
 
     birthday = models.DateField(
-        'Data de nascimento'
+        'Data de nascimento',
     )
 
     active_client = models.ForeignKey(
@@ -135,7 +136,8 @@ class BankAccount(models.Model):
     )
 
     agency = models.CharField(
-        max_length=6
+        max_length=6,
+        validators=[validators.validate_agency]
     )  # BR pattern: '[4alg]-[1dig]'
 
     account = models.CharField(

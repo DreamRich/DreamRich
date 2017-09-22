@@ -5,4 +5,4 @@ class ClientConfig(AppConfig):
     name = 'client'
 
     def ready(self):
-        import client.signals # NOQA
+        import client.signals  # NOQA

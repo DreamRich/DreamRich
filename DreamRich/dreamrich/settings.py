@@ -46,6 +46,8 @@ LOCAL_APPS = [
     'patrimony',
     'employee',
     'dr_auth',
+    'goal',
+    'financial_planning'
 ]
 
 DEFAULT_APPS = [
@@ -158,6 +160,10 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("client.serializers", ("*")),
     ("employee.factories", ("*")),
     ("employee.serializers", ("*")),
+    ("patrimony.factories", ("*")),
+    ("patrimony.serializers", ("*")),
+    ("goal.factories", ("*")),
+    ("financial_planning.factories", ("*")),
 ]
 
 # Internationalization

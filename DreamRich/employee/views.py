@@ -11,7 +11,7 @@ from employee.models import (
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
-    queryset = Employee.objects.all()
+    queryset = Employee.objects.filter(financialadviser=None)
 
 
 class FinancialAdviserViewSet(viewsets.ModelViewSet):
