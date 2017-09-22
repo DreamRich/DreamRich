@@ -22,6 +22,15 @@ class GoalManager(models.Model):
         return duration_goals
 
     @property
+    def year_init_to_year_end(self):
+        array = []
+        actual_year = datetime.datetime.now().year
+        for index in range(self.duration_goals):
+            array.append(actual_year + index)
+
+        return array
+
+    @property
     def goals_flow_dic(self):
 
         data = []
@@ -29,19 +38,18 @@ class GoalManager(models.Model):
 
         for goal in goals:
             goal_flow_dic = {
-                    'name': goal.goal_type.name,
-                    'data': goal.flow,
-                    }
+                'name': goal.goal_type.name,
+                'data': goal.flow,
+            }
             data.append(goal_flow_dic)
 
         return data
 
 
-
 class Goal(models.Model):
     has_end_date = models.BooleanField()
     year_init = models.PositiveSmallIntegerField()
-    year_end = models.PositiveSmallIntegerField(null = True, blank=True)
+    year_end = models.PositiveSmallIntegerField(null=True, blank=True)
     periodicity = models.PositiveSmallIntegerField()
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
@@ -80,6 +88,5 @@ class Goal(models.Model):
         else:
             index_goal_end = self.year_end - actual_year
             goal_array_flow = self.generic_flow(index_goal_end, actual_year)
-
 
         return goal_array_flow

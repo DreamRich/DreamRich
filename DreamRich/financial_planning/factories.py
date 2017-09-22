@@ -33,4 +33,4 @@ class GoalMainFactory():
 
         financial_planning = FinancialPlanningFactory()
         goal_manager = financial_planning.goal_manager
-        GoalFactory.create_batch(8,goal_manager = goal_manager)
+        GoalFactory.create_batch(8, goal_manager=goal_manager)
