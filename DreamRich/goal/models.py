@@ -22,6 +22,15 @@ class GoalManager(models.Model):
         return duration_goals
 
     @property
+    def year_init_to_year_end(self):
+        array = []
+        actual_year = datetime.datetime.now().year
+        for index in range(self.duration_goals):
+            array.append(actual_year + index)
+
+        return array
+
+    @property
     def goals_flow_dic(self):
 
         data = []
