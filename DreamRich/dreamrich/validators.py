@@ -50,17 +50,17 @@ def validate_cpf(value):
     return orig_value
 
 
-def validate_phonenumber(phone_number):
+def validate_phone_number(phone_number):
     regex = re.compile('^\([1-9]{2}\) [2-9][0-9]{3,4}\-[0-9]{4}$')
     if not regex.match(phone_number):
-        raise ValidationError("Phone number invalid")
+        raise ValidationError("Phone number invalid.")
 
 def validate_agency(agency):
     regex = re.compile('\d{4}[-]?\d{0,1}')
     if not regex.match(agency):
-        raise ValidationError("Agency number invalid")
+        raise ValidationError("Agency number invalid.")
 
 def validate_account(account):
     regex = re.compile('\d{5,11}[-]\d{1}')
     if not regex.match(account):
-        raise ValidationError("Account number invalid")
+        raise ValidationError("Account number invalid.")

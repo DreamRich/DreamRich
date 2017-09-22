@@ -60,7 +60,7 @@ class ClientBase(base_models.BaseModel):
 
     telephone = models.CharField(
         max_length=19,
-        validators=[validators.validate_phonenumber]
+        validators=[validators.validate_phone_number]
     )  # considering +55
 
     cpf = models.CharField(
