@@ -1,7 +1,6 @@
 import re
 from django.core.validators import EMPTY_VALUES
 from django.forms import ValidationError
-from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
 
 ERROR_MESSAGES = {
