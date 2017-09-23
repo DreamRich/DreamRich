@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from client.models import (
     ActiveClient,
@@ -9,9 +8,8 @@ from client.models import (
 from client.factories import (
     ActiveClientMainFactory,
     ClientFactory,
-    BankAccountFactory,
 )
-import pytest
+
 
 class ClientModelTest(TestCase):
 
@@ -35,7 +33,6 @@ class ClientModelTest(TestCase):
         self.assertEqual(ActiveClient.objects.last(), active_client)
 
     def test_not_save_active_client_with_cpf_wrong(self):
-        error_message = "Invalid CPF number."
         self.active_client = ActiveClientMainFactory()
         active_client = ActiveClient.objects.last()
         active_client.cpf = "12345678901"
@@ -50,7 +47,6 @@ class ClientModelTest(TestCase):
         self.assertEqual(ActiveClient.objects.last(), active_client)
 
     def test_not_save_active_client_with_phone_number_wrong(self):
-        error_message = "Phone number invalid."
         self.active_client = ActiveClientMainFactory()
         active_client = ActiveClient.objects.last()
         active_client.telephone = "9999-9999"
@@ -65,7 +61,6 @@ class ClientModelTest(TestCase):
         self.assertEqual(BankAccount.objects.last(), bank_account)
 
     def test_not_save_active_client_with_agency_number_wrong(self):
-        error_message = "Agency number invalid."
         self.active_client = ActiveClientMainFactory()
         bank_account = BankAccount.objects.last()
         bank_account.agency = "12-1"
@@ -80,7 +75,6 @@ class ClientModelTest(TestCase):
         self.assertEqual(BankAccount.objects.last(), bank_account)
 
     def test_not_save_active_client_with_account_number_wrong(self):
-        error_message = "Account number invalid."
         self.active_client = ActiveClientMainFactory()
         bank_account = BankAccount.objects.last()
         bank_account.account = "1212-1"

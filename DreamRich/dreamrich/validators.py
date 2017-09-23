@@ -54,10 +54,12 @@ def validate_phone_number(phone_number):
     if not regex.match(phone_number):
         raise ValidationError("Phone number invalid.")
 
+
 def validate_agency(agency):
     regex = re.compile('\d{4}[-]?\d{0,1}')
     if not regex.match(agency):
         raise ValidationError("Agency number invalid.")
+
 
 def validate_account(account):
     regex = re.compile('\d{5,11}[-]\d{1}')

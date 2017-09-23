@@ -10,6 +10,6 @@ class Employee(BaseUser):
         validators=[validators.validate_cpf]
     )
 
+
 class FinancialAdviser(Employee):
     clients = models.ManyToManyField(ActiveClient)
-

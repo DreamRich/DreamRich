@@ -3,6 +3,7 @@ from dr_auth.models import BaseUser
 from dreamrich import validators
 from dreamrich import models as base_models
 
+
 class Country(base_models.BaseModel):
 
     name = models.CharField(
