@@ -2,6 +2,7 @@
 import inspect
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
+from django.contrib.auth.models import User
 from dreamrich.settings import LOCAL_APPS
 
 
@@ -10,6 +11,8 @@ class Command(BaseCommand):
     loops = 3
 
     def handle(self, *args, **kwargs):
+        self._create_user()
+
         self._print_message("Loading apps")
         self.level += 1
         self.loops = kwargs['loop']
@@ -29,6 +32,12 @@ class Command(BaseCommand):
                 self.level += 1
                 self._print_error("{} factory module not found D:".format(app))
                 self.level -= 1
+
+    def _create_user(self):
+        user = User.objects.create(username="a")
+        user.set_password('a')
+        user.save()
+        self._print_message('Creating a default user(username: a password: a)')
 
     def _load_factories(self, app_module, app):
         has_main = False
