@@ -6,5 +6,4 @@ class EmployeeConfig(AppConfig):
 
     def ready(self):
         import employee.signals
-# This line is to don't broke CI
-        print(employee.signals)
+        employee.signals
