@@ -21,8 +21,10 @@ def gen_agency(factory):
     while True:
         try:
             number = functools.partial(random.randint, 0, 9)
-            gen = lambda: "{}{}{}{}-{}".format(number(), number(), number(),
-                                               number(), number())
+
+            def gen(): return "{}{}{}{}-{}".format(number(), number(),
+                                                   number(), number(), number()
+                                                   )
             agency = gen()
             return agency
         except BaseException:

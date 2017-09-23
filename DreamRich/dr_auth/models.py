@@ -17,4 +17,4 @@ class BaseUser(User):
         self.full_clean()
 
         super(BaseUser, self).save(force_insert, force_update, using,
-             update_fields)
+                                   update_fields)
