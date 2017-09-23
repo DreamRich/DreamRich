@@ -31,7 +31,8 @@ class StateSerializer(serializers.ModelSerializer):
         model = State
         fields = [
             'name',
-            'abbreviation'
+            'abbreviation',
+            'country_id'
         ]
 
 
