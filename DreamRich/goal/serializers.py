@@ -8,4 +8,5 @@ class GoalManagerSerializer(serializers.ModelSerializer):
         model = GoalManager
         fields = [
             'goals_flow_dic',
+            'year_init_to_year_end',
         ]
