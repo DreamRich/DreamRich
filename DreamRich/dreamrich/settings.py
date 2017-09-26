@@ -163,6 +163,7 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("patrimony.factories", ("*")),
     ("patrimony.serializers", ("*")),
     ("goal.factories", ("*")),
+    ("goal.serializers", ("*")),
     ("financial_planning.factories", ("*")),
 ]
 
