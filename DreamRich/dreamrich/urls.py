@@ -6,5 +6,6 @@ urlpatterns = [
         url(r'^patrimony/', include('patrimony.urls')),
         url(r'^employee/', include('employee.urls')),
         url(r'^auth/', include('dr_auth.urls')),
+        url(r'^goal/', include('goal.urls')),
     ]))
 ]
