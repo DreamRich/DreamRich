@@ -7,3 +7,14 @@ class BaseUser(User):
     @property
     def permissions(self):
         return available_perm_status(self)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.pk:
+            # TODO: Generate random password
+            self.set_password(self.password)
+        self.username = self.cpf
+        self.full_clean()
+
+        super(BaseUser, self).save(force_insert, force_update, using,
+                                   update_fields)

@@ -1,9 +1,10 @@
 from django.db import models
 from dr_auth.models import BaseUser
 from dreamrich import validators
+from dreamrich import models as base_models
 
 
-class Country(models.Model):
+class Country(base_models.BaseModel):
 
     name = models.CharField(
         max_length=30
@@ -17,7 +18,7 @@ class Country(models.Model):
         return self.name
 
 
-class State(models.Model):
+class State(base_models.BaseModel):
 
     name = models.CharField(
         max_length=30
@@ -37,7 +38,7 @@ class State(models.Model):
         return self.name
 
 
-class ClientBase(models.Model):
+class ClientBase(base_models.BaseModel):
 
     class Meta:
         abstract = True
@@ -60,7 +61,7 @@ class ClientBase(models.Model):
 
     telephone = models.CharField(
         max_length=19,
-        validators=[validators.validate_phonenumber]
+        validators=[validators.validate_phone_number]
     )  # considering +55
 
     cpf = models.CharField(
@@ -76,7 +77,7 @@ class ClientBase(models.Model):
         return "name: {} cpf: {}".format(self.name, self.cpf)
 
 
-class ActiveClient(ClientBase, BaseUser):
+class ActiveClient(BaseUser, ClientBase):
 
     id_document = models.ImageField(
         upload_to='public/id_documents'
@@ -86,14 +87,6 @@ class ActiveClient(ClientBase, BaseUser):
         upload_to='public/proof_of_address'
     )
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.set_password(self.password)
-        self.username = self.cpf
-        self.full_clean()
-
-        super(ActiveClient, self).save(*args, **kwargs)
-
 
 class Client(ClientBase):
 
@@ -102,11 +95,11 @@ class Client(ClientBase):
         on_delete=models.CASCADE,
         related_name='spouse',
         null=True,
-        blank=True
+        blank=True,
     )
 
 
-class Dependent(models.Model):
+class Dependent(base_models.BaseModel):
 
     name = models.CharField(
         max_length=30
@@ -127,7 +120,7 @@ class Dependent(models.Model):
     )
 
 
-class BankAccount(models.Model):
+class BankAccount(base_models.BaseModel):
 
     active_client = models.OneToOneField(
         ActiveClient,
@@ -141,14 +134,15 @@ class BankAccount(models.Model):
     )  # BR pattern: '[4alg]-[1dig]'
 
     account = models.CharField(
-        max_length=10
+        max_length=13,
+        validators=[validators.validate_account]
     )  # BR pattern: '[8alg]-[1dig]'
 
     def __str__(self):
         return str(self.agency) + ' ' + str(self.account)
 
 
-class Address(models.Model):
+class Address(base_models.BaseModel):
 
     type_of_address = models.CharField(
         max_length=20
