@@ -61,6 +61,6 @@ class GoalTest(TestCase):
         self.assertEqual(goals_flow_dic, self.goal_manager.goals_flow_dic)
 
     def test_year_init_to_year_end(self):
-        array = [ 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026,
-                  2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036]
+        array = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026,
+                 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036]
         self.assertEqual(self.goal_manager.year_init_to_year_end, array)
