@@ -63,22 +63,6 @@ class Patrimony(models.Model):
         return total
 
     @property
-    def total_regular_cost(self):
-        regular_cost = self.regularcost
-        total_regular_cost = regular_cost.home \
-            + regular_cost.electricity_bill + regular_cost.gym \
-            + regular_cost.taxes + regular_cost.car_gas \
-            + regular_cost.insurance + regular_cost.cellphone \
-            + regular_cost.health_insurance + regular_cost.supermarket \
-            + regular_cost.housekeeper + regular_cost.beauty \
-            + regular_cost.internet + regular_cost.netflix \
-            + regular_cost.recreation + regular_cost.meals \
-            + regular_cost.appointments + regular_cost.drugstore \
-            + regular_cost.extras
-
-        return total_regular_cost
-
-    @property
     def leftover(self):
         return (self.current_monthly_income - self.regularcost.total)
 
@@ -128,35 +112,3 @@ class Income(models.Model):
     thirteenth = models.DecimalField(decimal_places=2, max_digits=8)
     vacation = models.DecimalField(decimal_places=2, max_digits=8)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
-
-
-class RegularCost(models.Model):
-    patrimony = models.OneToOneField(
-        Patrimony,
-        on_delete=models.CASCADE,
-        primary_key=True)
-
-    home = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    electricity_bill = models.DecimalField(decimal_places=2, max_digits=8,
-                                           default=0)
-    gym = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    taxes = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    car_gas = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-
-    insurance = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    cellphone = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    health_insurance = models.DecimalField(decimal_places=2, max_digits=8,
-                                           default=0)
-    supermarket = models.DecimalField(decimal_places=2, max_digits=8,
-                                      default=0)
-    housekeeper = models.DecimalField(decimal_places=2, max_digits=8,
-                                      default=0)
-    beauty = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    internet = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    netflix = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    recreation = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    meals = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    appointments = models.DecimalField(
-        decimal_places=2, max_digits=8, default=0)  # consultas
-    drugstore = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    extras = models.DecimalField(decimal_places=2, max_digits=8, default=0)

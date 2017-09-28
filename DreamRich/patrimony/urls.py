@@ -8,7 +8,6 @@ from patrimony.views import (
     EquipmentViewSet,
     LifeInsuranceViewSet,
     IncomeViewSet,
-    RegularCostViewSet,
 )
 
 
@@ -22,7 +21,6 @@ router.register('companyparticipation', CompanyParticipationViewSet)
 router.register('equipment', EquipmentViewSet)
 router.register('lifeinsurance', LifeInsuranceViewSet)
 router.register('income', IncomeViewSet)
-router.register('regularcost', RegularCostViewSet)
 router.register('', PatrimonyViewSet)
 
 urlpatterns = router.urls
