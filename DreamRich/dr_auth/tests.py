@@ -36,11 +36,8 @@ class AuthTest(TestCase):
                                          {'username': self.employee.username,
                                           'password': 'def123'})
         self.assertEqual(
-            response.data['permissions']['see_all_basic_client_data'], True)
-        self.assertEqual(
-            response.data['permissions']['change_own_client_data'], False)
-        self.assertEqual(
-            response.data['permissions']['see_own_client_data'], False)
+            response.data['permissions'], 'see_all_basic_client_data, '
+            'see_employee_data')
 
     def test_permission_financial_adviser(self):
         response = self.client_test.post('/api/auth/',
@@ -48,11 +45,8 @@ class AuthTest(TestCase):
                                           .username,
                                           'password': 'def123'})
         self.assertEqual(
-            response.data['permissions']['see_all_basic_client_data'], True)
-        self.assertEqual(
-            response.data['permissions']['change_own_client_data'], True)
-        self.assertEqual(
-            response.data['permissions']['see_own_client_data'], True)
+            response.data['permissions'], 'see_all_basic_client_data, '
+            'change_own_client_data, see_own_client_data, see_employee_data')
 
     def test_permission_active_client(self):
         response = self.client_test.post('/api/auth/',
@@ -60,11 +54,7 @@ class AuthTest(TestCase):
                                           .username,
                                           'password': 'default123'})
         self.assertEqual(
-            response.data['permissions']['see_all_basic_client_data'], False)
-        self.assertEqual(
-            response.data['permissions']['change_own_client_data'], False)
-        self.assertEqual(
-            response.data['permissions']['see_own_client_data'], True)
+            response.data['permissions'], 'see_own_client_data')
 
     def test_not_get_token(self):
         response = self.client_test.post('/api/auth/',
