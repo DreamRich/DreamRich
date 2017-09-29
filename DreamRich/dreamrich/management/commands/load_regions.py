@@ -21,7 +21,7 @@ class Command(BaseCommand):
                 if not line:
                     continue
 
-                elif(line[0:2] == "->"):
+                elif line[0:2] == "->":
                     line = line[3:] # 3 to take space as well
 
                     try:
