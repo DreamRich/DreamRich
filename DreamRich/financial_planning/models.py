@@ -10,36 +10,7 @@ class FinancialIndependence(models.Model):
     remain_patrimony = models.PositiveIntegerField()
 
 
-class FinancialPlanning(models.Model):
-
-    active_client = models.OneToOneField(
-        ActiveClient,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
-
-    patrimony = models.OneToOneField(
-        Patrimony,
-        on_delete=models.CASCADE,
-    )
-
-    financial_independence = models.OneToOneField(
-        FinancialIndependence,
-        on_delete=models.CASCADE,
-    )
-
-    goal_manager = models.OneToOneField(
-        GoalManager,
-        on_delete=models.CASCADE,
-    )
-
-
-
 class RegularCost(models.Model):
-    financial_planning = models.OneToOneField(
-        FinancialPlanning,
-        on_delete=models.CASCADE,
-        primary_key=True)
 
     home = models.DecimalField(decimal_places=2, max_digits=8, default=0)
     electricity_bill = models.DecimalField(decimal_places=2, max_digits=8,
@@ -75,3 +46,31 @@ class RegularCost(models.Model):
             + self.meals + self.appointments + self.drugstore + self.extras
 
         return total
+
+
+class FinancialPlanning(models.Model):
+
+    active_client = models.OneToOneField(
+        ActiveClient,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+    patrimony = models.OneToOneField(
+        Patrimony,
+        on_delete=models.CASCADE,
+    )
+
+    financial_independence = models.OneToOneField(
+        FinancialIndependence,
+        on_delete=models.CASCADE,
+    )
+
+    goal_manager = models.OneToOneField(
+        GoalManager,
+        on_delete=models.CASCADE,
+    )
+
+    regular_cost = models.OneToOneField(
+        RegularCost,
+        on_delete=models.CASCADE)

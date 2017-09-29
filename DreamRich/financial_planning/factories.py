@@ -16,27 +16,6 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     remain_patrimony = 200000
 
 
-class FinancialPlanningFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.FinancialPlanning
-
-    active_client = factory.SubFactory(ActiveClientMainFactory)
-    patrimony = factory.SubFactory(PatrimonyMainFactory)
-    financial_independence = factory.SubFactory(FinancialIndependenceFactory)
-    goal_manager = factory.SubFactory(GoalManagerFactory)
-
-
-class GoalMainFactory():
-
-    @staticmethod
-    def create():
-
-        financial_planning = FinancialPlanningFactory()
-        goal_manager = financial_planning.goal_manager
-        GoalFactory.create_batch(8, goal_manager=goal_manager)
-
-
 class RegularCostFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -60,3 +39,25 @@ class RegularCostFactory(factory.DjangoModelFactory):
     appointments = round(Decimal(12.2), 2)
     drugstore = round(Decimal(12.2), 2)
     extras = round(Decimal(12.2), 2)
+
+
+class FinancialPlanningFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.FinancialPlanning
+
+    active_client = factory.SubFactory(ActiveClientMainFactory)
+    patrimony = factory.SubFactory(PatrimonyMainFactory)
+    financial_independence = factory.SubFactory(FinancialIndependenceFactory)
+    goal_manager = factory.SubFactory(GoalManagerFactory)
+    regular_cost = factory.SubFactory(RegularCostFactory)
+
+
+class GoalMainFactory():
+
+    @staticmethod
+    def create():
+
+        financial_planning = FinancialPlanningFactory()
+        goal_manager = financial_planning.goal_manager
+        GoalFactory.create_batch(8, goal_manager=goal_manager)
