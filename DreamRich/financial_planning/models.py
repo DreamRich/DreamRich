@@ -38,7 +38,6 @@ class RegularCost(models.Model):
     drugstore = models.DecimalField(decimal_places=2, max_digits=8, default=0)
     extras = models.DecimalField(decimal_places=2, max_digits=8, default=0)
 
-    @property
     def total(self):
         total = self.home + self.electricity_bill + self.gym + self.taxes \
             + self.car_gas + self.insurance + self.cellphone \
@@ -77,7 +76,6 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
-    @property
     def duration_financial_planning(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year

@@ -15,7 +15,7 @@ class RegularCostTest(TestCase):
 
     def test_regulat_cost_total(self):
         total = Decimal('219.60')
-        self.assertEqual(self.regular_cost.total, total)
+        self.assertEqual(self.regular_cost.total(), total)
 
 class FinancialPlanningTest(TestCase):
      def setUp(self):
@@ -26,4 +26,4 @@ class FinancialPlanningTest(TestCase):
 
      def test_duration_financial_planning(self):
          self.assertEqual(
-              self.financial_planning.duration_financial_planning, 20)
+                 self.financial_planning.duration_financial_planning(), 20)

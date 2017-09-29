@@ -19,7 +19,7 @@ class GoalManager(models.Model):
     def year_init_to_year_end(self):
         array = []
         actual_year = datetime.datetime.now().year
-        duration_goals = self.financialplanning.duration_financial_planning
+        duration_goals = self.financialplanning.duration_financial_planning()
         for index in range(duration_goals):
             array.append(actual_year + index)
 
@@ -58,7 +58,7 @@ class Goal(models.Model):
         index_goal_init = self.year_init - actual_year
         mod_period = 0
         duration_goals = self.goal_manager.financialplanning.\
-                            duration_financial_planning
+                duration_financial_planning()
         goal_array_flow = []
         for index in range(duration_goals):
             if index > index_goal_init:
@@ -80,7 +80,7 @@ class Goal(models.Model):
 
         if not self.has_end_date:
             index_goal_end = self.goal_manager.financialplanning.\
-                                duration_financial_planning
+                                duration_financial_planning()
             goal_array_flow = self.generic_flow(index_goal_end, actual_year)
         else:
             index_goal_end = self.year_end - actual_year
