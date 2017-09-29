@@ -35,10 +35,6 @@ class GoalTest(TestCase):
                                      50000, 0, 0,
                                      50000, 0, 0, 0, 0, 0, 0]
 
-    def test_duration_goals(self):
-        self.assertEqual(
-            self.goal_manager.duration_goals, 20)
-
     def test_flow_hasnt_end_date(self):
         self.assertEqual(self.array_flow_withot_date,
                          self.goal_has_end_date.flow)

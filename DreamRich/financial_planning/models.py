@@ -2,6 +2,7 @@ from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager
+import datetime
 
 
 class FinancialIndependence(models.Model):
@@ -73,4 +74,15 @@ class FinancialPlanning(models.Model):
 
     regular_cost = models.OneToOneField(
         RegularCost,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE
+    )
+
+    @property
+    def duration_financial_planning(self):
+        age_of_independence = self.financial_independence.age
+        actual_year = datetime.datetime.now().year
+        birthday_year = self.active_client.birthday.year
+        actual_age = actual_year - birthday_year
+        duration_financial_planning = age_of_independence - actual_age
+
+        return duration_financial_planning
