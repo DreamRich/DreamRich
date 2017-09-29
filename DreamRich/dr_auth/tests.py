@@ -37,7 +37,7 @@ class AuthTest(TestCase):
                                           'password': 'def123'})
         self.assertEqual(
             response.data['permissions'], 'see_all_basic_client_data, '
-            'see_employee_data')
+            'see_employee_data, allow_any')
 
     def test_permission_financial_adviser(self):
         response = self.client_test.post('/api/auth/',
@@ -46,7 +46,8 @@ class AuthTest(TestCase):
                                           'password': 'def123'})
         self.assertEqual(
             response.data['permissions'], 'see_all_basic_client_data, '
-            'change_own_client_data, see_own_client_data, see_employee_data')
+            'change_own_client_data, see_own_client_data, see_employee_data, '
+            'allow_any')
 
     def test_permission_active_client(self):
         response = self.client_test.post('/api/auth/',
@@ -54,7 +55,7 @@ class AuthTest(TestCase):
                                           .username,
                                           'password': 'default123'})
         self.assertEqual(
-            response.data['permissions'], 'see_own_client_data')
+            response.data['permissions'], 'see_own_client_data, allow_any')
 
     def test_not_get_token(self):
         response = self.client_test.post('/api/auth/',
