@@ -47,6 +47,17 @@ class RegularCost(models.Model):
 
         return total
 
+    def flow(self, regular_cost_change):
+        data = []
+        duration = self.financialplanning.duration()
+        actual_regular_cost = self.total()
+
+        for index in range(duration):
+            actual_regular_cost += regular_cost_change[index]
+            data.append(actual_regular_cost)
+
+        return data
+
 
 class FinancialPlanning(models.Model):
 
@@ -76,11 +87,11 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
-    def duration_financial_planning(self):
+    def duration(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
         birthday_year = self.active_client.birthday.year
         actual_age = actual_year - birthday_year
-        duration_financial_planning = age_of_independence - actual_age
+        duration = age_of_independence - actual_age
 
-        return duration_financial_planning
+        return duration

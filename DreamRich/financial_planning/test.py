@@ -7,23 +7,37 @@ from financial_planning.factories import (
 )
 import datetime
 
-
-class RegularCostTest(TestCase):
-
+class FinancialPlanningTest(TestCase):
     def setUp(self):
         self.regular_cost = RegularCostFactory()
+        active_client = ActiveClientMainFactory(
+        birthday=datetime.datetime(1967, 1, 1))
+        self.financial_planning = FinancialPlanningFactory(
+                                     active_client=active_client,
+                                     regular_cost=self.regular_cost,
+                                     )
+        self.non_change_regular_cost = [0, 0, 0, 0, Decimal('123.40'),
+                                        Decimal('-123.40'), 0, 0, 0, 0]
+        self.flow_regular_cost_without_change = [Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                 Decimal('343.00'),
+                                                 Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                 Decimal('219.60'),
+                                                ]
+
+    def test_duration_financial_planning(self):
+        self.assertEqual(
+             self.financial_planning.duration(), 10)
 
     def test_regulat_cost_total(self):
         total = Decimal('219.60')
         self.assertEqual(self.regular_cost.total(), total)
 
-class FinancialPlanningTest(TestCase):
-     def setUp(self):
-         active_client = ActiveClientMainFactory(
-         birthday=datetime.datetime(1977, 1, 1))
-         self.financial_planning = FinancialPlanningFactory(
-                                     active_client=active_client)
-
-     def test_duration_financial_planning(self):
-         self.assertEqual(
-                 self.financial_planning.duration_financial_planning(), 20)
+    def test_regular_cost_flow_withot_change(self):
+        self.assertEqual(self.flow_regular_cost_without_change,
+                         self.regular_cost.flow(self.non_change_regular_cost))
