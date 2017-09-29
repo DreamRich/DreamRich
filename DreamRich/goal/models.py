@@ -8,24 +8,18 @@ import datetime
 class GoalType(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
 
 class GoalManager(models.Model):
 
-    @property
-    def duration_goals(self):
-        age_of_independence = self.financialplanning.financial_independence.age
-        actual_year = datetime.datetime.now().year
-        birthday_year = self.financialplanning.active_client.birthday.year
-        actual_age = actual_year - birthday_year
-        duration_goals = age_of_independence - actual_age
-
-        return duration_goals
 
     @property
     def year_init_to_year_end(self):
         array = []
         actual_year = datetime.datetime.now().year
-        for index in range(self.duration_goals):
+        duration_goals = self.financialplanning.duration()
+        for index in range(duration_goals):
             array.append(actual_year + index)
 
         return array
@@ -62,7 +56,7 @@ class Goal(models.Model):
 
         index_goal_init = self.year_init - actual_year
         mod_period = 0
-        duration_goals = self.goal_manager.duration_goals
+        duration_goals = self.goal_manager.financialplanning.duration()
         goal_array_flow = []
         for index in range(duration_goals):
             if index > index_goal_init:
@@ -83,7 +77,7 @@ class Goal(models.Model):
         index_goal_end = self.year_end - actual_year
 
         if not self.has_end_date:
-            index_goal_end = self.goal_manager.duration_goals
+            index_goal_end = self.goal_manager.financialplanning.duration()
             goal_array_flow = self.generic_flow(index_goal_end, actual_year)
         else:
             index_goal_end = self.year_end - actual_year

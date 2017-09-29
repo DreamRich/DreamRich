@@ -3,6 +3,7 @@ from . import models
 from client.factories import ActiveClientMainFactory
 from patrimony.factories import PatrimonyMainFactory
 from goal.factories import GoalManagerFactory, GoalFactory
+from decimal import Decimal
 
 
 class FinancialIndependenceFactory(factory.DjangoModelFactory):
@@ -15,6 +16,31 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     remain_patrimony = 200000
 
 
+class RegularCostFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.RegularCost
+
+    home = round(Decimal(12.2), 2)
+    electricity_bill = round(Decimal(12.2), 2)
+    gym = round(Decimal(12.2), 2)
+    taxes = round(Decimal(12.2), 2)
+    car_gas = round(Decimal(12.2), 2)
+    insurance = round(Decimal(12.2), 2)
+    cellphone = round(Decimal(12.2), 2)
+    health_insurance = round(Decimal(12.2), 2)
+    supermarket = round(Decimal(12.2), 2)
+    housekeeper = round(Decimal(12.2), 2)
+    beauty = round(Decimal(12.2), 2)
+    internet = round(Decimal(12.2), 2)
+    netflix = round(Decimal(12.2), 2)
+    recreation = round(Decimal(12.2), 2)
+    meals = round(Decimal(12.2), 2)
+    appointments = round(Decimal(12.2), 2)
+    drugstore = round(Decimal(12.2), 2)
+    extras = round(Decimal(12.2), 2)
+
+
 class FinancialPlanningFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -24,6 +50,7 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     patrimony = factory.SubFactory(PatrimonyMainFactory)
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
+    regular_cost = factory.SubFactory(RegularCostFactory)
 
 
 class GoalMainFactory():

@@ -8,7 +8,6 @@ from patrimony.serializers import (
     EquipmentSerializer,
     LifeInsuranceSerializer,
     IncomeSerializer,
-    RegularCostSerializer,
 )
 
 from patrimony.models import (
@@ -20,7 +19,6 @@ from patrimony.models import (
     Equipment,
     LifeInsurance,
     Income,
-    RegularCost,
 )
 
 
@@ -62,8 +60,3 @@ class LifeInsuranceViewSet(viewsets.ModelViewSet):
 class IncomeViewSet(viewsets.ModelViewSet):
     serializer_class = IncomeSerializer
     queryset = Income.objects.all()
-
-
-class RegularCostViewSet(viewsets.ModelViewSet):
-    serializer_class = RegularCostSerializer
-    queryset = RegularCost.objects.all()

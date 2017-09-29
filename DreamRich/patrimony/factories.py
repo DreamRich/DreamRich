@@ -1,6 +1,6 @@
 import factory
-from decimal import Decimal
 from . import models
+from decimal import Decimal
 
 
 class ActiveFactory(factory.DjangoModelFactory):
@@ -70,31 +70,6 @@ class IncomeFactory(factory.DjangoModelFactory):
     vacation = round(Decimal(1212.2), 2)
 
 
-class RegularCostFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.RegularCost
-
-    home = round(Decimal(12.2), 2)
-    electricity_bill = round(Decimal(12.2), 2)
-    gym = round(Decimal(12.2), 2)
-    taxes = round(Decimal(12.2), 2)
-    car_gas = round(Decimal(12.2), 2)
-    insurance = round(Decimal(12.2), 2)
-    cellphone = round(Decimal(12.2), 2)
-    health_insurance = round(Decimal(12.2), 2)
-    supermarket = round(Decimal(12.2), 2)
-    housekeeper = round(Decimal(12.2), 2)
-    beauty = round(Decimal(12.2), 2)
-    internet = round(Decimal(12.2), 2)
-    netflix = round(Decimal(12.2), 2)
-    recreation = round(Decimal(12.2), 2)
-    meals = round(Decimal(12.2), 2)
-    appointments = round(Decimal(12.2), 2)
-    drugstore = round(Decimal(12.2), 2)
-    extras = round(Decimal(12.2), 2)
-
-
 class PatrimonyMainFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -108,4 +83,3 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     equipment = factory.RelatedFactory(EquipmentFactory, 'patrimony')
     life_insurance = factory.RelatedFactory(LifeInsuranceFactory, 'patrimony')
     income = factory.RelatedFactory(IncomeFactory, 'patrimony')
-    regular_cost = factory.RelatedFactory(RegularCostFactory, 'patrimony')
