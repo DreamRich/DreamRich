@@ -14,7 +14,6 @@ class GoalType(models.Model):
 class GoalManager(models.Model):
 
 
-
     @property
     def year_init_to_year_end(self):
         array = []
