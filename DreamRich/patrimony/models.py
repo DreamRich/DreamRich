@@ -109,6 +109,16 @@ class Income(models.Model):
     source = models.CharField(max_length=100)
     value_monthly = models.DecimalField(decimal_places=2, max_digits=8,
                                         default=0)
-    thirteenth = models.DecimalField(decimal_places=2, max_digits=8)
-    vacation = models.DecimalField(decimal_places=2, max_digits=8)
+    thirteenth = models.BooleanField()
+    vacation = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+
+    @property
+    def annual_income(self):
+        total = self.value_monthly*12
+        if self.thirteenth:
+            total += self.value_monthly
+        if self.vacation:
+            total += self.value_monthly/3
+
+        return total
