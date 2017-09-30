@@ -2,6 +2,7 @@ from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager
+from lib.financial_planning.flow import generic_flow
 import datetime
 
 
@@ -48,13 +49,9 @@ class RegularCost(models.Model):
         return total
 
     def flow(self, regular_cost_change):
-        data = []
         duration = self.financialplanning.duration()
-        actual_regular_cost = self.total()
-
-        for index in range(duration):
-            actual_regular_cost += regular_cost_change[index]
-            data.append(actual_regular_cost)
+        total = self.total()
+        data = generic_flow(regular_cost_change, duration, total)
 
         return data
 

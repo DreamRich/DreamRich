@@ -16,19 +16,6 @@ class FinancialPlanningTest(TestCase):
                                      active_client=active_client,
                                      regular_cost=self.regular_cost,
                                      )
-        self.non_change_regular_cost = [0, 0, 0, 0, Decimal('123.40'),
-                                        Decimal('-123.40'), 0, 0, 0, 0]
-        self.flow_regular_cost_without_change = [Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                 Decimal('343.00'),
-                                                 Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                 Decimal('219.60'),
-                                                ]
 
     def test_duration_financial_planning(self):
         self.assertEqual(
@@ -39,5 +26,18 @@ class FinancialPlanningTest(TestCase):
         self.assertEqual(self.regular_cost.total(), total)
 
     def test_regular_cost_flow_withot_change(self):
-        self.assertEqual(self.flow_regular_cost_without_change,
-                         self.regular_cost.flow(self.non_change_regular_cost))
+        change_regular_cost = [0, 0, 0, 0, Decimal('123.40'),
+                                        Decimal('-123.40'), 0, 0, 0, 0]
+        flow_regular_cost_with_change = [Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         Decimal('343.00'),
+                                         Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         Decimal('219.60'),
+                                         ]
+        self.assertEqual(flow_regular_cost_with_change,
+                         self.regular_cost.flow(change_regular_cost))
