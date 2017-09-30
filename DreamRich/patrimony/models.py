@@ -33,20 +33,12 @@ class Patrimony(models.Model):
         return total
 
     @property
-    def current_monthly_income(self):
-        total_value_monthly = self.income_set.all().aggregate(
-            Sum('value_monthly'))
-        total_value_monthly = total_value_monthly['value_monthly__sum']
-        total_vacation = self.income_set.all().aggregate(Sum('vacation'))
-        total_vacation = total_vacation['vacation__sum']
-        total_thirteenth = self.income_set.all().aggregate(Sum('thirteenth'))
-        total_thirteenth = total_thirteenth['thirteenth__sum']
-        total_vacation_monthly = total_vacation / 12
-        total_thirteenth_monthly = total_thirteenth / 12
+    def total_annual_income(self):
+        total = 0
+        incomes = list(self.income_set.all())
 
-        total = total_value_monthly + total_vacation_monthly \
-                                    + total_thirteenth_monthly
-        total = round(total, 2)
+        for income in incomes:
+            total += income.annual()
 
         return total
 
@@ -113,12 +105,14 @@ class Income(models.Model):
     vacation = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
-    @property
-    def annual_income(self):
+    def annual(self):
         total = self.value_monthly*12
         if self.thirteenth:
             total += self.value_monthly
         if self.vacation:
             total += self.value_monthly/3
 
-        return total
+        return round(total,2)
+
+    def __str__(self):
+        return "Annual {}".format(self.annual())

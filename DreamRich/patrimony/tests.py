@@ -37,12 +37,17 @@ class PatrimonyTest(TestCase):
                          self.patrimony.possible_income_generation)
 
     def test_annual_income(self):
-        self.assertEqual(self.common_income.annual_income,Decimal(14400.00))
+        self.assertEqual(self.common_income.annual(),Decimal(14400.00))
 
     def test_annual_income_with_thirteen(self):
-        self.assertEqual(self.income_with_thirteenth.annual_income,
+        self.assertEqual(self.income_with_thirteenth.annual(),
                          Decimal(15600.00))
 
     def test_annual_income_with_vacation(self):
-        self.assertEqual(self.income_with_vacation.annual_income,
+        self.assertEqual(self.income_with_vacation.annual(),
                          Decimal(14800.00))
+
+    def test_current_monthly_income(self):
+        print(list(self.patrimony.income_set.all()))
+        self.assertEqual(Decimal('60962.67'),
+                         self.patrimony.total_annual_income)
