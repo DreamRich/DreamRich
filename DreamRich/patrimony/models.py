@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Sum
+from lib.financial_planning.flow import generic_flow
 
 
 class Patrimony(models.Model):
@@ -32,7 +33,6 @@ class Patrimony(models.Model):
 
         return total
 
-    @property
     def total_annual_income(self):
         total = 0
         incomes = list(self.income_set.all())
@@ -41,6 +41,13 @@ class Patrimony(models.Model):
             total += income.annual()
 
         return total
+
+    def income_flow(self, income_change):
+        duration = self.financialplanning.duration()
+        total = self.total_annual_income()
+        data = generic_flow(income_change, duration, total)
+
+        return data
 
     @property
     def current_none_investment(self):
@@ -53,10 +60,6 @@ class Patrimony(models.Model):
 
         total = total_movable_property + salable_total
         return total
-
-    @property
-    def leftover(self):
-        return (self.current_monthly_income - self.regularcost.total)
 
 
 class Active(models.Model):

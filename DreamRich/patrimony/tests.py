@@ -1,12 +1,20 @@
 from django.test import TestCase
 from decimal import Decimal
 from patrimony.factories import PatrimonyMainFactory, IncomeFactory
+from client.factories import ActiveClientMainFactory
+from financial_planning.factories import FinancialPlanningFactory
+import datetime
 
 
 class PatrimonyTest(TestCase):
 
     def setUp(self):
+        active_client = ActiveClientMainFactory(
+                            birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
+        financial_planning = FinancialPlanningFactory(
+                                active_client=active_client,
+                                patrimony=self.patrimony)
         self.common_income = IncomeFactory(value_monthly =\
                                              round(Decimal(1200),2),
                                           thirteenth = False,
@@ -48,6 +56,23 @@ class PatrimonyTest(TestCase):
                          Decimal(14800.00))
 
     def test_current_monthly_income(self):
-        print(list(self.patrimony.income_set.all()))
         self.assertEqual(Decimal('60962.67'),
-                         self.patrimony.total_annual_income)
+                         self.patrimony.total_annual_income())
+
+    def test_income_flow(self):
+        change_total_annual_income = [0, 0, 0, 0, Decimal('500.00'),
+                                            Decimal('-500.00'), 0, 0, 0, 0]
+        flow_regular_cost_with_change = [Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('61462.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         Decimal('60962.67'),
+                                         ]
+
+        self.assertEqual(flow_regular_cost_with_change,
+                     self.patrimony.income_flow(change_total_annual_income))
