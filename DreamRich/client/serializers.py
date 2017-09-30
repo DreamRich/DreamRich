@@ -59,11 +59,14 @@ class DependentSerializer(serializers.ModelSerializer):
 
 class BankAccountSerializer(serializers.ModelSerializer):
 
+    active_client_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = BankAccount
         fields = [
             'agency',
-            'account'
+            'account',
+            'active_client_id'
         ]
 
 
@@ -73,6 +76,7 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = [
             'name',
+            'surname',
             'birthday',
             'profession',
             'cpf',
@@ -87,8 +91,8 @@ class ActiveClientSerializer(serializers.ModelSerializer):
     spouse = ClientSerializer(read_only=True)
     client_bank_account = BankAccountSerializer(read_only=True)
 
-    id_document = serializers.ImageField()
-    proof_of_address = serializers.ImageField()
+    id_document = serializers.ImageField(read_only=True)
+    proof_of_address = serializers.ImageField(read_only=True)
 
     class Meta:
 
