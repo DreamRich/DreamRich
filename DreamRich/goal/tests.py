@@ -60,3 +60,8 @@ class GoalTest(TestCase):
         array = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026,
                  2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036]
         self.assertEqual(self.goal_manager.year_init_to_year_end, array)
+
+    def test_value_total_by_year(self):
+        array = [0, 0, 0, 0, 100000, 0, 0, 100000, 0, 0, 100000, 0, 0, 100000,
+                 0, 0, 50000, 0, 0, 50000]
+        self.assertEqual(self.goal_manager.value_total_by_year(), array)
