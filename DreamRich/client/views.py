@@ -5,7 +5,8 @@ from client.serializers import (
     AddressSerializer,
     StateSerializer,
     CountrySerializer,
-    BankAccountSerializer
+    BankAccountSerializer,
+    DependentSerializer
 )
 from client.models import (
     Client,
@@ -13,7 +14,8 @@ from client.models import (
     Address,
     State,
     Country,
-    BankAccount
+    BankAccount,
+    Dependent
 )
 
 
@@ -45,3 +47,7 @@ class CountryViewSet(viewsets.ModelViewSet):
 class BankAccountViewSet(viewsets.ModelViewSet):
     serializer_class = BankAccountSerializer
     queryset = BankAccount.objects.all()
+
+class DependentViewSet(viewsets.ModelViewSet):
+    serializer_class = DependentSerializer
+    queryset = Dependent.objects.all()

@@ -49,11 +49,14 @@ class CountrySerializer(serializers.ModelSerializer):
 
 class DependentSerializer(serializers.ModelSerializer):
 
+    active_client_id = serializers.IntegerField(write_only=True)
     class Meta:
         model = Dependent
         fields = [
-            'active_client',
-            'birthday'
+            'active_client_id',
+            'birthday',
+            'name',
+            'surname'
         ]
 
 

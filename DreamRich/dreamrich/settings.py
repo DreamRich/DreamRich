@@ -119,6 +119,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
     'dr_auth.utils.jwt_response_payload_handler',
+    'JWT_ALLOW_REFRESH': True,
 }
 
 # Database
