@@ -19,7 +19,10 @@ class BaseUser(User):
                 return item[0]
             else:
                 return '{}, {}'.format(current, *item)
-        return reduce(reducer, permissions.items(), '')
+
+        items = list(permissions.items())
+        items.sort()
+        return reduce(reducer, items, '')
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
