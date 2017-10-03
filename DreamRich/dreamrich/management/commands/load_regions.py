@@ -1,5 +1,8 @@
 # pylint: disable=unused-argument
+import os
+import yaml
 from django.core.management.base import BaseCommand
+from dreamrich.settings import BASE_DIR
 from client.models import Country, State
 
 FILE_PATH = 'dreamrich/management/commands/data/regions_data_list'
@@ -14,8 +17,11 @@ class Command(BaseCommand):
         return name, abbreviation
 
     def handle(self, *args, **kwargs):
-        with open(FILE_PATH) as file:
-            for line in file:
+        file_path = os.path.join(BASE_DIR, 'dreamrich', 'seed',
+            'regions_data_list.yml')
+        with open(file_path) as load_file:
+            # yaml.load(load_file)
+            for line in load_file:
                 line = line.lstrip()
 
                 if not line:
