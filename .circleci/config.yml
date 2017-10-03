@@ -33,7 +33,7 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            radon cc ../DreamRich
+            radon cc ../DreamRich -a -n B
       - run:
           command: |
             . venv/bin/activate

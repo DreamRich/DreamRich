@@ -5,7 +5,8 @@ from client.views import (
     AddressViewSet,
     StateViewSet,
     CountryViewSet,
-    BankAccountViewSet
+    BankAccountViewSet,
+    DependentViewSet,
 )
 
 app_name = 'client'
@@ -16,6 +17,7 @@ router.register(r'^address', AddressViewSet)
 router.register(r'^state', StateViewSet)
 router.register(r'^country', CountryViewSet)
 router.register(r'^bank-account', BankAccountViewSet)
+router.register(r'^dependent', DependentViewSet)
 router.register(r'', ClientViewSet)
 
 urlpatterns = router.urls
