@@ -39,6 +39,22 @@ class GoalManager(models.Model):
 
         return data
 
+    def matrix_flow_goals(self):
+        matrix = []
+        goals = list(self.goal_set.all())
+
+        for goal in goals:
+            matrix.append(goal.flow)
+
+        return matrix
+
+
+    def value_total_by_year(self):
+        matrix = self.matrix_flow_goals()
+
+        array = [sum(index) for index in zip(*matrix)]
+
+        return array
 
 class Goal(models.Model):
     has_end_date = models.BooleanField()
