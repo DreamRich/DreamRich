@@ -15,11 +15,11 @@ class ProfitTest(TestCase):
     PROFIT_NET_SUGGESTED = 0.0326
 
     def test_annual(self):
-        profit_annual = Profit.annual(self.CDI, self.IPCA)
+        profit_annual = Profit.actual_rate(self.CDI, self.IPCA)
         self.assertAlmostEqual(profit_annual, self.PROFIT_ANNUAL, 4)
 
     def test_net_annual(self):
-        profit_net_annual = Profit.net_annual(
+        profit_net_annual = Profit.actual_rate(
             self.NET_PROFITABILITY, self.IPCA)
         self.assertAlmostEqual(profit_net_annual, self.PROFIT_NET, 4)
 
