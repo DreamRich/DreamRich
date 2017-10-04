@@ -3,7 +3,7 @@ from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager
 from lib.financial_planning.flow import generic_flow
-from lib.profit import profit
+from lib.profit.profit import actual_rate
 import datetime
 
 
@@ -85,9 +85,9 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
-    cdi = models.DecimalField(max_digits=4, decimal_places=2)
+    cdi = models.DecimalField(max_digits=6, decimal_places=4)
 
-    ipca = models.DecimalField(max_digits=4, decimal_places=2)
+    ipca = models.DecimalField(max_digits=6, decimal_places=4)
 
     def duration(self):
         age_of_independence = self.financial_independence.age
@@ -99,4 +99,4 @@ class FinancialPlanning(models.Model):
         return duration
 
     def real_gain(self):
-        profit.actual_rate(self.cdi, self.ipca)
+        return round(actual_rate(self.cdi, self.ipca), 4)

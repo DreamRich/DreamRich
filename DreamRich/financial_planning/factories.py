@@ -51,8 +51,8 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
     regular_cost = factory.SubFactory(RegularCostFactory)
-    cdi = round(Decimal(12.13), 2)
-    ipca = round(Decimal(7.5), 2)
+    cdi = round(Decimal(0.1213), 4)
+    ipca = round(Decimal(0.075), 4)
 
 
 class GoalMainFactory():
