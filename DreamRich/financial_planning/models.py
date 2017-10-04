@@ -3,13 +3,21 @@ from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager
 from lib.financial_planning.flow import generic_flow
+from lib.profit.profit import actual_rate
 import datetime
+import numpy
 
 
 class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
+
+    def assets_required(self):
+        rate = float(self.financialplanning.real_gain())
+
+        return numpy.pv(rate, self.duration_of_usufruct,
+                        -self.remain_patrimony*12)
 
 
 class RegularCost(models.Model):
@@ -84,6 +92,10 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
+    cdi = models.DecimalField(max_digits=6, decimal_places=4)
+
+    ipca = models.DecimalField(max_digits=6, decimal_places=4)
+
     def duration(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
@@ -92,3 +104,6 @@ class FinancialPlanning(models.Model):
         duration = age_of_independence - actual_age
 
         return duration
+
+    def real_gain(self):
+        return actual_rate(self.cdi, self.ipca)
