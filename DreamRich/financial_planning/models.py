@@ -5,12 +5,19 @@ from goal.models import GoalManager
 from lib.financial_planning.flow import generic_flow
 from lib.profit.profit import actual_rate
 import datetime
+import numpy
 
 
 class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
+
+    def assets_required(self):
+        rate = float(self.financialplanning.real_gain())
+
+        return numpy.pv(rate, self.duration_of_usufruct,
+                        -self.remain_patrimony*12)
 
 
 class RegularCost(models.Model):
@@ -99,4 +106,4 @@ class FinancialPlanning(models.Model):
         return duration
 
     def real_gain(self):
-        return round(actual_rate(self.cdi, self.ipca), 4)
+        return actual_rate(self.cdi, self.ipca)
