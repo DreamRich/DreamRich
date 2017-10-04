@@ -3,6 +3,7 @@ from decimal import Decimal
 from client.factories import ActiveClientMainFactory
 from financial_planning.factories import (
         RegularCostFactory,
+        FinancialIndependenceFactory,
         FinancialPlanningFactory
 )
 import datetime
@@ -12,9 +13,15 @@ class FinancialPlanningTest(TestCase):
         self.regular_cost = RegularCostFactory()
         active_client = ActiveClientMainFactory(
         birthday=datetime.datetime(1967, 1, 1))
+        self.financial_independece = FinancialIndependenceFactory(
+                                        duration_of_usufruct = 35,
+                                        remain_patrimony = 30000,
+                                     )
         self.financial_planning = FinancialPlanningFactory(
                                      active_client=active_client,
                                      regular_cost=self.regular_cost,
+                                     financial_independence =
+                                     self.financial_independece
                                      )
 
     def test_duration_financial_planning(self):
@@ -41,3 +48,8 @@ class FinancialPlanningTest(TestCase):
                                          ]
         self.assertEqual(flow_regular_cost_with_change,
                          self.regular_cost.flow(change_regular_cost))
+
+    def test_assets_required(self):
+        self.assertAlmostEqual(self.financial_independece.assets_required(),
+                               6447963.5463578859,
+                               4)
