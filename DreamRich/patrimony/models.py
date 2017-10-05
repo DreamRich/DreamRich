@@ -6,7 +6,6 @@ from lib.financial_planning.flow import generic_flow
 class Patrimony(models.Model):
     fgts = models.DecimalField(decimal_places=2, max_digits=8)
 
-    @property
     def current_net_investment(self):
         total_active = self.active_set.all().aggregate(Sum('value'))
         total_arrearage = self.arrearage_set.all().aggregate(Sum('value'))
@@ -15,7 +14,6 @@ class Patrimony(models.Model):
 
         return total
 
-    @property
     def current_property_investment(self):
         non_salable_total = self.realestate_set.filter(
             salable=False).aggregate(Sum('value'))
@@ -23,7 +21,6 @@ class Patrimony(models.Model):
 
         return non_salable_total
 
-    @property
     def possible_income_generation(self):
         total_company_participation = self.companyparticipation_set.all(
         ).aggregate(Sum('value'))
@@ -49,7 +46,6 @@ class Patrimony(models.Model):
 
         return data
 
-    @property
     def current_none_investment(self):
         total_movable_property = self.movableproperty_set.all().aggregate(
             Sum('value'))

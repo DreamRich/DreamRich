@@ -9,7 +9,7 @@ class ActiveFactory(factory.DjangoModelFactory):
         model = models.Active
 
     name = factory.Faker('first_name')
-    value = round(Decimal(1.1), 2)
+    value = round(Decimal(351200.00), 2)
 
 
 class ArrearageFactory(factory.DjangoModelFactory):
@@ -18,7 +18,7 @@ class ArrearageFactory(factory.DjangoModelFactory):
         model = models.Arrearage
 
     name = factory.Faker('first_name')
-    value = round(Decimal(0.2), 2)
+    value = round(Decimal(30000), 2)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):

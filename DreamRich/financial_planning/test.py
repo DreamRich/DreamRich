@@ -1,6 +1,11 @@
 from django.test import TestCase
 from decimal import Decimal
 from client.factories import ActiveClientMainFactory
+from patrimony.factories import (
+    PatrimonyMainFactory,
+    ActiveFactory,
+    ArrearageFactory,
+)
 from financial_planning.factories import (
         RegularCostFactory,
         FinancialIndependenceFactory,
@@ -13,6 +18,10 @@ class FinancialPlanningTest(TestCase):
         self.regular_cost = RegularCostFactory()
         active_client = ActiveClientMainFactory(
         birthday=datetime.datetime(1967, 1, 1))
+        self.patrimony = PatrimonyMainFactory()
+        active = ActiveFactory(patrimony=self.patrimony,value=30000.00)
+        active_2 = ActiveFactory(patrimony=self.patrimony,value=321200.00)
+        arrerage = ArrearageFactory(patrimony=self.patrimony,value=351200.00)
         self.financial_independece = FinancialIndependenceFactory(
                                         duration_of_usufruct = 35,
                                         remain_patrimony = 30000,
@@ -20,8 +29,9 @@ class FinancialPlanningTest(TestCase):
         self.financial_planning = FinancialPlanningFactory(
                                      active_client=active_client,
                                      regular_cost=self.regular_cost,
+                                     patrimony=self.patrimony,
                                      financial_independence =
-                                     self.financial_independece
+                                         self.financial_independece
                                      )
 
     def test_duration_financial_planning(self):
@@ -53,3 +63,10 @@ class FinancialPlanningTest(TestCase):
         self.assertAlmostEqual(self.financial_independece.assets_required(),
                                6447963.5463578859,
                                4)
+
+    def test_remain_necessary_for_retirement(self):
+        self.financial_planning.active_client.\
+                    birthday=datetime.datetime(1978, 1, 1)
+        self.assertAlmostEqual(self.financial_independece.
+                                    remain_necessary_for_retirement(),
+                                12147.728680592305, 4)
