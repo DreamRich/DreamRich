@@ -33,7 +33,7 @@ class PatrimonyTest(TestCase):
 
     def test_current_net_investment(self):
         self.assertEqual(
-            Decimal('0.90'),
+            Decimal('321200.00'),
             self.patrimony.current_net_investment())
 
     def test_current_property_investment(self):
