@@ -34,15 +34,15 @@ class PatrimonyTest(TestCase):
     def test_current_net_investment(self):
         self.assertEqual(
             Decimal('0.90'),
-            self.patrimony.current_net_investment)
+            self.patrimony.current_net_investment())
 
     def test_current_property_investment(self):
         self.assertEqual(Decimal('121.21'),
-                         self.patrimony.current_property_investment)
+                         self.patrimony.current_property_investment())
 
     def test_current_income_generation(self):
         self.assertEqual(Decimal('1345.61'),
-                         self.patrimony.possible_income_generation)
+                         self.patrimony.possible_income_generation())
 
     def test_annual_income(self):
         self.assertEqual(self.common_income.annual(),Decimal(14400.00))
