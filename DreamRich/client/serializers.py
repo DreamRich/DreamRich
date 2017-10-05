@@ -21,7 +21,8 @@ class AddressSerializer(serializers.ModelSerializer):
             'detail',
             'cep',
             'number',
-            'complement'
+            'complement',
+            'state_id'
         ]
 
 
@@ -30,6 +31,7 @@ class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = [
+            'id',
             'name',
             'abbreviation',
             'country_id'
@@ -42,6 +44,7 @@ class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = [
+            'id',
             'name',
             'abbreviation',
             'country_states'
