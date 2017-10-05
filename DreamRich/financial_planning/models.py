@@ -4,6 +4,7 @@ from patrimony.models import Patrimony
 from goal.models import GoalManager
 from lib.financial_planning.flow import generic_flow
 from lib.profit.profit import actual_rate
+from decimal import Decimal
 import datetime
 import numpy
 
@@ -144,3 +145,9 @@ class FinancialPlanning(models.Model):
             data.append(actual_leftovers_for_objectives)
 
         return data
+
+    def real_gain_related_cdi(self):
+        real_gain_cdi = {rate: actual_rate(Decimal(rate/100) * self.cdi, self.ipca) for rate in range(80, 205, 5)}
+        return real_gain_cdi;
+
+

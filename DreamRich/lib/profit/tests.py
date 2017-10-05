@@ -1,5 +1,5 @@
 from django.test import TestCase
-from lib.profit.profit import actual_rate, net_annual_suggested
+from lib.profit.profit import actual_rate
 
 
 class ProfitTest(TestCase):
@@ -23,13 +23,3 @@ class ProfitTest(TestCase):
             self.NET_PROFITABILITY, self.IPCA)
         self.assertAlmostEqual(profit_net_annual, self.PROFIT_NET, 4)
 
-    def test_net_annual_suggested(self):
-        profit_net_annual_suggested = net_annual_suggested(
-            self.CDI,
-            self.WALLET_PROFITABILITY_TARGET,
-            self.INCOME_TAX,
-            self.IPCA)
-        self.assertAlmostEqual(
-            profit_net_annual_suggested,
-            self.PROFIT_NET_SUGGESTED,
-            4)
