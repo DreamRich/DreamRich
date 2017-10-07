@@ -4,7 +4,7 @@ from lib.financial_planning.flow import generic_flow
 
 
 class Patrimony(models.Model):
-    fgts = models.FloatField(default = 0)
+    fgts = models.FloatField(default=0)
 
     def current_net_investment(self):
         total_active = self.active_set.all().aggregate(Sum('value'))
@@ -104,13 +104,13 @@ class Income(models.Model):
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
     def annual(self):
-        total = self.value_monthly*12
+        total = self.value_monthly * 12
         if self.thirteenth:
             total += self.value_monthly
         if self.vacation:
-            total += self.value_monthly/3
+            total += self.value_monthly / 3
 
-        return round(total,2)
+        return round(total, 2)
 
     def __str__(self):
         return "Annual {}".format(self.annual())

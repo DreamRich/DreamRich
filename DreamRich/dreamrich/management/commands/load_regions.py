@@ -4,6 +4,7 @@ from client.models import Country, State
 
 FILE_PATH = 'dreamrich/management/commands/data/regions_data_list'
 
+
 class Command(BaseCommand):
     @staticmethod
     def _parse_line(line):
@@ -22,7 +23,7 @@ class Command(BaseCommand):
                     continue
 
                 elif line[0:2] == "->":
-                    line = line[3:] # 3 to take space as well
+                    line = line[3:]  # 3 to take space as well
 
                     try:
                         country, abbreviation = self._parse_line(line)

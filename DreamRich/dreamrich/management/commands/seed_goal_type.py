@@ -5,6 +5,7 @@ from goal.models import GoalType
 
 FILE_PATH = 'dreamrich/management/commands/data/goal_type.yaml'
 
+
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):

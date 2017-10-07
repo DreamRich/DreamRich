@@ -17,16 +17,16 @@ class FinancialIndependence(models.Model):
         rate = float(self.financialplanning.real_gain())
 
         return numpy.pv(rate, self.duration_of_usufruct,
-                        -self.remain_patrimony*12)
+                        -self.remain_patrimony * 12)
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
         rate = 0.0544
         years_for_retirement = self.financialplanning.duration()
-        current_net_investment = float(self.financialplanning.patrimony.\
-                                      current_net_investment())
-        total =  numpy.pmt(rate, years_for_retirement, current_net_investment,
-                           assets_required)
+        current_net_investment = float(self.financialplanning.patrimony.
+                                       current_net_investment())
+        total = numpy.pmt(rate, years_for_retirement, current_net_investment,
+                          assets_required)
         total /= 12
         if total < 0:
             total = 0
@@ -129,17 +129,17 @@ class FinancialPlanning(models.Model):
         income_flow = self.patrimony.income_flow(change)
         regular_cost_flow = self.regular_cost.flow(change)
         remain_necessary_for_retirement = self.financial_independence.\
-                                            remain_necessary_for_retirement()
+            remain_necessary_for_retirement()
         spent_with_annual_protection = 2000
 
         data = []
 
         for index in range(self.duration()):
             actual_leftovers_for_objectives = income_flow[index] -\
-                                             goal_value_total_by_year[index] -\
-                                             regular_cost_flow[index] -\
-                                             remain_necessary_for_retirement -\
-                                             spent_with_annual_protection
+                goal_value_total_by_year[index] -\
+                regular_cost_flow[index] -\
+                remain_necessary_for_retirement -\
+                spent_with_annual_protection
 
             data.append(actual_leftovers_for_objectives)
 

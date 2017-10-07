@@ -48,6 +48,7 @@ class BankAccountViewSet(viewsets.ModelViewSet):
     serializer_class = BankAccountSerializer
     queryset = BankAccount.objects.all()
 
+
 class DependentViewSet(viewsets.ModelViewSet):
     serializer_class = DependentSerializer
     queryset = Dependent.objects.all()
