@@ -3,6 +3,7 @@ from dr_auth.permissions import ClientsPermission
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 import json
+from dr_auth.permissions import ClientsPermission
 from client.serializers import (
     ClientSerializer,
     ActiveClientSerializer,
@@ -36,7 +37,6 @@ class ActiveClientViewSet(viewsets.ModelViewSet):
                            'GET': 'see_own_client_data'}
     serializer_class = ActiveClientSerializer
     queryset = ActiveClient.objects.all()
-
     permission_classes = (ClientsPermission,)
 
 
