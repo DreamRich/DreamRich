@@ -2,7 +2,6 @@ from rest_framework import permissions
 import rolepermissions
 from rolepermissions import checkers
 
-
 class FinancialAdvisersPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if checkers.has_permission(request.user, 'see_financial_adviser_data'):
@@ -23,4 +22,4 @@ class ClientsPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if checkers.has_permission(request.user, 'change_own_client_data'):
             return True
-        return False
+        return False 
