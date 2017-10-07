@@ -12,6 +12,8 @@ from client.models import (
 
 class AddressSerializer(serializers.ModelSerializer):
 
+    state_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Address
         fields = [
