@@ -12,6 +12,8 @@ from client.models import (
 
 class AddressSerializer(serializers.ModelSerializer):
 
+    state_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Address
         fields = [
@@ -21,7 +23,8 @@ class AddressSerializer(serializers.ModelSerializer):
             'detail',
             'cep',
             'number',
-            'complement'
+            'complement',
+            'state_id'
         ]
 
 
@@ -30,6 +33,7 @@ class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = [
+            'id',
             'name',
             'abbreviation',
             'country_id'
@@ -42,6 +46,7 @@ class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = [
+            'id',
             'name',
             'abbreviation',
             'country_states'

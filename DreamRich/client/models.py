@@ -11,7 +11,7 @@ class Country(base_models.BaseModel):
     )
 
     abbreviation = models.CharField(
-        max_length=2
+        max_length=3
     )
 
     def __str__(self):
