@@ -11,8 +11,8 @@ class GoalType(models.Model):
     def __str__(self):
         return self.name
 
-class GoalManager(models.Model):
 
+class GoalManager(models.Model):
 
     @property
     def year_init_to_year_end(self):
@@ -48,13 +48,13 @@ class GoalManager(models.Model):
 
         return matrix
 
-
     def value_total_by_year(self):
         matrix = self.matrix_flow_goals()
 
         array = [sum(index) for index in zip(*matrix)]
 
         return array
+
 
 class Goal(models.Model):
     has_end_date = models.BooleanField()

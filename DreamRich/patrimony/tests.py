@@ -10,26 +10,23 @@ class PatrimonyTest(TestCase):
 
     def setUp(self):
         active_client = ActiveClientMainFactory(
-                            birthday=datetime.datetime(1967, 1, 1))
+            birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
         financial_planning = FinancialPlanningFactory(
-                                active_client=active_client,
-                                patrimony=self.patrimony)
-        self.common_income = IncomeFactory(value_monthly =\
-                                             round(Decimal(1200),2),
-                                          thirteenth = False,
-                                          patrimony = self.patrimony,
-                                          vacation = False)
-        self.income_with_thirteenth = IncomeFactory(value_monthly =\
-                                                     round(Decimal(1200),2),
-                                                   thirteenth = True,
-                                                   patrimony = self.patrimony,
-                                                   vacation = False)
-        self.income_with_vacation = IncomeFactory(value_monthly =\
-                                                     round(Decimal(1200),2),
-                                                   thirteenth = False,
-                                                   patrimony = self.patrimony,
-                                                   vacation = True)
+            active_client=active_client,
+            patrimony=self.patrimony)
+        self.common_income = IncomeFactory(value_monthly=round(Decimal(1200), 2),
+                                           thirteenth=False,
+                                           patrimony=self.patrimony,
+                                           vacation=False)
+        self.income_with_thirteenth = IncomeFactory(value_monthly=round(Decimal(1200), 2),
+                                                    thirteenth=True,
+                                                    patrimony=self.patrimony,
+                                                    vacation=False)
+        self.income_with_vacation = IncomeFactory(value_monthly=round(Decimal(1200), 2),
+                                                  thirteenth=False,
+                                                  patrimony=self.patrimony,
+                                                  vacation=True)
 
     def test_current_net_investment(self):
         self.assertEqual(
@@ -45,7 +42,7 @@ class PatrimonyTest(TestCase):
                          self.patrimony.possible_income_generation())
 
     def test_annual_income(self):
-        self.assertEqual(self.common_income.annual(),Decimal(14400.00))
+        self.assertEqual(self.common_income.annual(), Decimal(14400.00))
 
     def test_annual_income_with_thirteen(self):
         self.assertEqual(self.income_with_thirteenth.annual(),
@@ -61,7 +58,7 @@ class PatrimonyTest(TestCase):
 
     def test_income_flow(self):
         change_total_annual_income = [0, 0, 0, 0, Decimal('500.00'),
-                                            Decimal('-500.00'), 0, 0, 0, 0]
+                                      Decimal('-500.00'), 0, 0, 0, 0]
         flow_regular_cost_with_change = [Decimal('60962.67'),
                                          Decimal('60962.67'),
                                          Decimal('60962.67'),
@@ -75,4 +72,4 @@ class PatrimonyTest(TestCase):
                                          ]
 
         self.assertEqual(flow_regular_cost_with_change,
-                     self.patrimony.income_flow(change_total_annual_income))
+                         self.patrimony.income_flow(change_total_annual_income))
