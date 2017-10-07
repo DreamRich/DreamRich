@@ -19,9 +19,9 @@ class FinancialPlanningTest(TestCase):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
-        active = ActiveFactory(patrimony=self.patrimony, value=30000.00)
-        active_2 = ActiveFactory(patrimony=self.patrimony, value=321200.00)
-        arrerage = ArrearageFactory(patrimony=self.patrimony, value=351200.00)
+        active = ActiveFactory(patrimony=self.patrimony, value=30000.00)  # NOQA
+        active_2 = ActiveFactory(patrimony=self.patrimony, value=321200.00)  # NOQA
+        arrerage = ArrearageFactory(patrimony=self.patrimony, value=351200.00)  # NOQA
         self.financial_independece = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
@@ -43,12 +43,12 @@ class FinancialPlanningTest(TestCase):
 
     def test_regular_cost_flow_withot_change(self):
         change_regular_cost = [0, 0, 0, 0, 123.40, -123.40, 0, 0, 0, 0]
-        flow_regular_cost_with_change = [219.59999999999994, 219.59999999999994,
-                                         219.59999999999994, 219.59999999999994,
-                                         342.99999999999994, 219.59999999999994,
-                                         219.59999999999994, 219.59999999999994,
-                                         219.59999999999994, 219.59999999999994]
-        self.assertEqual(flow_regular_cost_with_change,
+        flow_regular_cost_change = [219.59999999999994, 219.59999999999994,
+                                    219.59999999999994, 219.59999999999994,
+                                    342.99999999999994, 219.59999999999994,
+                                    219.59999999999994, 219.59999999999994,
+                                    219.59999999999994, 219.59999999999994]
+        self.assertEqual(flow_regular_cost_change,
                          self.regular_cost.flow(change_regular_cost))
 
     def test_assets_required(self):

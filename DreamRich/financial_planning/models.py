@@ -129,17 +129,17 @@ class FinancialPlanning(models.Model):
         income_flow = self.patrimony.income_flow(change)
         regular_cost_flow = self.regular_cost.flow(change)
         remain_necessary_for_retirement = self.financial_independence.\
-                                            remain_necessary_for_retirement()
+            remain_necessary_for_retirement()
         spent_with_annual_protection = 2000
 
         data = []
 
         for index in range(self.duration()):
             actual_leftovers_for_objectives = income_flow[index] -\
-                                             goal_value_total_by_year[index] -\
-                                             regular_cost_flow[index] -\
-                                             remain_necessary_for_retirement -\
-                                             spent_with_annual_protection
+                goal_value_total_by_year[index] -\
+                regular_cost_flow[index] -\
+                remain_necessary_for_retirement -\
+                spent_with_annual_protection
 
             data.append(actual_leftovers_for_objectives)
 

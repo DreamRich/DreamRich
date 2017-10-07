@@ -4,7 +4,7 @@ from lib.financial_planning.flow import generic_flow
 
 
 class Patrimony(models.Model):
-    fgts = models.FloatField(default = 0)
+    fgts = models.FloatField(default=0)
 
     def current_net_investment(self):
         total_active = self.active_set.all().aggregate(Sum('value'))
