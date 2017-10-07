@@ -1,6 +1,5 @@
 import factory
 from . import models
-from decimal import Decimal
 
 
 class ActiveFactory(factory.DjangoModelFactory):
@@ -9,7 +8,7 @@ class ActiveFactory(factory.DjangoModelFactory):
         model = models.Active
 
     name = factory.Faker('first_name')
-    value = round(Decimal(351200.00), 2)
+    value = round(351200.00, 2)
 
 
 class ArrearageFactory(factory.DjangoModelFactory):
@@ -18,7 +17,7 @@ class ArrearageFactory(factory.DjangoModelFactory):
         model = models.Arrearage
 
     name = factory.Faker('first_name')
-    value = round(Decimal(30000), 2)
+    value = round(30000, 2)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):
@@ -27,7 +26,7 @@ class RealEstateFactory(factory.DjangoModelFactory):
         model = models.RealEstate
 
     name = factory.Faker('first_name')
-    value = round(Decimal(121.21), 2)
+    value = round(121.21, 2)
     salable = False
 
 
@@ -37,7 +36,7 @@ class CompanyParticipationFactory(factory.DjangoModelFactory):
         model = models.CompanyParticipation
 
     name = factory.Faker('first_name')
-    value = round(Decimal(1221.21), 2)
+    value = round(1221.21, 2)
 
 
 class EquipmentFactory(factory.DjangoModelFactory):
@@ -46,7 +45,7 @@ class EquipmentFactory(factory.DjangoModelFactory):
         model = models.Equipment
 
     name = factory.Faker('first_name')
-    value = round(Decimal(122.2), 2)
+    value = round(122.2, 2)
 
 
 class LifeInsuranceFactory(factory.DjangoModelFactory):
@@ -55,7 +54,7 @@ class LifeInsuranceFactory(factory.DjangoModelFactory):
         model = models.LifeInsurance
 
     name = factory.Faker('first_name')
-    value = round(Decimal(121.21), 2)
+    value = round(121.21, 2)
     redeemable = True
 
 
@@ -65,7 +64,7 @@ class IncomeFactory(factory.DjangoModelFactory):
         model = models.Income
 
     source = factory.Faker('first_name')
-    value_monthly = round(Decimal(1212.2), 2)
+    value_monthly = round(1212.2, 2)
     thirteenth = True
     vacation = True
 
@@ -75,7 +74,7 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Patrimony
 
-    fgts = round(Decimal(2.2), 2)
+    fgts = round(2.2, 2)
     active = factory.RelatedFactory(ActiveFactory, 'patrimony')
     arrearage = factory.RelatedFactory(ArrearageFactory, 'patrimony')
     real_estate = factory.RelatedFactory(RealEstateFactory, 'patrimony')

@@ -6,6 +6,7 @@ from dreamrich.settings import BASE_DIR
 from client.models import Country, State
 
 
+
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):

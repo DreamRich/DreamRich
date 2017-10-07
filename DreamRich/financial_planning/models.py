@@ -36,30 +36,24 @@ class FinancialIndependence(models.Model):
 
 class RegularCost(models.Model):
 
-    home = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    electricity_bill = models.DecimalField(decimal_places=2, max_digits=8,
-                                           default=0)
-    gym = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    taxes = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    car_gas = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-
-    insurance = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    cellphone = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    health_insurance = models.DecimalField(decimal_places=2, max_digits=8,
-                                           default=0)
-    supermarket = models.DecimalField(decimal_places=2, max_digits=8,
-                                      default=0)
-    housekeeper = models.DecimalField(decimal_places=2, max_digits=8,
-                                      default=0)
-    beauty = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    internet = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    netflix = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    recreation = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    meals = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    appointments = models.DecimalField(
-        decimal_places=2, max_digits=8, default=0)  # consultas
-    drugstore = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    extras = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    home = models.FloatField(default=0)
+    electricity_bill = models.FloatField(default=0)
+    gym = models.FloatField(default=0)
+    taxes = models.FloatField(default=0)
+    car_gas = models.FloatField(default=0)
+    insurance = models.FloatField(default=0)
+    cellphone = models.FloatField(default=0)
+    health_insurance = models.FloatField(default=0)
+    supermarket = models.FloatField(default=0)
+    housekeeper = models.FloatField(default=0)
+    beauty = models.FloatField(default=0)
+    internet = models.FloatField(default=0)
+    netflix = models.FloatField(default=0)
+    recreation = models.FloatField(default=0)
+    meals = models.FloatField(default=0)
+    appointments = models.FloatField(default=0)  # consultas
+    drugstore = models.FloatField(default=0)
+    extras = models.FloatField(default=0)
 
     def total(self):
         total = self.home + self.electricity_bill + self.gym + self.taxes \
@@ -106,9 +100,9 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
-    cdi = models.DecimalField(max_digits=6, decimal_places=4)
+    cdi = models.FloatField()
 
-    ipca = models.DecimalField(max_digits=6, decimal_places=4)
+    ipca = models.FloatField()
 
     def duration(self):
         age_of_independence = self.financial_independence.age
@@ -121,3 +115,32 @@ class FinancialPlanning(models.Model):
 
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
+
+    def change_flow(self):
+        data = []
+        for index in range(self.duration()):
+            data.append(0)
+
+        return data
+
+    def annual_leftovers_for_objectives(self):
+        change = self.change_flow()
+        goal_value_total_by_year = self.goal_manager.value_total_by_year()
+        income_flow = self.patrimony.income_flow(change)
+        regular_cost_flow = self.regular_cost.flow(change)
+        remain_necessary_for_retirement = self.financial_independence.\
+            remain_necessary_for_retirement()
+        spent_with_annual_protection = 2000
+
+        data = []
+
+        for index in range(self.duration()):
+            actual_leftovers_for_objectives = income_flow[index] -\
+                goal_value_total_by_year[index] -\
+                regular_cost_flow[index] -\
+                remain_necessary_for_retirement -\
+                spent_with_annual_protection
+
+            data.append(actual_leftovers_for_objectives)
+
+        return data
