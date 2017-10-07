@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from dr_auth.permissions import ClientsPermission
 from client.serializers import (
     ClientSerializer,
     ActiveClientSerializer,
@@ -22,11 +23,15 @@ from client.models import (
 class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
-
+    permission_classes = (ClientsPermission,)
 
 class ActiveClientViewSet(viewsets.ModelViewSet):
+    required_permission = 'change_own_client_data'
     serializer_class = ActiveClientSerializer
     queryset = ActiveClient.objects.all()
+    
+    permission_classes = (ClientsPermission,)
+
 
 
 class AddressViewSet(viewsets.ModelViewSet):
