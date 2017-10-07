@@ -4,7 +4,7 @@ from lib.financial_planning.flow import generic_flow
 
 
 class Patrimony(models.Model):
-    fgts = models.DecimalField(decimal_places=2, max_digits=8)
+    fgts = models.FloatField(default = 0)
 
     def current_net_investment(self):
         total_active = self.active_set.all().aggregate(Sum('value'))
@@ -60,46 +60,45 @@ class Patrimony(models.Model):
 
 class Active(models.Model):
     name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
 class RealEstate(models.Model):
     name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    value = models.FloatField(default=0)
     salable = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
-    value = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+    value = models.FloatField(default=0)
     redeemable = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
 
 class Income(models.Model):
     source = models.CharField(max_length=100)
-    value_monthly = models.DecimalField(decimal_places=2, max_digits=8,
-                                        default=0)
+    value_monthly = models.FloatField(default=0)
     thirteenth = models.BooleanField()
     vacation = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)

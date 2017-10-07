@@ -1,5 +1,4 @@
 from django.test import TestCase
-from decimal import Decimal
 from client.factories import ActiveClientMainFactory
 from patrimony.factories import (
     PatrimonyMainFactory,
@@ -38,24 +37,17 @@ class FinancialPlanningTest(TestCase):
         self.assertEqual(
             self.financial_planning.duration(), 10)
 
-    def test_regulat_cost_total(self):
-        total = Decimal('219.60')
-        self.assertEqual(self.regular_cost.total(), total)
+    def test_regular_cost_total(self):
+        total = 219.5999999999994
+        self.assertAlmostEqual(self.regular_cost.total(), total, 4)
 
     def test_regular_cost_flow_withot_change(self):
-        change_regular_cost = [0, 0, 0, 0, Decimal('123.40'),
-                               Decimal('-123.40'), 0, 0, 0, 0]
-        flow_regular_cost_with_change = [Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         Decimal('343.00'),
-                                         Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         Decimal('219.60'),
-                                         ]
+        change_regular_cost = [0, 0, 0, 0, 123.40, -123.40, 0, 0, 0, 0]
+        flow_regular_cost_with_change = [219.59999999999994, 219.59999999999994,
+                                         219.59999999999994, 219.59999999999994,
+                                         342.99999999999994, 219.59999999999994,
+                                         219.59999999999994, 219.59999999999994,
+                                         219.59999999999994, 219.59999999999994]
         self.assertEqual(flow_regular_cost_with_change,
                          self.regular_cost.flow(change_regular_cost))
 
