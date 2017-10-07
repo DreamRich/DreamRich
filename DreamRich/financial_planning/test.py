@@ -19,9 +19,15 @@ class FinancialPlanningTest(TestCase):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
+<<<<<<< 030276378c880f296a0600d4d875a78cb5af2c38
         active = ActiveFactory(patrimony=self.patrimony, value=30000.00)  # NOQA
         active_2 = ActiveFactory(patrimony=self.patrimony, value=321200.00)  # NOQA
         arrerage = ArrearageFactory(patrimony=self.patrimony, value=351200.00)  # NOQA
+=======
+        active = ActiveFactory(patrimony=self.patrimony, value=30000.00)
+        active_2 = ActiveFactory(patrimony=self.patrimony, value=321200.00)
+        arrerage = ArrearageFactory(patrimony=self.patrimony, value=351200.00)
+>>>>>>> Simple stylesheet fixes
         self.financial_independece = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
