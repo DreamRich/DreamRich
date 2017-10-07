@@ -6,6 +6,7 @@ from dreamrich.settings import BASE_DIR
 from client.models import Country, State
 
 
+
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
@@ -18,7 +19,6 @@ class Command(BaseCommand):
                 data = yaml.load(load_file)
                 for country in data:
                     states = country.pop('states', [])
-
 
                     new_country, created = Country.objects.get_or_create(
                             **country)
