@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from dr_auth.permissions import ClientsPermission
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+import json
 from client.serializers import (
     ClientSerializer,
     ActiveClientSerializer,
@@ -44,6 +45,12 @@ class AddressViewSet(viewsets.ModelViewSet):
                            'GET': 'see_own_client_data'}
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
+
+    @list_route(methods=['get'])
+    def type_of_address(self, request):
+        addresses = self.queryset.values('type_of_address').distinct()
+        mapped = map(lambda x: x['type_of_address'], addresses)
+        return Response(list(mapped), 200)
 
 
 class StateViewSet(viewsets.ModelViewSet):

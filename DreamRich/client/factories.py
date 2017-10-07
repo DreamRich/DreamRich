@@ -11,7 +11,7 @@ class CountryFactory(factory.DjangoModelFactory):
         model = models.Country
 
     name = factory.Sequence(lambda n: 'country%s' % n)
-    abbreviation = factory.Sequence(lambda n: '%2d' % n)
+    abbreviation = factory.Sequence(lambda n: '%2d' % (n %1000))
 
 
 class StateFactory(factory.DjangoModelFactory):
@@ -20,7 +20,7 @@ class StateFactory(factory.DjangoModelFactory):
         model = models.State
 
     name = factory.Sequence(lambda n: 'state%s' % n)
-    abbreviation = factory.Sequence(lambda n: '%s' % n)
+    abbreviation = factory.Sequence(lambda n: '%s' % (n%100))
     country = factory.SubFactory(CountryFactory)
 
 
