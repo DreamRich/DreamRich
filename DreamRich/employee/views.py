@@ -10,7 +10,7 @@ from employee.models import (
     Employee,
     FinancialAdviser,
 )
-from dr_auth.permissions import SomePermission, EmployeesPermission  
+from dr_auth.permissions import EmployeesPermission,FinancialAdvisersPermission
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     required_permission = 'see_employee_data'
@@ -18,21 +18,16 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.all()
 
-    @list_route(methods=['get']) 
-    def employee_permissions(self, request):
-        queryset = Employee.objects.all()
-        employee_available_permissions = CommonEmployee().available_permissions 
-        return Response(employee_available_permissions)
     @detail_route
     def a(self, request, *args, **kwargs):
         print(request.user)
 
 class FinancialAdviserViewSet(viewsets.ModelViewSet):
-    required_permission = 'see_financialadvisers_data'
+    required_permission = 'see_employee_data'
 
     serializer_class = FinancialAdviserSerializer
     queryset = FinancialAdviser.objects.all()
-    permission_classes = (EmployeesPermission,)
+    permission_classes = (FinancialAdvisersPermission,)
 
     @detail_route(methods=['get'])
     def a(self, request, pk=None, *args, **kwargs):
