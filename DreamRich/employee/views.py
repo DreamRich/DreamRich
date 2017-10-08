@@ -10,7 +10,8 @@ from employee.models import (
     Employee,
     FinancialAdviser,
 )
-from dr_auth.permissions import EmployeesPermission,FinancialAdvisersPermission
+from dr_auth.permissions import EmployeesPermission, FinancialAdvisersPermission
+
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     required_permission = 'see_employee_data'
@@ -21,6 +22,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     @detail_route
     def a(self, request, *args, **kwargs):
         print(request.user)
+
 
 class FinancialAdviserViewSet(viewsets.ModelViewSet):
     required_permission = 'see_employee_data'
