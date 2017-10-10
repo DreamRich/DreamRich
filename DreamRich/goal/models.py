@@ -100,3 +100,7 @@ class Goal(models.Model):
             goal_array_flow = self.generic_flow(index_goal_end, actual_year)
 
         return goal_array_flow
+
+    def __str__(self):
+        string_format = "Goal type = {} value = {}"
+        return string_format.format(self.goal_type.name,self.value)
