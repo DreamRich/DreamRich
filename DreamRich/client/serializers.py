@@ -13,6 +13,7 @@ from client.models import (
 class AddressSerializer(serializers.ModelSerializer):
 
     state_id = serializers.IntegerField(write_only=True)
+    active_client_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Address
@@ -24,7 +25,8 @@ class AddressSerializer(serializers.ModelSerializer):
             'cep',
             'number',
             'complement',
-            'state_id'
+            'state_id',
+            'active_client_id'
         ]
 
 

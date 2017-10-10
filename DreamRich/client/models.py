@@ -170,9 +170,9 @@ class Address(base_models.BaseModel):
         max_length=20
     )
 
-    client = models.ManyToManyField(
+    active_client = models.ForeignKey(
         ActiveClient,
-        related_name='client_address'
+        related_name='address'
     )
 
     city = models.CharField(

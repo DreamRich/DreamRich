@@ -11,7 +11,7 @@ class CountryFactory(factory.DjangoModelFactory):
         model = models.Country
 
     name = factory.Sequence(lambda n: 'country%s' % n)
-    abbreviation = factory.Sequence(lambda n: '%2d' % n)
+    abbreviation = factory.Sequence(lambda n: '%2d' % (n %1000))
 
 
 class StateFactory(factory.DjangoModelFactory):
@@ -20,7 +20,7 @@ class StateFactory(factory.DjangoModelFactory):
         model = models.State
 
     name = factory.Sequence(lambda n: 'state%s' % n)
-    abbreviation = factory.Sequence(lambda n: '%s' % n)
+    abbreviation = factory.Sequence(lambda n: '%s' % (n%100))
     country = factory.SubFactory(CountryFactory)
 
 
@@ -35,7 +35,7 @@ class AddressFactory(factory.DjangoModelFactory):
     detail = factory.Sequence(lambda n: 'detail%s' % n)
     cep = factory.Sequence(lambda n: '700000%s' % n)
     state = factory.SubFactory(StateFactory)
-    number = 1
+    number = factory.Faker('pyint')
     complement = factory.Sequence(lambda n: 'complement%s' % n)
 
 
@@ -53,18 +53,6 @@ class ClientFactory(factory.DjangoModelFactory):
     telephone = factory.Sequence(lambda n: '(61) 91234-56%02d' % n)
     hometown = factory.Faker('word')
     cpf = factory.LazyAttribute(gen_cpf)
-    address = factory.RelatedFactory(AddressFactory)
-
-    @factory.post_generation
-    def addresses(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # A list of groups were passed in, use them
-            for address in extracted:
-                self.addresses.add(address)
 
 
 class DependentFactory(factory.DjangoModelFactory):
@@ -102,4 +90,5 @@ class ActiveClientMainFactory(ClientFactory):
     email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
 
     spouse = factory.RelatedFactory(ClientFactory, 'active_spouse')
+    address = factory.RelatedFactory(AddressFactory, 'active_client')
     dependent = factory.RelatedFactory(DependentFactory, "active_client")

@@ -9,44 +9,30 @@ from client.models import Country, State
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        with open(FILE_PATH) as file:
-            for line in file:
-                line = line.lstrip()
+        file_path = os.path.join(BASE_DIR, 'dreamrich', 'seed',
+                                 'regions_data_list.yml')
 
-                if not line:
-                    continue
+        self.stdout.write('Load seed from {}'.format(file_path))
+        with open(file_path) as load_file:
+            try:
+                data = yaml.load(load_file)
+                for country in data:
+                    states = country.pop('states', [])
 
-                elif line[0:2] == "->":
-                    line = line[3:]  # 3 to take space as well
+                    new_country, _ = Country.objects.get_or_create(
+                        **country)
+                    self.stdout.write('\tCountry {name} - {abbreviation} '
+                                      'was registered'.format(**country))
 
-                    try:
-                        country, abbreviation = self._parse_line(line)
-                    except ValueError:
-                        self.stderr.write('Probably the file format is wrong')
+                    for state in states:
+                        State.objects.get_or_create(country=new_country,
+                                                    **state)
+                        self.stdout.write('\t\tState {name} - {abbreviation} '
+                                          'was registered'.format(**state))
 
-                    Country.objects.create(
-                        name=country,
-                        abbreviation=abbreviation
-                    )
-                    self.stdout.write('Country {} - {} was registered'.format(
-                        country,
-                        abbreviation
-                    ))
-
-                else:
-                    try:
-                        state, abbreviation = self._parse_line(line)
-                    except ValueError:
-                        self.stderr.write('Probably the file format is wrong')
-
-                    State.objects.create(
-                        name=state,
-                        abbreviation=abbreviation,
-                        country_id=Country.objects.last().id
-                    )
-                    self.stdout.write('State {} - {} was registered'.format(
-                        state,
-                        abbreviation
-                    ))
-
-            self.stdout.write('\nAll regions were registered successfully!')
+            except yaml.parser.ParserError as parser_error:
+                self.stderr.write(str(parser_error))
+            except yaml.scanner.ScannerError as scanner_error:
+                self.stderr.write(str(scanner_error))
+            finally:
+                self.stdout.write('End seed')
