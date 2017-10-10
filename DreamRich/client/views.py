@@ -3,9 +3,7 @@ from dr_auth.permissions import ClientsPermission
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 import json
-from dr_auth.permissions import ClientsPermission
-from rest_framework.decorators import list_route
-from rest_framework.response import Response
+
 from client.serializers import (
     ClientSerializer,
     ActiveClientSerializer,
