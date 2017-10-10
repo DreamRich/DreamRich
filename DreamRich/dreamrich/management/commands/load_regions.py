@@ -20,8 +20,8 @@ class Command(BaseCommand):
                 for country in data:
                     states = country.pop('states', [])
 
-                    new_country, _ = Country.objects.get_or_create(
-                        **country)
+                    new_country, created = Country.objects.get_or_create(
+                            **country)
                     self.stdout.write('\tCountry {name} - {abbreviation} '
                                       'was registered'.format(**country))
 
