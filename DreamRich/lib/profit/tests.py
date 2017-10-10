@@ -22,4 +22,3 @@ class ProfitTest(TestCase):
         profit_net_annual = actual_rate(
             self.NET_PROFITABILITY, self.IPCA)
         self.assertAlmostEqual(profit_net_annual, self.PROFIT_NET, 4)
-
