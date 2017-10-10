@@ -64,7 +64,7 @@ class IncomeFactory(factory.DjangoModelFactory):
         model = models.Income
 
     source = factory.Faker('first_name')
-    value_monthly = round(1212.2, 2)
+    value_monthly = round(51212.2, 2)
     thirteenth = True
     vacation = True
 

@@ -11,6 +11,7 @@ class PatrimonyTest(TestCase):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
+        self.patrimony.income_set.all().update(value_monthly=1212.2)
         financial_planning = FinancialPlanningFactory(  # NOQA
             active_client=active_client,
             patrimony=self.patrimony)
