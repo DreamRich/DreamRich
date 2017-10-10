@@ -15,29 +15,37 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     remain_patrimony = 200000
 
 
+class CostTypeFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.CostType
+
+    name = factory.Faker('name')
+
+
 class RegularCostFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.RegularCost
 
-    home = round(12.2, 2)
-    electricity_bill = round(12.2, 2)
-    gym = round(12.2, 2)
-    taxes = round(12.2, 2)
-    car_gas = round(12.2, 2)
-    insurance = round(12.2, 2)
-    cellphone = round(12.2, 2)
-    health_insurance = round(12.2, 2)
-    supermarket = round(12.2, 2)
-    housekeeper = round(12.2, 2)
-    beauty = round(12.2, 2)
-    internet = round(12.2, 2)
-    netflix = round(12.2, 2)
-    recreation = round(12.2, 2)
-    meals = round(12.2, 2)
-    appointments = round(12.2, 2)
-    drugstore = round(12.2, 2)
-    extras = round(12.2, 2)
+
+    value = factory.Faker('pyint')
+    cost_type = factory.SubFactory(CostTypeFactory)
+
+class CostManagerFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.CostManager
+
+    @factory.post_generation
+    def _regular_cost(self, create, extracted, **kwargs):
+
+        if create:
+            return RegularCostFactory.create_batch(18,
+                    cost_manager=self,
+                    value=round(12.2, 2))
+
+        else:
+            return RegularCostFactory.build_batch(18, value=round(12.2, 2))
 
 
 class FinancialPlanningFactory(factory.DjangoModelFactory):
@@ -49,7 +57,7 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     patrimony = factory.SubFactory(PatrimonyMainFactory)
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
-    regular_cost = factory.SubFactory(RegularCostFactory)
+    cost_manager = factory.SubFactory(CostManagerFactory)
     cdi = round(0.1213, 4)
     ipca = round(0.075, 4)
 
@@ -58,7 +66,6 @@ class GoalMainFactory():
 
     @staticmethod
     def create():
-
         financial_planning = FinancialPlanningFactory()
         goal_manager = financial_planning.goal_manager
         GoalFactory.create_batch(8, goal_manager=goal_manager)
