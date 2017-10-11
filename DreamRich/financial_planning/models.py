@@ -118,7 +118,7 @@ class FinancialPlanning(models.Model):
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def create_array_change(self, change):
+    def create_array_change_annual(self, change):
         actual_year = datetime.datetime.now().year
         data = [0] * self.duration()
         for change_year in change.keys():
@@ -128,8 +128,8 @@ class FinancialPlanning(models.Model):
         return data
 
     def annual_leftovers_for_goal(self, change_income={}, change_cost={}):
-        array_change_income = self.create_array_change(change_income)
-        array_change_cost = self.create_array_change(change_cost)
+        array_change_income = self.create_array_change_annual(change_income)
+        array_change_cost = self.create_array_change_annual(change_cost)
 
         income_flow = self.patrimony.income_flow(array_change_income)
         regular_cost_flow = self.regular_cost.flow(array_change_cost)

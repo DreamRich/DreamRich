@@ -117,3 +117,9 @@ class FinancialPlanningTest(TestCase):
                  609470.63389720698]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
+
+    def test_create_array_change_annual(self):
+        change = {2018: 2000, 2020: -5000}
+        array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
+        self.assertEqual(self.financial_planning.create_array_change_annual(
+                                                 change), array_compare)
