@@ -110,6 +110,12 @@ class FinancialPlanningTest(TestCase):
         self.assertAlmostEqual(self.financial_planning.
                                real_gain_related_cdi(), data)
 
+    def test_create_array_change_annual(self):
+        change = {2018: 2000, 2020: -5000}
+        array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
+        self.assertEqual(self.financial_planning.create_array_change_annual(
+                                                 change), array_compare)
+
     def test_annual_leftovers_for_goal_without_change(self):
         array = [609470.63389720698, 609470.63389720698,  609470.63389720698,
                  609470.63389720698, 609470.63389720698,  609470.63389720698,
@@ -117,9 +123,12 @@ class FinancialPlanningTest(TestCase):
                  609470.63389720698]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
-
-    def test_create_array_change_annual(self):
-        change = {2018: 2000, 2020: -5000}
-        array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
-        self.assertEqual(self.financial_planning.create_array_change_annual(
-                                                 change), array_compare)
+    def test_annual_leftovers_for_goal_with_change(self):
+        change_income = {2018: 2000}
+        change_cost = {2017: 2000, 2026: 9000}
+        array = [607470.63389720698, 609470.63389720698,  609470.63389720698,
+                 609470.63389720698, 609470.63389720698,  609470.63389720698,
+                 609470.63389720698, 609470.63389720698,  609470.63389720698,
+                 600470.63389720698]
+        self.assertEqual(self.financial_planning.annual_leftovers_for_goal(
+                                        change_income, change_cost), array)
