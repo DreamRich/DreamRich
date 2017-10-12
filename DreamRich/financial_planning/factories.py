@@ -13,6 +13,7 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
+    target_profitability = 110
 
 
 class RegularCostFactory(factory.DjangoModelFactory):
