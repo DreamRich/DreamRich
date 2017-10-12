@@ -7,8 +7,6 @@ from client.factories import ActiveClientMainFactory
 from django.contrib.auth.models import User
 from rest_framework_jwt.settings import api_settings
 from json import dumps
-from rolepermissions.roles import assign_role
-
 
 
 class AuthTest(TestCase):
