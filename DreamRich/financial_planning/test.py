@@ -116,6 +116,12 @@ class FinancialPlanningTest(TestCase):
         self.assertEqual(self.financial_planning.create_array_change_annual(
                                                  change), array_compare)
 
+    def test_create_array_change_annual(self):
+        change = {2018: 2000, 2020: -5000}
+        array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
+        self.assertEqual(self.financial_planning.create_array_change_annual(
+                                                 change), array_compare)
+
     def test_annual_leftovers_for_goal_without_change(self):
         array = [609470.63389720698, 609470.63389720698,  609470.63389720698,
                  609470.63389720698, 609470.63389720698,  609470.63389720698,
@@ -123,7 +129,10 @@ class FinancialPlanningTest(TestCase):
                  609470.63389720698]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
+<<<<<<< f4023f34674b35e163584b8bcae5bde0043af82c
 
+=======
+>>>>>>> Testing annual leftover for gols with change in income and regular cost
     def test_annual_leftovers_for_goal_with_change(self):
         change_income = {2018: 2000}
         change_cost = {2017: 2000, 2026: 9000}
