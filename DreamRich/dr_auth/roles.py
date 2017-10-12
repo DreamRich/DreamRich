@@ -21,6 +21,8 @@ class FinancialAdviser(AbstractUserRole):
         'see_financial_adviser_data': True,
         'allow_any': True,
     }
+
+
 class Client(AbstractUserRole):
     available_permissions = {
         'see_all_basic_client_data': False,
@@ -29,4 +31,3 @@ class Client(AbstractUserRole):
         'see_employee_data': False,
         'allow_any': True,
     }
-

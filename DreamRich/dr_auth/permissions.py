@@ -23,4 +23,4 @@ class ClientsPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if checkers.has_permission(request.user, 'change_own_client_data'):
             return True
-        return False 
+        return False
