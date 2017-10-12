@@ -48,7 +48,9 @@ class AuthTest(TestCase):
         self.assertEqual(
             response.data['permissions'], 'allow_any, '
             'change_own_client_data, see_all_basic_client_data, '
-            'see_employee_data, see_own_client_data')
+            'see_employee_data, see_financial_adviser_data, '
+            'see_own_client_data'
+        )
 
     def test_permission_active_client(self):
         response = self.client_test.post('/api/auth/',
