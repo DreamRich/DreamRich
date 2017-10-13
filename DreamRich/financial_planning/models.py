@@ -12,7 +12,6 @@ class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
-    target_profitability = models.PositiveIntegerField()
 
     def assets_required(self):
         rate = self.financialplanning.real_gain()
@@ -23,7 +22,8 @@ class FinancialIndependence(models.Model):
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
         rate_dic = self.financialplanning.real_gain_related_cdi()
-        rate_target_profitability = rate_dic[self.target_profitability]
+        target_profitability = self.financialplanning.target_profitability
+        rate_target_profitability = rate_dic[target_profitability]
         years_for_retirement = self.financialplanning.duration()
         current_net_investment = self.financialplanning.patrimony.\
                                  current_net_investment()
@@ -105,6 +105,8 @@ class FinancialPlanning(models.Model):
     cdi = models.FloatField()
 
     ipca = models.FloatField()
+
+    target_profitability = models.PositiveIntegerField()
 
     def duration(self):
         age_of_independence = self.financial_independence.age
