@@ -43,25 +43,6 @@ class CostType(models.Model):
 
 class CostManager(models.Model):
 
-    #    home = models.FloatField(default=0)
-    #    electricity_bill = models.FloatField(default=0)
-    #    gym = models.FloatField(default=0)
-    #    taxes = models.FloatField(default=0)
-    #    car_gas = models.FloatField(default=0)
-    #    insurance = models.FloatField(default=0)
-    #    cellphone = models.FloatField(default=0)
-    #    health_insurance = models.FloatField(default=0)
-    #    supermarket = models.FloatField(default=0)
-    #    housekeeper = models.FloatField(default=0)
-    #    beauty = models.FloatField(default=0)
-    #    internet = models.FloatField(default=0)
-    #    netflix = models.FloatField(default=0)
-    #    recreation = models.FloatField(default=0)
-    #    meals = models.FloatField(default=0)
-    #    appointments = models.FloatField(default=0)  # consultas
-    #    drugstore = models.FloatField(default=0)
-    #    extras = models.FloatField(default=0)
-
     def total(self):
         total_query = self.regular_costs.aggregate(models.Sum('value'))
         total = total_query.pop('value__sum', 0)
