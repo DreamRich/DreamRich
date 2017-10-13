@@ -7,5 +7,6 @@ urlpatterns = [
         url(r'^employee/', include('employee.urls')),
         url(r'^auth/', include('dr_auth.urls')),
         url(r'^goal/', include('goal.urls')),
+        url(r'^financial_planning/', include('financial_planning.urls')),
     ]))
 ]

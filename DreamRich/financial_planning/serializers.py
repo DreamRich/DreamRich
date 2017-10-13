@@ -11,6 +11,7 @@ class CostTypeSerializer(serializers.ModelSerializer):
             'name'
         ]
 
+
 class RegularCostSerializer(serializers.ModelSerializer):
 
     cost_type_id = serializers.IntegerField(write_only=True)
@@ -24,6 +25,7 @@ class RegularCostSerializer(serializers.ModelSerializer):
             'value',
             'cost_type',
         ]
+
 
 class CostManagerSerializer(serializers.ModelSerializer):
 

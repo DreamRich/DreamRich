@@ -27,9 +27,9 @@ class RegularCostFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.RegularCost
 
-
     value = factory.Faker('pyint')
     cost_type = factory.SubFactory(CostTypeFactory)
+
 
 class CostManagerFactory(factory.DjangoModelFactory):
 
@@ -41,8 +41,8 @@ class CostManagerFactory(factory.DjangoModelFactory):
 
         if create:
             return RegularCostFactory.create_batch(18,
-                cost_manager=self,
-                value=round(12.2, 2))
+                                                   cost_manager=self,
+                                                   value=round(12.2, 2))
 
         else:
             return RegularCostFactory.build_batch(18, value=round(12.2, 2))

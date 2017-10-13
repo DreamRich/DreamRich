@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from client.factories import ActiveClientMainFactory
 from patrimony.factories import (
     PatrimonyMainFactory,
@@ -62,3 +62,35 @@ class FinancialPlanningTest(TestCase):
         self.assertAlmostEqual(self.financial_independece.
                                remain_necessary_for_retirement(),
                                12147.728680592305, 4)
+
+
+class RegularCostViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.manager = CostManagerFactory()
+
+    def test_get_view(self):
+        pk = self.manager.pk
+        response = self.client.get('/api/financial_planning/costmanager/'
+                                   '{}/'.format(pk))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_view(self):
+        response = self.client.post('/api/financial_planning/costmanager', {},
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain,
+                         [('/api/financial_planning/costmanager/', 301)])
+
+    def test_delete_view(self):
+        pk = self.manager.pk
+        response = self.client.delete('/api/financial_planning/costmanager/'
+                                      '{}/'.format(pk))
+        self.assertEqual(response.status_code, 204)
+
+    def test_update_view(self):
+        pk = self.manager.pk
+        response = self.client.put('/api/financial_planning/costmanager/'
+                                   '{}/'.format(pk))
+        self.assertEqual(response.status_code, 200)
