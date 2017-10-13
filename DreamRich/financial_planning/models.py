@@ -63,9 +63,13 @@ class CostManager(models.Model):
 #    extras = models.FloatField(default=0)
 
     def total(self):
-        total = 219.59999999999994
-
+        total_query = self.regular_costs.aggregate(models.Sum('value'))
+        total = total_query.pop('value__sum', 0)
         return total
+
+    @property
+    def total_cost(self):
+        return self.total()
 
     def flow(self, regular_cost_change):
         duration = self.financialplanning.duration()
@@ -79,7 +83,11 @@ class RegularCost(models.Model):
 
     value = models.FloatField(default=0)
     cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
-    cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE)
+    cost_manager = models.ForeignKey(
+        CostManager,
+        related_name='regular_costs',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         if self.cost_type_id is not None:
