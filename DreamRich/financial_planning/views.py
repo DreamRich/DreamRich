@@ -1,12 +1,19 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from financial_planning.serializers import (
     RegularCostSerializer,
-    CostManagerSerializer
+    CostManagerSerializer,
+    CostTypeSerializer,
 )
 from financial_planning.models import (
     RegularCost,
-    CostManager
+    CostManager,
+    CostType,
 )
+
+
+class CostTypeViewList(generics.ListAPIView):
+    serializer_class = CostTypeSerializer
+    queryset = CostType.objects.all()
 
 
 class RegularCostViewSet(viewsets.ModelViewSet):

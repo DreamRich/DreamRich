@@ -1,6 +1,8 @@
 from rest_framework import routers
+from django.conf.urls import url
 from financial_planning.views import (
     RegularCostViewSet,
+    CostTypeViewList,
     CostManagerViewSet,
 )
 
@@ -11,4 +13,5 @@ router = routers.DefaultRouter()
 router.register(r'^regularcost', RegularCostViewSet)
 router.register(r'^costmanager', CostManagerViewSet)
 
-urlpatterns = router.urls
+
+urlpatterns = [url(r'costtype/$', CostTypeViewList.as_view())] + router.urls

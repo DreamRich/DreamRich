@@ -7,7 +7,7 @@ class CostTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostType
         fields = [
-            'pk',
+            'id',
             'name'
         ]
 
@@ -15,13 +15,15 @@ class CostTypeSerializer(serializers.ModelSerializer):
 class RegularCostSerializer(serializers.ModelSerializer):
 
     cost_type_id = serializers.IntegerField(write_only=True)
+    cost_manager_id = serializers.IntegerField(write_only=True)
     cost_type = CostTypeSerializer(read_only=True)
 
     class Meta:
         model = RegularCost
         fields = [
-            'pk',
+            'id',
             'cost_type_id',
+            'cost_manager_id',
             'value',
             'cost_type',
         ]
@@ -35,7 +37,7 @@ class CostManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostManager
         fields = [
-            'pk',
+            'id',
             'regular_costs',
             'total_cost',
         ]
