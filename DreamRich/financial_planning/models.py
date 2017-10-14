@@ -173,11 +173,6 @@ class FinancialPlanning(models.Model):
         rate_dic = self.real_gain_related_cdi()
         real_gain = rate_dic[self.target_profitability] + 1
 
-        print('\n\n\n')
-        print('sobra {}'.format(annual_leftovers_for_goal))
-        print('valor total obj {}'.format(total_goals))
-        print('ganho real {}'.format(real_gain))
-
         for index in range(duration-1):
             leftover_this_year = resource_for_goal[index] - total_goals[index]
             resource_for_goal_monetized = leftover_this_year * real_gain
