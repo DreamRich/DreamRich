@@ -8,4 +8,12 @@
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=too-few-public-methods, missing-docstring, anomalous-backslash-in-string
+disable=too-few-public-methods, missing-docstring, anomalous-backslash-in-string, too-many-ancestors
+
+[BASIC]
+
+# The acceptable names of methods regex
+method-rgx=[a-z_][a-z0-9_]{2,55}$
+
+# Good variable names which should always be accepted, separated by a comma
+good-names=pk,id,_

@@ -12,6 +12,7 @@ class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
+    target_profitability = models.PositiveIntegerField()
 
     def assets_required(self):
         rate = float(self.financialplanning.real_gain())
@@ -21,12 +22,13 @@ class FinancialIndependence(models.Model):
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
-        rate = 0.0544
+        rate = self.financialplanning.real_gain_related_cdi()
+        rate_target_profitability = float(rate[self.target_profitability])
         years_for_retirement = self.financialplanning.duration()
         current_net_investment = float(self.financialplanning.patrimony.
                                        current_net_investment())
-        total = numpy.pmt(rate, years_for_retirement, current_net_investment,
-                          assets_required)
+        total = numpy.pmt(rate_target_profitability, years_for_retirement,
+                          current_net_investment, assets_required)
         total /= 12
         if total < 0:
             total = 0
@@ -120,18 +122,22 @@ class FinancialPlanning(models.Model):
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def change_flow(self):
-        data = []
-        for index in range(self.duration()):
-            data.append(0)
+    def create_array_change_annual(self, change):
+        actual_year = datetime.datetime.now().year
+        data = [0] * self.duration()
+        for change_year in change.keys():
+            index_change = change_year - actual_year
+            data[index_change] += change[change_year]
 
         return data
 
-    def annual_leftovers_for_objectives(self):
-        change = self.change_flow()
+    def annual_leftovers_for_goal(self, change_income={}, change_cost={}):
+        array_change_income = self.create_array_change_annual(change_income)
+        array_change_cost = self.create_array_change_annual(change_cost)
+
+        income_flow = self.patrimony.income_flow(array_change_income)
+        regular_cost_flow = self.cost_manager.flow(array_change_cost)
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
-        income_flow = self.patrimony.income_flow(change)
-        regular_cost_flow = self.cost_manager.flow(change)
         remain_necessary_for_retirement = self.financial_independence.\
             remain_necessary_for_retirement()
         spent_with_annual_protection = 2000
@@ -139,12 +145,21 @@ class FinancialPlanning(models.Model):
         data = []
 
         for index in range(self.duration()):
-            actual_leftovers_for_objectives = income_flow[index] -\
+            actual_leftovers_for_goals = income_flow[index] -\
                 goal_value_total_by_year[index] -\
                 regular_cost_flow[index] -\
                 remain_necessary_for_retirement -\
                 spent_with_annual_protection
 
-            data.append(actual_leftovers_for_objectives)
+            data.append(actual_leftovers_for_goals)
 
+        return data
+
+    def real_gain_related_cdi(self):
+        cdi_initial = 80
+        cdi_final = 205
+        data = {}
+        for rate in range(cdi_initial, cdi_final, 5):
+            cdi_rate = actual_rate(float(rate / 100) * self.cdi, self.ipca)
+            data[rate] = cdi_rate
         return data

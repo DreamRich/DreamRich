@@ -17,7 +17,7 @@ class Command(BaseCommand):
             try:
                 types = yaml.load(load_file)
                 for type_cost in types:
-                    new_type, _ = CostType.objects.get_or_create(
+                    CostType.objects.get_or_create(
                         **type_cost)
                     self.stdout.write('Cost type {name} '
                                       'was registered'.format(**type_cost))

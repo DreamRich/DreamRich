@@ -1,8 +1,8 @@
 import factory
-from . import models
 from client.factories import ActiveClientMainFactory
 from patrimony.factories import PatrimonyMainFactory
 from goal.factories import GoalManagerFactory, GoalFactory
+from . import models
 
 
 class FinancialIndependenceFactory(factory.DjangoModelFactory):
@@ -13,6 +13,7 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
+    target_profitability = 110
 
 
 class CostTypeFactory(factory.DjangoModelFactory):
@@ -37,15 +38,14 @@ class CostManagerFactory(factory.DjangoModelFactory):
         model = models.CostManager
 
     @factory.post_generation
-    def _regular_cost(self, create, extracted, **kwargs):
+    def _regular_cost(self, create, extracted, **kwargs): # pylint: disable=unused-argument
 
         if create:
             return RegularCostFactory.create_batch(18,
                                                    cost_manager=self,
                                                    value=round(12.2, 2))
 
-        else:
-            return RegularCostFactory.build_batch(18, value=round(12.2, 2))
+        return RegularCostFactory.build_batch(18, value=round(12.2, 2))
 
 
 class FinancialPlanningFactory(factory.DjangoModelFactory):

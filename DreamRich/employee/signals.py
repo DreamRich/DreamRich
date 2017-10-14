@@ -11,4 +11,4 @@ def permission_financial_adviser(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Employee)
 def permission_employee(sender, instance, **kwargs):
-    assign_role(instance, 'comum_employee')
+    assign_role(instance, 'employee')

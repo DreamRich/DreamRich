@@ -18,7 +18,7 @@ class FinancialAdviserMainFactory(EmployeeMainFactory):
         model = FinancialAdviser
 
     @factory.post_generation
-    def clients(self, create, extracted, **kwargs):
+    def clients(self, create, extracted):
         if not create:
             return
 

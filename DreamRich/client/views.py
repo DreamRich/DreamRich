@@ -1,7 +1,8 @@
+from dr_auth.permissions import ClientsPermission
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
-import json
+
 from client.serializers import (
     ClientSerializer,
     ActiveClientSerializer,
@@ -23,16 +24,24 @@ from client.models import (
 
 
 class ClientViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
+    permission_classes = (ClientsPermission,)
 
 
 class ActiveClientViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = ActiveClientSerializer
     queryset = ActiveClient.objects.all()
+    permission_classes = (ClientsPermission,)
 
 
 class AddressViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
 
@@ -44,6 +53,8 @@ class AddressViewSet(viewsets.ModelViewSet):
 
 
 class StateViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = StateSerializer
     queryset = State.objects.all()
 
@@ -61,15 +72,21 @@ class StateViewSet(viewsets.ModelViewSet):
 
 
 class CountryViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = CountrySerializer
     queryset = Country.objects.all()
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = BankAccountSerializer
     queryset = BankAccount.objects.all()
 
 
 class DependentViewSet(viewsets.ModelViewSet):
+    required_permission = {'PUT': 'change_own_client_data',
+                           'GET': 'see_own_client_data'}
     serializer_class = DependentSerializer
     queryset = Dependent.objects.all()
