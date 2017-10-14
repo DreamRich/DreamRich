@@ -1,8 +1,8 @@
+import datetime
 from django.test import TestCase
 from financial_planning.factories import FinancialPlanningFactory
 from client.factories import ActiveClientMainFactory
 from goal.factories import GoalFactory, GoalTypeFactory
-import datetime
 
 
 class GoalTest(TestCase):

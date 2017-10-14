@@ -1,8 +1,8 @@
+from json import dumps
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
-from json import dumps
 
 
 class AuthView(APIView):
@@ -58,8 +58,7 @@ class AuthView(APIView):
 
             return Response(dumps({'detail': 'email sent'}), status=200)
 
-        else:
-            return Response(dumps({'detail': 'user not found'}), status=404)
+        return Response(dumps({'detail': 'user not found'}), status=404)
 
 
 # Create your views here.

@@ -11,16 +11,16 @@ from patrimony.views import (
 )
 
 
-app_name = 'patrimony'
+app_name = 'patrimony' # pylint: disable=invalid-name
 
-router = routers.DefaultRouter()
-router.register('active', ActiveViewSet)
-router.register('arrearage', ArrearageViewSet)
-router.register('realestate', RealEstateViewSet)
-router.register('companyparticipation', CompanyParticipationViewSet)
-router.register('equipment', EquipmentViewSet)
-router.register('lifeinsurance', LifeInsuranceViewSet)
-router.register('income', IncomeViewSet)
-router.register('', PatrimonyViewSet)
+router = routers.DefaultRouter() # pylint: disable=invalid-name
+router.register(r'^active', ActiveViewSet)
+router.register(r'^arrearage', ArrearageViewSet)
+router.register(r'^realestate', RealEstateViewSet)
+router.register(r'^companyparticipation', CompanyParticipationViewSet)
+router.register(r'^equipment', EquipmentViewSet)
+router.register(r'^lifeinsurance', LifeInsuranceViewSet)
+router.register(r'^income', IncomeViewSet)
+router.register(r'^', PatrimonyViewSet)
 
 urlpatterns = router.urls

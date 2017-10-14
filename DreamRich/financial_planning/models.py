@@ -25,9 +25,9 @@ class FinancialIndependence(models.Model):
         rate = self.financialplanning.real_gain_related_cdi()
         rate_target_profitability = float(rate[self.target_profitability])
         years_for_retirement = self.financialplanning.duration()
-        current_net_investment = float(self.financialplanning.patrimony.\
+        current_net_investment = float(self.financialplanning.patrimony.
                                        current_net_investment())
-        total = numpy.pmt(rate_target_profitability, years_for_retirement,\
+        total = numpy.pmt(rate_target_profitability, years_for_retirement,
                           current_net_investment, assets_required)
         total /= 12
         if total < 0:
@@ -36,35 +36,23 @@ class FinancialIndependence(models.Model):
         return total
 
 
-class RegularCost(models.Model):
+class CostType(models.Model):
+    name = models.CharField(max_length=100)
 
-    home = models.FloatField(default=0)
-    electricity_bill = models.FloatField(default=0)
-    gym = models.FloatField(default=0)
-    taxes = models.FloatField(default=0)
-    car_gas = models.FloatField(default=0)
-    insurance = models.FloatField(default=0)
-    cellphone = models.FloatField(default=0)
-    health_insurance = models.FloatField(default=0)
-    supermarket = models.FloatField(default=0)
-    housekeeper = models.FloatField(default=0)
-    beauty = models.FloatField(default=0)
-    internet = models.FloatField(default=0)
-    netflix = models.FloatField(default=0)
-    recreation = models.FloatField(default=0)
-    meals = models.FloatField(default=0)
-    appointments = models.FloatField(default=0)  # consultas
-    drugstore = models.FloatField(default=0)
-    extras = models.FloatField(default=0)
+    def __str__(self):
+        return self.name
+
+
+class CostManager(models.Model):
 
     def total(self):
-        total = self.home + self.electricity_bill + self.gym + self.taxes \
-            + self.car_gas + self.insurance + self.cellphone \
-            + self.health_insurance + self.supermarket + self.housekeeper \
-            + self.beauty + self.internet + self.netflix + self.recreation \
-            + self.meals + self.appointments + self.drugstore + self.extras
-
+        total_query = self.regular_costs.aggregate(models.Sum('value'))
+        total = total_query.pop('value__sum', 0)
         return total
+
+    @property
+    def total_cost(self):
+        return self.total()
 
     def flow(self, regular_cost_change):
         duration = self.financialplanning.duration()
@@ -72,6 +60,22 @@ class RegularCost(models.Model):
         data = generic_flow(regular_cost_change, duration, total)
 
         return data
+
+
+class RegularCost(models.Model):
+
+    value = models.FloatField(default=0)
+    cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
+    cost_manager = models.ForeignKey(
+        CostManager,
+        related_name='regular_costs',
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        if self.cost_type_id is not None:
+            return '{} {}'.format(self.cost_type.name, self.value)
+        return str(self.value)
 
 
 class FinancialPlanning(models.Model):
@@ -97,8 +101,8 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE,
     )
 
-    regular_cost = models.OneToOneField(
-        RegularCost,
+    cost_manager = models.OneToOneField(
+        CostManager,
         on_delete=models.CASCADE
     )
 
@@ -132,7 +136,7 @@ class FinancialPlanning(models.Model):
         array_change_cost = self.create_array_change_annual(change_cost)
 
         income_flow = self.patrimony.income_flow(array_change_income)
-        regular_cost_flow = self.regular_cost.flow(array_change_cost)
+        regular_cost_flow = self.cost_manager.flow(array_change_cost)
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
         remain_necessary_for_retirement = self.financial_independence.\
             remain_necessary_for_retirement()
@@ -156,6 +160,6 @@ class FinancialPlanning(models.Model):
         cdi_final = 205
         data = {}
         for rate in range(cdi_initial, cdi_final, 5):
-            cdi_rate = actual_rate(float(rate/100) * self.cdi, self.ipca)
+            cdi_rate = actual_rate(float(rate / 100) * self.cdi, self.ipca)
             data[rate] = cdi_rate
         return data

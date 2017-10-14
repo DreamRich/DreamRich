@@ -1,8 +1,7 @@
-from rest_framework import viewsets
 from dr_auth.permissions import ClientsPermission
+from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
-import json
 
 from client.serializers import (
     ClientSerializer,

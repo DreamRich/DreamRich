@@ -1,31 +1,29 @@
-from faker import Factory
-from dreamrich.validators import validate_cpf
 import functools
 import random
+from faker import Factory
+from dreamrich.validators import validate_cpf
 
-fake = Factory.create('pt_BR')
+FAKE_GENERATOR = Factory.create('pt_BR')
 
 
-def gen_cpf(factory):
+def gen_cpf(factory): # pylint: disable=unused-argument
     cpf = ""
     while cpf == "":
         try:
-            cpf = validate_cpf(fake.cpf())
+            cpf = validate_cpf(FAKE_GENERATOR.cpf())
         except BaseException:
             pass
 
     return cpf
 
 
-def gen_agency(factory):
+def gen_agency(factory): # pylint: disable=unused-argument
     while True:
         try:
             number = functools.partial(random.randint, 0, 9)
-
-            def gen(): return "{}{}{}{}-{}".format(number(), number(),
-                                                   number(), number(), number()
-                                                   )
-            agency = gen()
+            agency = "{}{}{}{}-{}".format(number(), number(),
+                                          number(), number(), number()
+                                         )
             return agency
         except BaseException:
             pass

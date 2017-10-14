@@ -1,28 +1,43 @@
-from financial_planning.models import RegularCost
+from financial_planning.models import RegularCost, CostManager, CostType
 from rest_framework import serializers
+
+
+class CostTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CostType
+        fields = [
+            'id',
+            'name'
+        ]
 
 
 class RegularCostSerializer(serializers.ModelSerializer):
 
+    cost_type_id = serializers.IntegerField(write_only=True)
+    cost_manager_id = serializers.IntegerField(write_only=True)
+    cost_type = CostTypeSerializer(read_only=True)
+
     class Meta:
         model = RegularCost
         fields = [
-            'home',
-            'electricity_bill',
-            'gym',
-            'taxes',
-            'car_gas',
-            'insurance',
-            'cellphone',
-            'health_insurance',
-            'supermarket',
-            'housekeeper',
-            'beauty',
-            'internet',
-            'netflix',
-            'recreation',
-            'meals',
-            'appointments',
-            'drugstore',
-            'extras',
+            'id',
+            'cost_type_id',
+            'cost_manager_id',
+            'value',
+            'cost_type',
+        ]
+
+
+class CostManagerSerializer(serializers.ModelSerializer):
+
+    regular_costs = RegularCostSerializer(many=True, read_only=True)
+    total_cost = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = CostManager
+        fields = [
+            'id',
+            'regular_costs',
+            'total_cost',
         ]

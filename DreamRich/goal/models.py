@@ -1,8 +1,8 @@
 """
 All attributes of this file have the annual order of magnitude
 """
-from django.db import models
 import datetime
+from django.db import models
 
 
 class GoalType(models.Model):
@@ -103,4 +103,4 @@ class Goal(models.Model):
 
     def __str__(self):
         string_format = "Goal type = {} value = {}"
-        return string_format.format(self.goal_type.name,self.value)
+        return string_format.format(self.goal_type.name, self.value)

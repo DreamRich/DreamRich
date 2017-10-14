@@ -1,7 +1,7 @@
+import datetime
+import factory
 from factory.fuzzy import FuzzyInteger
 from . import models
-import factory
-import datetime
 
 
 class GoalTypeFactory(factory.DjangoModelFactory):

@@ -7,17 +7,17 @@ class RatesTest(TestCase):
     real_rates = [[0.06, 0.049, 0.01],
                   [0.06, 0.0, 0.06],
                   [0.01, 1, -0.495]
-                  ]
+                 ]
     effectiveness_rate = [[0.011, 0.140],
                           [0.00, 0.00],
                           [0.001, 0.012],
                           [0.99, 3855.887]
-                          ]
+                         ]
     difference_rates = [[0.1, 0.1, 0],
                         [0.1, 0.2, -0.5],
                         [0.2, 0.1, 1.0],
                         [0.5, 0.4, 0.25]
-                        ]
+                       ]
 
     def test_real_rate_basic(self):
         for rates in self.real_rates:
