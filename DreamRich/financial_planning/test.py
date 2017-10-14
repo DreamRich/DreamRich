@@ -31,9 +31,9 @@ class FinancialPlanningTest(TestCase):
                                              value = 321200.00)  # NOQA
         arrerage = ArrearageFactory(patrimony = self.patrimony,
                                                 value = 351200.00)  # NOQA
-        goal_manager = GoalManagerFactory()
+        self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
-                                 goal_manager = goal_manager,
+                                 goal_manager = self.goal_manager,
                                  year_init = 2017,
                                  year_end = 2027,
                                  value = 2500,
@@ -47,7 +47,8 @@ class FinancialPlanningTest(TestCase):
             regular_cost = self.regular_cost,
             patrimony = self.patrimony,
             financial_independence = self.financial_independece,
-            goal_manager = goal_manager,
+            goal_manager = self.goal_manager,
+            target_profitability = 110,
         )
 
     def test_duration_financial_planning(self):
@@ -133,3 +134,22 @@ class FinancialPlanningTest(TestCase):
                  600460.73144555255]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(
                                         change_income, change_cost), array)
+
+    def test_total_resource_for_annual_goals(self):
+        change_income = {2018: 2000}
+        change_cost = {2017: 2000, 2026: 9000}
+        GoalFactory.create_batch(4,
+                                 goal_manager = self.goal_manager,
+                                 year_init = 2017,
+                                 year_end = 2027,
+                                 value = 65865,
+                                 periodicity = 1)
+        array = [607460.73144555255, 609460.73144555255,  609460.73144555255,
+                 609460.73144555255, 609460.73144555255,  609460.73144555255,
+                 609460.73144555255, 609460.73144555255,  609460.73144555255,
+                 600460.73144555255]
+        print(self.financial_planning.total_resource_for_annual_goals_real(
+                change_income, change_cost))
+        self.assertEqual(self.financial_planning.\
+                                total_resource_for_annual_goals_real(
+                                change_income, change_cost), array)
