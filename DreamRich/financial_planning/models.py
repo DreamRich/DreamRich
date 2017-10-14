@@ -170,20 +170,29 @@ class FinancialPlanning(models.Model):
                                         total_goals, duration):
         resource_for_goal = [0] * (duration)
         resource_for_goal[0] = annual_leftovers_for_goal[0]
-        rate_dic = real_gain_related_cdi()
+        rate_dic = self.real_gain_related_cdi()
+        real_gain = rate_dic[self.target_profitability] + 1
+
+        print('\n\n\n')
+        print('sobra {}'.format(annual_leftovers_for_goal))
+        print('valor total obj {}'.format(total_goals))
+        print('ganho real {}'.format(real_gain))
 
         for index in range(duration-1):
-            resource_for_goal_monetized = resource_for_goal[index] * real_gain
-            resource_for_goal[index+1] = annual_leftovers_for_goal[index+1] -\
-                                         total_goals[index+1] +\
+            leftover_this_year = resource_for_goal[index] - total_goals[index]
+            resource_for_goal_monetized = leftover_this_year * real_gain
+            resource_for_goal[index+1] = annual_leftovers_for_goal[index] +\
                                          resource_for_goal_monetized
 
         return resource_for_goal
 
-    def total_resource_for_annual_goals_real(self):
+    def total_resource_for_annual_goals_real(self, change_income={},
+                                             change_cost={}):
         # TODO Remover esse metodo e colocar esses atributos no metodo
         # total_resource_for_annual_goals
-        annual_leftovers_for_goal = self.annual_leftovers_for_goal()
+        annual_leftovers_for_goal = self.annual_leftovers_for_goal(
+                                                change_income,
+                                                change_cost)
         total_goals = self.goal_manager.value_total_by_year()
         duration = self.duration()
         return self.total_resource_for_annual_goals(annual_leftovers_for_goal,

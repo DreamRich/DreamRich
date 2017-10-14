@@ -26,18 +26,16 @@ class FinancialPlanningTest(TestCase):
         self.patrimony.income_set.all().update(value_monthly=55000,
                                                thirteenth=False,
                                                vacation=False)
-        ActiveFactory(patrimony=self.patrimony, value=30000.00)  # NOQA
-        ActiveFactory(patrimony=self.patrimony,
-                      value=321200.00)  # NOQA
-        ArrearageFactory(patrimony=self.patrimony,
-                                                value=351200.00)  # NOQA
-        goal_manager = GoalManagerFactory()
+        ActiveFactory(patrimony=self.patrimony, value=30000.00)
+        ActiveFactory(patrimony=self.patrimony, value=321200.00)
+        ArrearageFactory(patrimony=self.patrimony, value=351200.00)
+        self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
-                                 goal_manager=goal_manager,
-                                 year_init=2017,
-                                 year_end=2027,
-                                 value=2500,
-                                 periodicity=1)
+                                 goal_manager = self.goal_manager,
+                                 year_init = 2017,
+                                 year_end = 2027,
+                                 value = 2500,
+                                 periodicity = 1)
         self.financial_independece = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
@@ -47,7 +45,8 @@ class FinancialPlanningTest(TestCase):
             cost_manager=self.cost_manager,
             patrimony=self.patrimony,
             financial_independence=self.financial_independece,
-            goal_manager=goal_manager,
+            goal_manager=self.goal_manager,
+            target_profitability=110,
         )
 
     def test_duration_financial_planning(self):
@@ -132,7 +131,24 @@ class FinancialPlanningTest(TestCase):
                  609460.73144555255, 609460.73144555255, 609460.73144555255,
                  600460.73144555255]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(
-            change_income, change_cost), array)
+                         change_income, change_cost), array)
+
+    def test_total_resource_for_annual_goals(self):
+        change_income = {2018: 2000}
+        change_cost = {2017: 2000, 2026: 9000}
+        GoalFactory.create_batch(4,
+                                 goal_manager = self.goal_manager,
+                                 year_init = 2017,
+                                 year_end = 2027,
+                                 value = 65865,
+                                 periodicity = 1)
+        array = [607460.73144555255, 609460.73144555255,  609460.73144555255,
+                 609460.73144555255, 609460.73144555255,  609460.73144555255,
+                 609460.73144555255, 609460.73144555255,  609460.73144555255,
+                 600460.73144555255]
+        self.assertEqual(self.financial_planning.\
+                                total_resource_for_annual_goals_real(
+                                change_income, change_cost), array)
 
 
 class RegularCostViewTest(TestCase):
