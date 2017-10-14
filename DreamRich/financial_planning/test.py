@@ -150,5 +150,5 @@ class FinancialPlanningTest(TestCase):
                  1198350.4860797869]
 
         self.assertEqual(self.financial_planning.\
-                                total_resource_for_annual_goals_real(
+                                total_resource_for_annual_goals(
                                 change_income, change_cost), array)
