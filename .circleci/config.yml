@@ -28,7 +28,7 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            cd DreamRich
+            cd src
             pylint --load-plugins pylint_django dreamrich --rcfile=../.pylintrc
       - run:
           command: |
