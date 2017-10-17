@@ -13,7 +13,6 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
-    target_profitability = 110
 
 
 class CostTypeFactory(factory.DjangoModelFactory):
@@ -58,6 +57,7 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
     cost_manager = factory.SubFactory(CostManagerFactory)
+    target_profitability = 110
     cdi = round(0.1213, 4)
     ipca = round(0.075, 4)
 

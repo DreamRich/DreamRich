@@ -12,22 +12,22 @@ class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
-    target_profitability = models.PositiveIntegerField()
 
     def assets_required(self):
-        rate = float(self.financialplanning.real_gain())
+        rate = self.financialplanning.real_gain()
 
         return numpy.pv(rate, self.duration_of_usufruct,
                         -self.remain_patrimony * 12)
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
-        rate = self.financialplanning.real_gain_related_cdi()
-        rate_target_profitability = float(rate[self.target_profitability])
+        rate_dic = self.financialplanning.real_gain_related_cdi()
+        target_profitability = self.financialplanning.target_profitability
+        rate_target_profitability = rate_dic[target_profitability]
         years_for_retirement = self.financialplanning.duration()
-        current_net_investment = float(self.financialplanning.patrimony.
-                                       current_net_investment())
-        total = numpy.pmt(rate_target_profitability, years_for_retirement,
+        current_net_investment = self.financialplanning.patrimony.\
+                                 current_net_investment()
+        total = numpy.pmt(rate_target_profitability, years_for_retirement,\
                           current_net_investment, assets_required)
         total /= 12
         if total < 0:
@@ -110,6 +110,8 @@ class FinancialPlanning(models.Model):
 
     ipca = models.FloatField()
 
+    target_profitability = models.PositiveIntegerField()
+
     def duration(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
@@ -160,6 +162,28 @@ class FinancialPlanning(models.Model):
         cdi_final = 205
         data = {}
         for rate in range(cdi_initial, cdi_final, 5):
-            cdi_rate = actual_rate(float(rate / 100) * self.cdi, self.ipca)
+            cdi_rate = actual_rate(rate/100 * self.cdi, self.ipca)
             data[rate] = cdi_rate
         return data
+
+    def total_resource_for_annual_goals(self, change_income={},
+                                             change_cost={}):
+
+        annual_leftovers_for_goal = self.annual_leftovers_for_goal(
+                                                change_income,
+                                                change_cost)
+        total_goals = self.goal_manager.value_total_by_year()
+        duration = self.duration()
+
+        resource_for_goal = [0] * (duration)
+        resource_for_goal[0] = annual_leftovers_for_goal[0]
+        rate_dic = self.real_gain_related_cdi()
+        real_gain = rate_dic[self.target_profitability] + 1
+
+        for index in range(duration-1):
+            leftover_this_year = resource_for_goal[index] - total_goals[index]
+            resource_for_goal_monetized = leftover_this_year * real_gain
+            resource_for_goal[index+1] = annual_leftovers_for_goal[index] +\
+                                         resource_for_goal_monetized
+
+        return resource_for_goal
