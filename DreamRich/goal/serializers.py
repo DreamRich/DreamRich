@@ -5,7 +5,7 @@ class GoalTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GoalType
-        fields = ['name', 'pk']
+        fields = ['name', 'id']
 
 class GoalSerializer(serializers.ModelSerializer):
 
