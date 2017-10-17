@@ -166,6 +166,7 @@ class FinancialPlanning(models.Model):
             data[rate] = cdi_rate
         return data
 
+    @property
     def total_resource_for_annual_goals(self, change_income={},
                                              change_cost={}):
 

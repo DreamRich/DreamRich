@@ -1,4 +1,9 @@
-from financial_planning.models import RegularCost, CostManager, CostType
+from financial_planning.models import (
+    RegularCost,
+    CostManager,
+    CostType,
+    FinancialPlanning,
+)
 from rest_framework import serializers
 
 
@@ -40,4 +45,12 @@ class CostManagerSerializer(serializers.ModelSerializer):
             'id',
             'regular_costs',
             'total_cost',
+        ]
+
+class FinancialPlanningSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialPlanning
+        fields = [
+            'total_resource_for_annual_goals',
         ]
