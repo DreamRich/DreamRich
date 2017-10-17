@@ -39,7 +39,8 @@ class Command(BaseCommand):
             cpf='12312312387')
         user.set_password('a')
         user.save()
-        self._print_message('Creating a default user(username: 12312312387 password: a)')
+        self._print_message(
+            'Creating a default user(username: 12312312387 password: a)')
 
     def _load_factories(self, app_module, app):
         has_main = False

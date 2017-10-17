@@ -1,11 +1,13 @@
 from goal.models import GoalManager, GoalType, Goal
 from rest_framework import serializers
 
+
 class GoalTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GoalType
         fields = ['name', 'id']
+
 
 class GoalSerializer(serializers.ModelSerializer):
 
@@ -26,7 +28,6 @@ class GoalSerializer(serializers.ModelSerializer):
             'goal_type',
             'goal_manager_id'
         ]
-
 
 
 class GoalManagerSerializer(serializers.ModelSerializer):

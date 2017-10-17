@@ -7,9 +7,9 @@ from financial_planning.views import (
 )
 
 
-app_name = 'financial_planning' # pylint: disable=invalid-name
+app_name = 'financial_planning'  # pylint: disable=invalid-name
 
-router = routers.DefaultRouter() # pylint: disable=invalid-name
+router = routers.DefaultRouter()  # pylint: disable=invalid-name
 router.register(r'^regular_cost', RegularCostViewSet)
 router.register(r'^cost_manager', CostManagerViewSet)
 

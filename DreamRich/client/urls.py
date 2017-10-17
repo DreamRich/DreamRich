@@ -9,9 +9,9 @@ from client.views import (
     DependentViewSet,
 )
 
-app_name = 'client' # pylint: disable=invalid-name
+app_name = 'client'  # pylint: disable=invalid-name
 
-router = routers.DefaultRouter() # pylint: disable=invalid-name
+router = routers.DefaultRouter()  # pylint: disable=invalid-name
 router.register(r'^active', ActiveClientViewSet)
 router.register(r'^address', AddressViewSet)
 router.register(r'^state', StateViewSet)
