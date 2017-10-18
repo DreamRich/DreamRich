@@ -4,7 +4,10 @@ from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager
-from lib.financial_planning.flow import generic_flow
+from lib.financial_planning.flow import (
+    generic_flow,
+    create_array_change_annual,
+)
 from lib.profit.profit import actual_rate
 
 
@@ -54,10 +57,12 @@ class CostManager(models.Model):
     def total_cost(self):
         return self.total()
 
-    def flow(self, regular_cost_change):
+    def flow(self):
+        cost_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
+        array_change = create_array_change_annual(cost_changes, duration)
         total = self.total()
-        data = generic_flow(regular_cost_change, duration, total)
+        data = generic_flow(array_change, duration, total)
 
         return data
 
@@ -76,6 +81,19 @@ class RegularCost(models.Model):
         if self.cost_type_id is not None:
             return '{} {}'.format(self.cost_type.name, self.value)
         return str(self.value)
+
+
+class FlowUnitChange(models.Model):
+
+    annual_value = models.FloatField()
+
+    year = models.PositiveSmallIntegerField()
+
+    cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
+                                     null=True)
+
+    incomes = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
+                                null=True)
 
 
 class FinancialPlanning(models.Model):
@@ -110,7 +128,7 @@ class FinancialPlanning(models.Model):
 
     ipca = models.FloatField()
 
-    target_profitability = models.PositiveIntegerField()
+    target_profitability = models.PositiveSmallIntegerField()
 
     def duration(self):
         age_of_independence = self.financial_independence.age
@@ -124,21 +142,10 @@ class FinancialPlanning(models.Model):
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def create_array_change_annual(self, change):
-        actual_year = datetime.datetime.now().year
-        data = [0] * self.duration()
-        for change_year in change.keys():
-            index_change = change_year - actual_year
-            data[index_change] += change[change_year]
+    def annual_leftovers_for_goal(self):
 
-        return data
-
-    def annual_leftovers_for_goal(self, change_income={}, change_cost={}):
-        array_change_income = self.create_array_change_annual(change_income)
-        array_change_cost = self.create_array_change_annual(change_cost)
-
-        income_flow = self.patrimony.income_flow(array_change_income)
-        regular_cost_flow = self.cost_manager.flow(array_change_cost)
+        income_flow = self.patrimony.income_flow()
+        regular_cost_flow = self.cost_manager.flow()
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
         remain_necessary_for_retirement = self.financial_independence.\
             remain_necessary_for_retirement()
@@ -166,12 +173,10 @@ class FinancialPlanning(models.Model):
             data[rate] = cdi_rate
         return data
 
-    def total_resource_for_annual_goals(self, change_income={},
-                                        change_cost={}):
+    @property
+    def total_resource_for_annual_goals(self):
 
-        annual_leftovers_for_goal = self.annual_leftovers_for_goal(
-            change_income,
-            change_cost)
+        annual_leftovers_for_goal = self.annual_leftovers_for_goal()
         total_goals = self.goal_manager.value_total_by_year()
         duration = self.duration()
 

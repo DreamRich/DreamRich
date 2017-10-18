@@ -1,6 +1,7 @@
 import datetime
 from django.test import TestCase
 from patrimony.factories import PatrimonyMainFactory, IncomeFactory
+from financial_planning.models import FlowUnitChange
 from client.factories import ActiveClientMainFactory
 from financial_planning.factories import FinancialPlanningFactory
 
@@ -51,12 +52,15 @@ class PatrimonyTest(TestCase):
         self.assertEqual(60962.67, self.patrimony.total_annual_income())
 
     def test_income_flow(self):
-        change_total_annual_income = [0, 0, 0, 0, 500.00, -500.00, 0, 0, 0, 0]
+        FlowUnitChange.objects.create(annual_value = 500.00, year = 2021,
+                                      incomes=self.patrimony)
+        FlowUnitChange.objects.create(annual_value = -500.00, year = 2022,
+                                      incomes=self.patrimony)
+
         flow_regular_cost_with_change = [60962.67, 60962.67, 60962.67,
                                          60962.67, 61462.67, 60962.67,
                                          60962.67, 60962.67, 60962.67,
                                          60962.67]
 
         self.assertEqual(flow_regular_cost_with_change,
-                         self.patrimony.
-                         income_flow(change_total_annual_income))
+                         self.patrimony.income_flow())
