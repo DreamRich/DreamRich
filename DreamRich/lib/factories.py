@@ -6,7 +6,7 @@ from dreamrich.validators import validate_cpf
 FAKE_GENERATOR = Factory.create('pt_BR')
 
 
-def gen_cpf(factory): # pylint: disable=unused-argument
+def gen_cpf(factory):  # pylint: disable=unused-argument
     cpf = ""
     while cpf == "":
         try:
@@ -17,13 +17,13 @@ def gen_cpf(factory): # pylint: disable=unused-argument
     return cpf
 
 
-def gen_agency(factory): # pylint: disable=unused-argument
+def gen_agency(factory):  # pylint: disable=unused-argument
     while True:
         try:
             number = functools.partial(random.randint, 0, 9)
             agency = "{}{}{}{}-{}".format(number(), number(),
                                           number(), number(), number()
-                                         )
+                                          )
             return agency
         except BaseException:
             pass
