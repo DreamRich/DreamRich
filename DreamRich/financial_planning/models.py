@@ -92,7 +92,7 @@ class FlowUnitChange(models.Model):
     cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
                                      null=True)
 
-    income = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
+    incomes = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
                                 null=True)
 
 
