@@ -32,11 +32,11 @@ class FinancialPlanningTest(TestCase):
         ArrearageFactory(patrimony=self.patrimony, value=351200.00)
         self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
-                                 goal_manager = self.goal_manager,
-                                 year_init = 2017,
-                                 year_end = 2027,
-                                 value = 2500,
-                                 periodicity = 1)
+                                 goal_manager=self.goal_manager,
+                                 year_init=2017,
+                                 year_end=2027,
+                                 value=2500,
+                                 periodicity=1)
         self.financial_independece = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
@@ -143,14 +143,14 @@ class FinancialPlanningTest(TestCase):
         FlowUnitChange.objects.create(annual_value = 9000.00, year = 2026,
                                       cost_manager=self.cost_manager)
         GoalFactory.create_batch(4,
-                                 goal_manager = self.goal_manager,
-                                 year_init = 2017,
-                                 year_end = 2027,
-                                 value = 65865,
-                                 periodicity = 1)
-        array = [344000.73144555255, 418375.59771748987,  498792.99741851492,
-                 583581.36331910361, 672978.27267975872,  767234.21591384918,
-                 866613.29846251453, 971393.98081891797,  1081869.8587754001,
+                                 goal_manager=self.goal_manager,
+                                 year_init=2017,
+                                 year_end=2027,
+                                 value=65865,
+                                 periodicity=1)
+        array = [344000.73144555255, 418375.59771748987, 498792.99741851492,
+                 583581.36331910361, 672978.27267975872, 767234.21591384918,
+                 866613.29846251453, 971393.98081891797, 1081869.8587754001,
                  1198350.4860797869]
 
         self.assertEqual(self.financial_planning.\
@@ -165,25 +165,25 @@ class RegularCostViewTest(TestCase):
 
     def test_get_view(self):
         pk = self.manager.pk
-        response = self.client.get('/api/financial_planning/costmanager/'
+        response = self.client.get('/api/financial_planning/cost_manager/'
                                    '{}/'.format(pk))
         self.assertEqual(response.status_code, 200)
 
     def test_post_view(self):
-        response = self.client.post('/api/financial_planning/costmanager', {},
+        response = self.client.post('/api/financial_planning/cost_manager', {},
                                     follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain,
-                         [('/api/financial_planning/costmanager/', 301)])
+                         [('/api/financial_planning/cost_manager/', 301)])
 
     def test_delete_view(self):
         pk = self.manager.pk
-        response = self.client.delete('/api/financial_planning/costmanager/'
+        response = self.client.delete('/api/financial_planning/cost_manager/'
                                       '{}/'.format(pk))
         self.assertEqual(response.status_code, 204)
 
     def test_update_view(self):
         pk = self.manager.pk
-        response = self.client.put('/api/financial_planning/costmanager/'
+        response = self.client.put('/api/financial_planning/cost_manager/'
                                    '{}/'.format(pk))
         self.assertEqual(response.status_code, 200)

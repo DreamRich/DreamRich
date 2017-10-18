@@ -1,3 +1,5 @@
+import datetime
+import numpy
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
@@ -7,8 +9,6 @@ from lib.financial_planning.flow import (
     create_array_change_annual,
 )
 from lib.profit.profit import actual_rate
-import datetime
-import numpy
 
 
 class FinancialIndependence(models.Model):
@@ -29,8 +29,8 @@ class FinancialIndependence(models.Model):
         rate_target_profitability = rate_dic[target_profitability]
         years_for_retirement = self.financialplanning.duration()
         current_net_investment = self.financialplanning.patrimony.\
-                                 current_net_investment()
-        total = numpy.pmt(rate_target_profitability, years_for_retirement,\
+            current_net_investment()
+        total = numpy.pmt(rate_target_profitability, years_for_retirement,
                           current_net_investment, assets_required)
         total /= 12
         if total < 0:
@@ -169,7 +169,7 @@ class FinancialPlanning(models.Model):
         cdi_final = 205
         data = {}
         for rate in range(cdi_initial, cdi_final, 5):
-            cdi_rate = actual_rate(rate/100 * self.cdi, self.ipca)
+            cdi_rate = actual_rate(rate / 100 * self.cdi, self.ipca)
             data[rate] = cdi_rate
         return data
 
@@ -185,10 +185,10 @@ class FinancialPlanning(models.Model):
         rate_dic = self.real_gain_related_cdi()
         real_gain = rate_dic[self.target_profitability] + 1
 
-        for index in range(duration-1):
+        for index in range(duration - 1):
             leftover_this_year = resource_for_goal[index] - total_goals[index]
             resource_for_goal_monetized = leftover_this_year * real_gain
-            resource_for_goal[index+1] = annual_leftovers_for_goal[index] +\
-                                         resource_for_goal_monetized
+            resource_for_goal[index + 1] = annual_leftovers_for_goal[index] +\
+                resource_for_goal_monetized
 
         return resource_for_goal
