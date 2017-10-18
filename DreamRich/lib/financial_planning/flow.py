@@ -14,6 +14,6 @@ def create_array_change_annual(changes, duration):
     data = [0] * duration
     for unit_change in changes:
         index_change = unit_change.year - actual_year
-        data[index_change] += unit_change.value
+        data[index_change] += unit_change.annual_value
 
     return data
