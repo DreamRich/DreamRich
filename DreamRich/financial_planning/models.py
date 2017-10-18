@@ -174,12 +174,9 @@ class FinancialPlanning(models.Model):
         return data
 
     @property
-    def total_resource_for_annual_goals(self, change_income={},
-                                             change_cost={}):
+    def total_resource_for_annual_goals(self):
 
-        annual_leftovers_for_goal = self.annual_leftovers_for_goal(
-                                                change_income,
-                                                change_cost)
+        annual_leftovers_for_goal = self.annual_leftovers_for_goal()
         total_goals = self.goal_manager.value_total_by_year()
         duration = self.duration()
 
