@@ -142,12 +142,10 @@ class FinancialPlanning(models.Model):
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def annual_leftovers_for_goal(self, change_income={}, change_cost={}):
-        array_change_income = self.create_array_change_annual(change_income)
-        array_change_cost = self.create_array_change_annual(change_cost)
+    def annual_leftovers_for_goal(self):
 
-        income_flow = self.patrimony.income_flow(array_change_income)
-        regular_cost_flow = self.cost_manager.flow(array_change_cost)
+        income_flow = self.patrimony.income_flow()
+        regular_cost_flow = self.cost_manager.flow()
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
         remain_necessary_for_retirement = self.financial_independence.\
             remain_necessary_for_retirement()
