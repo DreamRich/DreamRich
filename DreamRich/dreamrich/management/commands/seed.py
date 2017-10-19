@@ -34,8 +34,8 @@ class Command(BaseCommand):
                 self.level -= 1
 
     def _create_user(self):
-        user = FinancialAdviser.objects.create(
-            username="a",
+        user, _ = FinancialAdviser.objects.get_or_create(
+            username="12312312387",
             cpf='12312312387')
         user.set_password('a')
         user.save()
@@ -47,7 +47,7 @@ class Command(BaseCommand):
         for name, obj in inspect.getmembers(app_module):
             has_main |= name.find('MainFactory') != -1
             if inspect.isclass(obj) and name.find('MainFactory') != -1:
-                self._print_message("Creating objects to {}".format(app))
+                self._print_message("Creating objects to {}".format(name))
                 self.level += 1
                 self._create_objects(obj)
                 self.level -= 1
@@ -57,10 +57,11 @@ class Command(BaseCommand):
     def _create_objects(self, obj):
         loop = 0
         error_message = "\n{}".format("  " * self.level)
+        self._print_message("", ending="")
         while loop < self.loops:
             try:
                 getattr(obj, 'create')()
-                self._print_message(".", ending="")
+                self._print_message("$", ending="", level=0)
                 loop += 1
             except IntegrityError as error:
                 error_message += "{}, ".format(error)
@@ -68,8 +69,10 @@ class Command(BaseCommand):
         self._print_error(error_message)
 
     def _print_message(self, message, *args, **kwargs):
-        self.stdout.write("{}{}".format("  " * self.level, message),
+        level = kwargs.pop('level', self.level)
+        self.stdout.write("{}{}".format("  " * level, message),
                           *args, **kwargs)
+        self.stdout.flush()
 
     def _print_error(self, message, *args, **kwargs):
         self.stderr.write("{}{}".format("  " * self.level, message),
