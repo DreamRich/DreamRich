@@ -21,6 +21,6 @@ router.register(r'^companyparticipation', CompanyParticipationViewSet)
 router.register(r'^equipment', EquipmentViewSet)
 router.register(r'^lifeinsurance', LifeInsuranceViewSet)
 router.register(r'^income', IncomeViewSet)
-router.register(r'^', PatrimonyViewSet)
+router.register(r'', PatrimonyViewSet)
 
 urlpatterns = router.urls
