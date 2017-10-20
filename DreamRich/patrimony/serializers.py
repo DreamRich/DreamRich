@@ -44,7 +44,7 @@ class ArrearageSerializer(serializers.ModelSerializer):
 class RealEstateSerializer(serializers.ModelSerializer):
 
     patrimony_id = serializers.IntegerField(write_only=True)
-    
+
     class Meta:
         model = RealEstate
         fields = [
@@ -58,21 +58,29 @@ class RealEstateSerializer(serializers.ModelSerializer):
 
 class CompanyParticipationSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = CompanyParticipation
         fields = [
+            'id',
             'name',
             'value',
+            'patrimony_id',
         ]
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Equipment
         fields = [
+            'id',
             'name',
             'value',
+            'patrimony_id',
         ]
 
 

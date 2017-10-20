@@ -68,12 +68,17 @@ class Active(models.Model):
     value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
+
 
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class RealEstate(models.Model):
     name = models.CharField(max_length=100)
@@ -81,18 +86,24 @@ class RealEstate(models.Model):
     salable = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
@@ -100,6 +111,8 @@ class LifeInsurance(models.Model):
     redeemable = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class Income(models.Model):
     source = models.CharField(max_length=100)
@@ -118,4 +131,4 @@ class Income(models.Model):
         return round(total, 2)
 
     def __str__(self):
-        return "Annual {}".format(self.annual())
+        return "Annual({}) {}".format(self.source, self.annual())
