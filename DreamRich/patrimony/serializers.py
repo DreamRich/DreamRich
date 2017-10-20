@@ -33,7 +33,7 @@ class ActiveSerializer(serializers.ModelSerializer):
 
     patrimony_id = serializers.IntegerField(write_only=True)
     active_type_id = serializers.IntegerField(write_only=True)
-    active_type = ActiveTypeSerializer()
+    active_type = ActiveTypeSerializer(read_only=True)
 
     class Meta:
         model = Active
@@ -44,6 +44,7 @@ class ActiveSerializer(serializers.ModelSerializer):
             'rate',
             'patrimony_id',
             'active_type_id',
+            'active_type',
         ]
 
 
