@@ -43,12 +43,16 @@ class ArrearageSerializer(serializers.ModelSerializer):
 
 class RealEstateSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+    
     class Meta:
         model = RealEstate
         fields = [
+            'id',
             'name',
             'value',
             'salable',
+            'patrimony_id',
         ]
 
 
@@ -84,11 +88,15 @@ class LifeInsuranceSerializer(serializers.ModelSerializer):
 
 class IncomeSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Income
         fields = [
+            'id',
             'source',
             'value_monthly',
             'thirteenth',
             'vacation',
+            'patrimony_id',
         ]
