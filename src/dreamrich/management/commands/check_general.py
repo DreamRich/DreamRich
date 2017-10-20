@@ -1,10 +1,9 @@
 # pylint: disable=unused-argument
-# Lembrar de tirar esses ignores de página toda
 import os
 import subprocess
 from django.core.management.base import BaseCommand
 from dreamrich.settings import BASE_DIR
-from .utils.get_modules import get_modules_list
+from .utils.get_modules import get_modules
 
 
 class Command(BaseCommand):
@@ -15,13 +14,19 @@ class Command(BaseCommand):
         src_folder = BASE_DIR + '/'
         pylintrc_file = src_folder + '../.pylintrc'
 
-        apps = get_modules_list()
+        apps = get_modules()
 
         self.stdout.write('The folowing modules will be verified: {}'
                           .format(', '.join(apps)))
 
+        has_error = False
         for app in apps:
             self.stdout.write('Scanning app {}...'.format(app))
             app = src_folder + app
 
-            subprocess.call(['pylint', '--rcfile', pylintrc_file, app])
+            returncode = subprocess.call(['pylint', '--rcfile', pylintrc_file, app])
+
+            has_error = True if returncode else False
+
+        if has_error:
+            exit(1)

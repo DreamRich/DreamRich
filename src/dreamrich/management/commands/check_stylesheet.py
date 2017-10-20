@@ -3,7 +3,7 @@ import os
 import subprocess
 from django.core.management.base import BaseCommand
 from dreamrich.settings import BASE_DIR
-from .utils.get_modules import get_modules_list
+from .utils.get_modules import get_modules
 
 
 class Command(BaseCommand):
@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
         src_folder = BASE_DIR + '/'
 
-        apps = get_modules_list()
+        apps = get_modules()
 
         self.stdout.write('The folowing modules will be verified: {}'
                           .format(', '.join(apps)))
@@ -22,5 +22,10 @@ class Command(BaseCommand):
             self.stdout.write('Scanning app {}...'.format(app))
             app = src_folder + app
 
-            subprocess.call(['pycodestyle', '--statistics', '--count',
+            returncode = subprocess.call(['pycodestyle', '--statistics', '--count',
                              '--exclude', 'migrations', app])
+
+            has_error = True if returncode else False
+
+        if has_error:
+            exit(1)

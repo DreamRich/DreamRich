@@ -1,7 +1,6 @@
 import subprocess
 
-
-def get_modules_list():
+def get_modules():
     inits_paths = subprocess.Popen(['find', '-name', '__init__.py'],
                                    stdout=subprocess.PIPE)
 
@@ -22,7 +21,7 @@ def get_modules_list():
         modules = modules.decode('utf-8')
         modules = set(modules.split('\n'))
 
-    modules = list(modules)
-    modules = sorted([module for module in modules if len(module)])
+        modules = list(modules)
+        modules = sorted([module for module in modules if len(module)])
 
-    return modules
+        return modules
