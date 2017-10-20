@@ -63,10 +63,20 @@ class Patrimony(models.Model):
         return total
 
 
+class ActiveType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 class Active(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    rate = models.FloatField(default=0)
+
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    active_type = models.ForeignKey(ActiveType, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
