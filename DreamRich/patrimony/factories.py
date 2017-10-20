@@ -1,5 +1,6 @@
 import factory
 from . import models
+from patrimony.choices import AMORTIZATION_CHOICES_LIST
 
 
 class ActiveTypeFactory(factory.DjangoModelFactory):
@@ -29,6 +30,9 @@ class ArrearageFactory(factory.DjangoModelFactory):
 
     name = factory.Faker('word')
     value = round(30000, 2)
+    period = factory.fuzzy.FuzzyInteger(50)
+    rate = factory.fuzzy.FuzzyDecimal(100)
+    amortization_system = factory.fuzzy.FuzzyChoice(AMORTIZATION_CHOICES_LIST)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):

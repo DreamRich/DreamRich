@@ -55,6 +55,9 @@ class ArrearageSerializer(serializers.ModelSerializer):
         fields = [
             'name',
             'value',
+            'period',
+            'rate',
+            'amortization_system',
         ]
 
 

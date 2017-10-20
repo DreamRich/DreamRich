@@ -4,6 +4,12 @@ from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
 )
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
+import patrimony.validators as patrimony_validators
+from patrimony.choices import AMORTIZATION_CHOICES
 
 
 class Patrimony(models.Model):
@@ -85,6 +91,25 @@ class Active(models.Model):
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    period = models.PositiveIntegerField(default=0)
+    rate = models.FloatField(
+        default=0,
+        validators=[
+            MinValueValidator(
+                patrimony_validators.MIN_VALUE_RATE,
+                "A taxa de juros não pode ser menor que 0%"
+            ),
+            MaxValueValidator(
+                patrimony_validators.MAX_VALUE_RATE,
+                "A taxa de juros não pode ser maior que 100%"
+            )
+        ]
+    )
+    amortization_system = models.CharField(
+        max_length=5,
+        choices=AMORTIZATION_CHOICES,
+        default=AMORTIZATION_CHOICES[0][0]
+    )
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
     def __str__(self):
