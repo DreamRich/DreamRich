@@ -12,7 +12,6 @@ class Command(BaseCommand):
         self.stdout.write("Executing stylesheet verification")
 
         src_folder = BASE_DIR + '/'
-        pylintrc_file = src_folder + '../.pylintrc'
 
         apps = get_modules_list()
 
@@ -23,4 +22,5 @@ class Command(BaseCommand):
             self.stdout.write('Scanning app {}...'.format(app))
             app = src_folder + app
 
-            subprocess.call(['pylint', '--rcfile', pylintrc_file, app])
+            subprocess.call(['pycodestyle', '--statistics', '--count',
+                             '--exclude', 'migrations', app])

@@ -1,11 +1,11 @@
 [MESSAGES CONTROL]
-disable=missing-docstring, too-few-public-methods, too-many-ancestors
-
-[BASIC]
-
-# The acceptable names of methods regex
-method-rgx=[a-z_][a-z0-9_]{2,55}$
+disable=missing-docstring, too-many-ancestors, bad-continuation,indent-after-paren,indent-string,max-line-lengh,max-module-lines,too-few-public-methods 
 
 [MASTER]
 load-plugins=pylint_django
+
 ignore=wsgi.py,manage.py,migrations,settings.py
+
+[FORMAT]
+max-line-length=80
+
