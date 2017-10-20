@@ -3,11 +3,13 @@ from financial_planning.serializers import (
     RegularCostSerializer,
     CostManagerSerializer,
     CostTypeSerializer,
+    FinancialPlanningSerializer,
 )
 from financial_planning.models import (
     RegularCost,
     CostManager,
     CostType,
+    FinancialPlanning,
 )
 
 
@@ -24,3 +26,10 @@ class RegularCostViewSet(viewsets.ModelViewSet):
 class CostManagerViewSet(viewsets.ModelViewSet):
     serializer_class = CostManagerSerializer
     queryset = CostManager.objects.all()
+
+
+class FinancialPlanningViewSet(viewsets.ModelViewSet):
+
+    serializer_class = FinancialPlanningSerializer
+    queryset = FinancialPlanning.objects.all()
+
