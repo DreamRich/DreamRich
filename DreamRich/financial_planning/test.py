@@ -59,9 +59,9 @@ class FinancialPlanningTest(TestCase):
         self.assertAlmostEqual(self.cost_manager.total(), total, 4)
 
     def test_regular_cost_flow_withot_change(self):
-        FlowUnitChange.objects.create(annual_value = 123.40, year = 2021,
+        FlowUnitChange.objects.create(annual_value=123.40, year=2021,
                                       cost_manager=self.cost_manager)
-        FlowUnitChange.objects.create(annual_value = -123.40, year = 2022,
+        FlowUnitChange.objects.create(annual_value=-123.40, year=2022,
                                       cost_manager=self.cost_manager)
         change_regular_cost = [0, 0, 0, 0, 123.40, -123.40, 0, 0, 0, 0]
         flow_regular_cost_change = [219.59999999999994, 219.59999999999994,
@@ -122,11 +122,11 @@ class FinancialPlanningTest(TestCase):
                          array)
 
     def test_annual_leftovers_for_goal_with_change(self):
-        FlowUnitChange.objects.create(annual_value = 2000.00, year = 2018,
+        FlowUnitChange.objects.create(annual_value=2000.00, year=2018,
                                       incomes=self.patrimony)
-        FlowUnitChange.objects.create(annual_value = 2000.00, year = 2017,
+        FlowUnitChange.objects.create(annual_value=2000.00, year=2017,
                                       cost_manager=self.cost_manager)
-        FlowUnitChange.objects.create(annual_value = 9000.00, year = 2026,
+        FlowUnitChange.objects.create(annual_value=9000.00, year=2026,
                                       cost_manager=self.cost_manager)
         array = [607460.73144555255, 609460.73144555255, 609460.73144555255,
                  609460.73144555255, 609460.73144555255, 609460.73144555255,
@@ -136,11 +136,11 @@ class FinancialPlanningTest(TestCase):
                          array)
 
     def test_total_resource_for_annual_goals(self):
-        FlowUnitChange.objects.create(annual_value = 2000.00, year = 2018,
+        FlowUnitChange.objects.create(annual_value=2000.00, year=2018,
                                       incomes=self.patrimony)
-        FlowUnitChange.objects.create(annual_value = 2000.00, year = 2017,
+        FlowUnitChange.objects.create(annual_value=2000.00, year=2017,
                                       cost_manager=self.cost_manager)
-        FlowUnitChange.objects.create(annual_value = 9000.00, year = 2026,
+        FlowUnitChange.objects.create(annual_value=9000.00, year=2026,
                                       cost_manager=self.cost_manager)
         GoalFactory.create_batch(4,
                                  goal_manager=self.goal_manager,
@@ -153,8 +153,8 @@ class FinancialPlanningTest(TestCase):
                  866613.29846251453, 971393.98081891797, 1081869.8587754001,
                  1198350.4860797869]
 
-        self.assertEqual(self.financial_planning.\
-                           total_resource_for_annual_goals, array)
+        self.assertEqual(self.financial_planning.
+                         total_resource_for_annual_goals, array)
 
 
 class RegularCostViewTest(TestCase):

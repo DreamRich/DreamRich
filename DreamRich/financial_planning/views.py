@@ -32,4 +32,3 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
 
     serializer_class = FinancialPlanningSerializer
     queryset = FinancialPlanning.objects.all()
-

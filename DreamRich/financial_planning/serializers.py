@@ -42,6 +42,7 @@ class CostManagerSerializer(serializers.ModelSerializer):
             'total_cost',
         ]
 
+
 class FinancialPlanningSerializer(serializers.ModelSerializer):
 
     class Meta:
