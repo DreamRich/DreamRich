@@ -52,9 +52,9 @@ class PatrimonyTest(TestCase):
         self.assertEqual(60962.67, self.patrimony.total_annual_income())
 
     def test_income_flow(self):
-        FlowUnitChange.objects.create(annual_value = 500.00, year = 2021,
+        FlowUnitChange.objects.create(annual_value=500.00, year=2021,
                                       incomes=self.patrimony)
-        FlowUnitChange.objects.create(annual_value = -500.00, year = 2022,
+        FlowUnitChange.objects.create(annual_value=-500.00, year=2022,
                                       incomes=self.patrimony)
 
         flow_regular_cost_with_change = [60962.67, 60962.67, 60962.67,

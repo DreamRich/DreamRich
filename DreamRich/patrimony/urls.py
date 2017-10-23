@@ -11,9 +11,9 @@ from patrimony.views import (
 )
 
 
-app_name = 'patrimony' # pylint: disable=invalid-name
+app_name = 'patrimony'  # pylint: disable=invalid-name
 
-router = routers.DefaultRouter() # pylint: disable=invalid-name
+router = routers.DefaultRouter()  # pylint: disable=invalid-name
 router.register(r'^active', ActiveViewSet)
 router.register(r'^arrearage', ArrearageViewSet)
 router.register(r'^realestate', RealEstateViewSet)
