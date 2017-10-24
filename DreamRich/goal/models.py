@@ -17,10 +17,10 @@ class GoalManager(models.Model):
     @property
     def year_init_to_year_end(self):
         array = []
-        actual_year = datetime.datetime.now().year
+        init_year = self.financialplanning.init_year
         duration_goals = self.financialplanning.duration()
         for index in range(duration_goals):
-            array.append(actual_year + index)
+            array.append(init_year + index)
 
         return array
 
