@@ -29,7 +29,7 @@ class ActiveManagerFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.ActiveManager
 
-    active = factory.RelatedFactory(ActiveType, 'active')
+    active = factory.RelatedFactory(ActiveFactory, 'active_manager')
 
 
 class ArrearageFactory(factory.DjangoModelFactory):
@@ -99,7 +99,7 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
         model = models.Patrimony
 
     fgts = round(2.2, 2)
-    active = factory.RelatedFactory(ActiveManagerFactory, 'patrimony')
+    activemanager = factory.RelatedFactory(ActiveManagerFactory, 'patrimony')
     arrearage = factory.RelatedFactory(ArrearageFactory, 'patrimony')
     real_estate = factory.RelatedFactory(RealEstateFactory, 'patrimony')
     company = factory.RelatedFactory(CompanyParticipationFactory, 'patrimony')

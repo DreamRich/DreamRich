@@ -18,7 +18,7 @@ class Patrimony(models.Model):
     def current_net_investment(self):
         total_active = self.activemanager.total
         total_arrearage = self.arrearage_set.all().aggregate(Sum('value'))
-        total = ((total_active['value__sum'] or 0)
+        total = (total_active
                  - (total_arrearage['value__sum'] or 0))
 
         return total
@@ -78,7 +78,7 @@ class ActiveType(models.Model):
 
 class ActiveManager(models.Model):
 
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
     CDI = 0.10
 
     @property

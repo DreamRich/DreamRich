@@ -8,6 +8,7 @@ from goal.factories import (
 from patrimony.factories import (
     PatrimonyMainFactory,
     ActiveFactory,
+    ActiveManagerFactory,
     ArrearageFactory,
 )
 from financial_planning.models import FlowUnitChange
@@ -27,8 +28,10 @@ class FinancialPlanningTest(TestCase):
         self.patrimony.income_set.all().update(value_monthly=55000,
                                                thirteenth=False,
                                                vacation=False)
-        ActiveFactory(patrimony=self.patrimony, value=30000.00)
-        ActiveFactory(patrimony=self.patrimony, value=321200.00)
+        ActiveFactory(value=30000.00,
+            active_manager=self.patrimony.activemanager)
+        ActiveFactory(value=321200.00,
+                active_manager=self.patrimony.activemanager)
         ArrearageFactory(patrimony=self.patrimony, value=351200.00)
         self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
