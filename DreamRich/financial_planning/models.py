@@ -60,7 +60,9 @@ class CostManager(models.Model):
     def flow(self):
         cost_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
-        array_change = create_array_change_annual(cost_changes, duration)
+        array_change = create_array_change_annual(cost_changes, duration,
+                                                  self.financialplanning.\
+                                                       init_year)
         total_annual = self.total() * 12
         data = generic_flow(array_change, duration, total_annual)
 
