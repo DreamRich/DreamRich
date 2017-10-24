@@ -76,6 +76,11 @@ class FinancialPlanningTest(TestCase):
                                6447963.5463578859,
                                4)
 
+    def test_remain_necessary_for_retirement_with_high_patrimony(self):
+        ActiveFactory(patrimony=self.patrimony, value=30021200.00)
+        self.assertEqual(self.financial_independece.
+                               remain_necessary_for_retirement(), 0)
+
     def test_remain_necessary_for_retirement(self):
         self.financial_planning.active_client.\
             birthday = datetime.datetime(1978, 1, 1)
