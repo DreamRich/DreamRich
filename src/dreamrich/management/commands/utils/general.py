@@ -5,7 +5,7 @@ from dreamrich.settings import BASE_DIR
 
 
 def get_modules():
-    inits_paths = subprocess.Popen(['find', '-name', '__init__.py'],
+    inits_paths = subprocess.Popen(['find', 'src', '-name', '__init__.py'],
                                    stdout=subprocess.PIPE)
 
     modules = subprocess.Popen(['cut', '-d', '/', '-f', '2'],
@@ -42,7 +42,7 @@ def get_script_name(path):
 def apply_to_all_modules(function, script_name):
     """ Apply a function to all modules.
     :param function: Must receive just one parameter, the module name and
-    the module must be located on src folder
+    the module that must be located on src folder
     on
     """
     print("\nApplying {}...\n".format(script_name))
@@ -54,7 +54,7 @@ def apply_to_all_modules(function, script_name):
 
     for module in modules:
         print('\nApplying {} to module {}...'.format(script_name, module))
-        module = os.path.join(BASE_DIR, module)
+        module = os.path.join(BASE_DIR, 'src', module)
 
         returncode = function(module)
         has_error = True if returncode else False

@@ -1,8 +1,7 @@
 # pylint: disable=unused-argument
-import os
 import subprocess
 from django.core.management.base import BaseCommand
-from .utils.general import get_modules, apply_to_all_modules, get_script_name
+from .utils.general import apply_to_all_modules, get_script_name
 
 
 class Command(BaseCommand):

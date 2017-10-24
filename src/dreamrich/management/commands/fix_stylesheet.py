@@ -1,8 +1,6 @@
-import os
 import subprocess
 from django.core.management.base import BaseCommand
-from dreamrich.settings import BASE_DIR
-from .utils.general import get_modules, apply_to_all_modules, get_script_name
+from .utils.general import apply_to_all_modules, get_script_name
 
 
 class Command(BaseCommand):
@@ -13,6 +11,6 @@ class Command(BaseCommand):
                          '--aggressive', '--recursive', '--verbose',
                          '--verbose', '--exclude', 'migrations', module])
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **kwargs): # pylint: disable=unused-argument
         script_name = get_script_name(__file__)
         apply_to_all_modules(self._call_autopep8, script_name)
