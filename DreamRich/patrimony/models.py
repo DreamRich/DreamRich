@@ -45,7 +45,9 @@ class Patrimony(models.Model):
     def income_flow(self):
         income_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
-        array_change = create_array_change_annual(income_changes, duration)
+        array_change = create_array_change_annual(income_changes, duration,
+                                                  self.financialplanning.\
+                                                        init_year)
         total = self.total_annual_income()
         data = generic_flow(array_change, duration, total)
 
