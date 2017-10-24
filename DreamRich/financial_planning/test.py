@@ -162,6 +162,9 @@ class FinancialPlanningTest(TestCase):
         self.assertEqual(financial_planning.init_year,
                          datetime.datetime.now().year)
 
+    def test_end_year(self):
+        self.assertEqual(self.financial_planning.end_year(), 2027)
+
 
 class RegularCostViewTest(TestCase):
 

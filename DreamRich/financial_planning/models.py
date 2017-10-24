@@ -138,12 +138,17 @@ class FinancialPlanning(models.Model):
 
         super(FinancialPlanning, self).save(*args, **kwargs)
 
-    def duration(self):
+    def end_year(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
         birthday_year = self.active_client.birthday.year
         actual_age = actual_year - birthday_year
-        duration = age_of_independence - actual_age
+        end_year = age_of_independence - actual_age + actual_year
+
+        return end_year
+
+    def duration(self):
+        duration = self.end_year() - self.init_year
 
         return duration
 
