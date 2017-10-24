@@ -124,11 +124,19 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
+    init_year = models.PositiveSmallIntegerField(null=True)
+
     cdi = models.FloatField()
 
     ipca = models.FloatField()
 
     target_profitability = models.PositiveSmallIntegerField()
+
+    def save(self, *args, **kwargs):
+        if not self.init_year:
+            self.init_year = datetime.datetime.now().year
+
+        super(FinancialPlanning, self).save(*args, **kwargs)
 
     def duration(self):
         age_of_independence = self.financial_independence.age
