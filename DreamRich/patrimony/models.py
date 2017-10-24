@@ -16,7 +16,7 @@ class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
 
     def current_net_investment(self):
-        total_active = self.activemanager.total
+        total_active = self.activemanager.total()
         total_arrearage = self.arrearage_set.all().aggregate(Sum('value'))
         total = (total_active
                  - (total_arrearage['value__sum'] or 0))
@@ -81,15 +81,14 @@ class ActiveManager(models.Model):
     patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
     CDI = 0.10
 
-    @property
     def total(self):
         return self.actives.aggregate(Sum('value')).pop('value__sum', 0)
 
     def _update_equivalent_rate(self):
+        total = self.total()
         for active in self.actives.all():
             active.update_equivalent_rate(total, self.CDI)
 
-    @property
     def real_profit_cdi(self):
         self._update_equivalent_rate()
         total_rate = self.actives.aggregate(
@@ -127,6 +126,7 @@ class Active(models.Model):
 
         percent = 0.0001  # Only update if has a change of 0.01%
         if abs(self.equivalent_rate - new_equivalent_rate) > percent:
+            self.equivalent_rate = new_equivalent_rate
             self.save()
 
     def __str__(self):
