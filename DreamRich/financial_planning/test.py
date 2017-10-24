@@ -58,17 +58,17 @@ class FinancialPlanningTest(TestCase):
         total = 219.5999999999994
         self.assertAlmostEqual(self.cost_manager.total(), total, 4)
 
-    def test_regular_cost_flow_withot_change(self):
+    def test_regular_cost_flow_with_change(self):
         FlowUnitChange.objects.create(annual_value=123.40, year=2021,
                                       cost_manager=self.cost_manager)
         FlowUnitChange.objects.create(annual_value=-123.40, year=2022,
                                       cost_manager=self.cost_manager)
         change_regular_cost = [0, 0, 0, 0, 123.40, -123.40, 0, 0, 0, 0]
-        flow_regular_cost_change = [219.59999999999994, 219.59999999999994,
-                                    219.59999999999994, 219.59999999999994,
-                                    342.99999999999994, 219.59999999999994,
-                                    219.59999999999994, 219.59999999999994,
-                                    219.59999999999994, 219.59999999999994]
+        flow_regular_cost_change = [2635.1999999999994, 2635.1999999999994,
+                                    2635.1999999999994, 2635.1999999999994,
+                                    2758.5999999999995, 2635.1999999999994,
+                                    2635.1999999999994, 2635.1999999999994,
+                                    2635.1999999999994, 2635.1999999999994]
         self.assertEqual(flow_regular_cost_change, self.cost_manager.flow())
 
     def test_assets_required(self):
@@ -114,10 +114,10 @@ class FinancialPlanningTest(TestCase):
                                real_gain_related_cdi(), data)
 
     def test_annual_leftovers_for_goal_without_change(self):
-        array = [609460.73144555255, 609460.73144555255, 609460.73144555255,
-                 609460.73144555255, 609460.73144555255, 609460.73144555255,
-                 609460.73144555255, 609460.73144555255, 609460.73144555255,
-                 609460.73144555255]
+        array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
+                607045.13144555257, 607045.13144555257, 607045.13144555257,
+                607045.13144555257, 607045.13144555257, 607045.13144555257,
+                607045.13144555257]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
 
@@ -128,10 +128,11 @@ class FinancialPlanningTest(TestCase):
                                       cost_manager=self.cost_manager)
         FlowUnitChange.objects.create(annual_value=9000.00, year=2026,
                                       cost_manager=self.cost_manager)
-        array = [607460.73144555255, 609460.73144555255, 609460.73144555255,
-                 609460.73144555255, 609460.73144555255, 609460.73144555255,
-                 609460.73144555255, 609460.73144555255, 609460.73144555255,
-                 600460.73144555255]
+
+        array = [605045.13144555257, 607045.13144555257, 607045.13144555257,
+                607045.13144555257, 607045.13144555257, 607045.13144555257,
+                607045.13144555257, 607045.13144555257, 607045.13144555257,
+                598045.13144555257]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
 
@@ -148,10 +149,10 @@ class FinancialPlanningTest(TestCase):
                                  year_end=2027,
                                  value=65865,
                                  periodicity=1)
-        array = [344000.73144555255, 418375.59771748987, 498792.99741851492,
-                 583581.36331910361, 672978.27267975872, 767234.21591384918,
-                 866613.29846251453, 971393.98081891797, 1081869.8587754001,
-                 1198350.4860797869]
+        array = [341585.13144555251, 413413.10143097816, 491145.17214779771,
+                573102.25206646265, 659513.98517549736, 750622.49741528649,
+                846683.07511569967, 947964.88030916872, 1054751.7049235257,
+                1167342.7659678517]
 
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
