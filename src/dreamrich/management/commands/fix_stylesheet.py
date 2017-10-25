@@ -11,6 +11,6 @@ class Command(BaseCommand):
                          '--aggressive', '--recursive', '--verbose',
                          '--verbose', '--exclude', 'migrations', module])
 
-    def handle(self, *args, **kwargs): # pylint: disable=unused-argument
+    def handle(self, *args, **unused_kwargs):
         script_name = get_script_name(__file__)
         apply_to_all_modules(self._call_autopep8, script_name)

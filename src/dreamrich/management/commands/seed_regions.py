@@ -9,8 +9,8 @@ from client.models import Country, State
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        file_path = os.path.join(BASE_DIR, 'dreamrich', 'seed',
-                                 'regions_data_list.yml')
+        file_path = os.path.join(BASE_DIR, 'src', 'dreamrich', 'management',
+                                 'seeds', 'regions_seed.yml')
 
         self.stdout.write('Load seed from {}'.format(file_path))
         with open(file_path) as load_file:
