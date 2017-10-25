@@ -88,6 +88,32 @@ class Active(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
+class ArrearageCalculator(models.Model):
+
+    @property
+    def calculate_arrearage(self):
+        data = []
+        outstanding_balance = self.calculate.value
+        for period in range(1,self.calculate.period+1):
+            interest = (
+                (self.calculate.value - (((period - 1)*self.calculate.value)/self.calculate.period))
+                    *
+                (self.calculate.rate/100)
+            )
+            amortization = self.calculate.value/self.calculate.period
+            outstanding_balance = outstanding_balance - amortization
+            parameter_list = {
+                'period': period,
+                'provision': amortization + interest,
+                'interest': interest,
+                'amortization': amortization,
+                'outstanding_balance': outstanding_balance
+            }
+            data.append(parameter_list)
+
+        return data
+
+
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
@@ -111,9 +137,15 @@ class Arrearage(models.Model):
         default=AMORTIZATION_CHOICES[0][0]
     )
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    arrearage_calculator = models.OneToOneField(
+        ArrearageCalculator,
+        related_name='calculate',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
 
 class RealEstate(models.Model):
     name = models.CharField(max_length=100)

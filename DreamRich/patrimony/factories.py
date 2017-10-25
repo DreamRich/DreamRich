@@ -23,6 +23,12 @@ class ActiveFactory(factory.DjangoModelFactory):
     rate = factory.Faker('pyfloat')
 
 
+class ArrearageCalculatorFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.ArrearageCalculator
+
+
 class ArrearageFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -33,6 +39,7 @@ class ArrearageFactory(factory.DjangoModelFactory):
     period = factory.fuzzy.FuzzyInteger(50)
     rate = factory.fuzzy.FuzzyDecimal(100)
     amortization_system = factory.fuzzy.FuzzyChoice(AMORTIZATION_CHOICES_LIST)
+    arrearage_calculator = factory.SubFactory(ArrearageCalculatorFactory)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):
