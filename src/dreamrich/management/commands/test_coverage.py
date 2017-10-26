@@ -18,7 +18,7 @@ class Command(BaseCommand):
         self.stdout.write("Generating html report...")
         subprocess.call(['coverage', 'html'])
 
-        htmlcov_path = os.path.realpath(".")
+        htmlcov_path = os.path.join('src', 'dreamrich', 'management')
         message = ("Open the following link in your browser:\n"
                    "\tfile:///{}/htmlcov/index.html").format(htmlcov_path)
         self.stdout.write(message)
