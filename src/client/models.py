@@ -65,6 +65,7 @@ class ClientBase(base_models.BaseModel):
     )  # considering +55
 
     cpf = models.CharField(
+        unique=True,
         max_length=14,
         validators=[validators.validate_cpf]
     )

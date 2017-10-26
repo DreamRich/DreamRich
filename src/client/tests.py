@@ -80,3 +80,14 @@ class ClientModelTest(TestCase):
         bank_account.account = "1212-1"
         with self.assertRaises(ValidationError):
             bank_account.save()
+
+    def test_not_save_active_client_with_repeated_cpf(self):
+        active_client = ActiveClientMainFactory()
+        active_client = ActiveClient.objects.last()
+
+        active_client2 = ActiveClientMainFactory()
+        active_client2 = ActiveClient.objects.last()
+        active_client2.cpf = active_client.cpf
+
+        with self.assertRaises(ValidationError):
+            active_client2.save()
