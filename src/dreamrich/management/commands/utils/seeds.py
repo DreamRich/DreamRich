@@ -3,6 +3,7 @@ import yaml
 from dreamrich.settings import BASE_DIR
 from sys import stderr
 
+
 def seed_seed(seed_file_name, seed_function):
     file_path = os.path.join(BASE_DIR, 'src', 'dreamrich', 'management',
                              'seeds', seed_file_name)

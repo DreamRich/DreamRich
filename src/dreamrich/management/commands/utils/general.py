@@ -5,9 +5,10 @@ from dreamrich.settings import BASE_DIR
 
 SRC_FOLDER = os.path.join(BASE_DIR, 'src')
 
+
 def get_modules():
-    get_abs_paths = subprocess.Popen(['find', SRC_FOLDER, '-name', '__init__.py'],
-                                   stdout=subprocess.PIPE)
+    get_abs_paths = subprocess.Popen(
+        ['find', SRC_FOLDER, '-name', '__init__.py'], stdout=subprocess.PIPE)
     find_error = get_abs_paths.wait()
 
     remove_leading = subprocess.Popen(['sed', 's@{}@@'.format(SRC_FOLDER)],
@@ -16,8 +17,8 @@ def get_modules():
     sed_error = remove_leading.wait()
 
     remove_trailing = subprocess.Popen(['cut', '-d', '/', '-f', '2'],
-                                      stdin=remove_leading.stdout,
-                                      stdout=subprocess.PIPE)
+                                       stdin=remove_leading.stdout,
+                                       stdout=subprocess.PIPE)
     cut_error = remove_leading.wait()
 
     modules, _ = remove_trailing.communicate()

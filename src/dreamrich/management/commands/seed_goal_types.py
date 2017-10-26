@@ -1,4 +1,3 @@
-# pylint: disable=unused-argument
 from django.core.management.base import BaseCommand
 from goal.models import GoalType
 from .utils.seeds import seed_seed
@@ -13,6 +12,5 @@ class Command(BaseCommand):
             print('Goal {name} was registered'
                   .format(**goal_type))
 
-
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **unused_kwargs):
         seed_seed('goal_types_seed.yml', self._seed_goal_types)

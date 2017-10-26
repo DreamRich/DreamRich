@@ -1,15 +1,16 @@
-# pylint: disable=unused-argument
 import subprocess
 from django.core.management.base import BaseCommand
 from .utils.general import apply_to_all_modules, get_script_name
 
 EXCLUDE_COMMAND = ['--exlude manage.py, __init__.py, migrations']
 
+
 class Command(BaseCommand):
 
     @staticmethod
     def _call_radon_raw(module):
-        returncode = subprocess.call(['radon', 'raw', module] + EXCLUDE_COMMAND)
+        returncode = subprocess.call(
+            ['radon', 'raw', module] + EXCLUDE_COMMAND)
         return returncode
 
     @staticmethod
@@ -17,7 +18,7 @@ class Command(BaseCommand):
         returncode = subprocess.call(['radon', 'cc', module] + EXCLUDE_COMMAND)
         return returncode
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **unused_kwargs):
         script_name = get_script_name(__file__)
 
         self.stdout.write("Analysing raw metrics...\n")

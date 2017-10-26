@@ -1,8 +1,7 @@
-# pylint: disable=unused-argument
-from sys import stderr
 from django.core.management.base import BaseCommand
 from client.models import Country, State
 from .utils.seeds import seed_seed
+
 
 class Command(BaseCommand):
     @staticmethod
@@ -21,5 +20,5 @@ class Command(BaseCommand):
                 print('\t\tState {name} - {abbreviation}'
                       ' was registered'.format(**state))
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **unused_kwargs):
         seed_seed('regions_seed.yml', self._seed_regions)
