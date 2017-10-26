@@ -6,17 +6,6 @@ if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.dreamrich.settings")
     try:
         from django.core.management import execute_from_command_line
-        print("""
-____________________________________________
-   ___                       ___  _     __
-  / _ \\_______ ___ ___ _    / _ \\(_)___/ /
- / // / __/ -_) _ `/  ' \\  / , _/ / __/ _ \\
-/____/_/  \\__/\\_,_/_/_/_/ /_/|_/_/\\__/_//_/
---------------------------------------------
-____________________________________________
-Copyright 2017 - Dreamrich Software
-
-""")
 
     except ImportError:
         # The above import may fail for some other reason. Ensure that the
