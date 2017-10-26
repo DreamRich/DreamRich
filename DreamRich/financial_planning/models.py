@@ -60,9 +60,11 @@ class CostManager(models.Model):
     def flow(self):
         cost_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
-        array_change = create_array_change_annual(cost_changes, duration)
-        total = self.total()
-        data = generic_flow(array_change, duration, total)
+        array_change = create_array_change_annual(cost_changes, duration,
+                                                  self.financialplanning.\
+                                                       init_year)
+        total_annual = self.total() * 12
+        data = generic_flow(array_change, duration, total_annual)
 
         return data
 
@@ -124,18 +126,31 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
+    init_year = models.PositiveSmallIntegerField(null=True)
+
     cdi = models.FloatField()
 
     ipca = models.FloatField()
 
     target_profitability = models.PositiveSmallIntegerField()
 
-    def duration(self):
+    def save(self, *args, **kwargs):
+        if not self.init_year:
+            self.init_year = datetime.datetime.now().year
+
+        super(FinancialPlanning, self).save(*args, **kwargs)
+
+    def end_year(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
         birthday_year = self.active_client.birthday.year
         actual_age = actual_year - birthday_year
-        duration = age_of_independence - actual_age
+        end_year = age_of_independence - actual_age + actual_year
+
+        return end_year
+
+    def duration(self):
+        duration = self.end_year() - self.init_year
 
         return duration
 

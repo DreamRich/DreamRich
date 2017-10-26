@@ -1,5 +1,6 @@
 import datetime
 
+
 def generic_flow(array_change, duration, total):
     data = []
 
@@ -9,11 +10,11 @@ def generic_flow(array_change, duration, total):
 
     return data
 
-def create_array_change_annual(changes, duration):
-    actual_year = datetime.datetime.now().year
+
+def create_array_change_annual(changes, duration, init_year):
     data = [0] * duration
     for unit_change in changes:
-        index_change = unit_change.year - actual_year
+        index_change = unit_change.year - init_year
         data[index_change] += unit_change.annual_value
 
     return data

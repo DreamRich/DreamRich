@@ -12,9 +12,9 @@ from patrimony.views import (
 )
 
 
-app_name = 'patrimony' # pylint: disable=invalid-name
+app_name = 'patrimony'  # pylint: disable=invalid-name
 
-router = routers.DefaultRouter() # pylint: disable=invalid-name
+router = routers.DefaultRouter()  # pylint: disable=invalid-name
 router.register(r'^active', ActiveViewSet)
 router.register(r'^active_type', ActiveTypeViewSet)
 router.register(r'^arrearage', ArrearageViewSet)
