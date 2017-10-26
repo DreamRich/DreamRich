@@ -1,32 +1,35 @@
+import datetime
+import numpy
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager
-from lib.financial_planning.flow import generic_flow
+from lib.financial_planning.flow import (
+    generic_flow,
+    create_array_change_annual,
+)
 from lib.profit.profit import actual_rate
-import datetime
-import numpy
 
 
 class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
-    target_profitability = models.PositiveIntegerField()
 
     def assets_required(self):
-        rate = float(self.financialplanning.real_gain())
+        rate = self.financialplanning.real_gain()
 
         return numpy.pv(rate, self.duration_of_usufruct,
                         -self.remain_patrimony * 12)
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
-        rate = self.financialplanning.real_gain_related_cdi()
-        rate_target_profitability = float(rate[self.target_profitability])
+        rate_dic = self.financialplanning.real_gain_related_cdi()
+        target_profitability = self.financialplanning.target_profitability
+        rate_target_profitability = rate_dic[target_profitability]
         years_for_retirement = self.financialplanning.duration()
-        current_net_investment = float(self.financialplanning.patrimony.
-                                       current_net_investment())
+        current_net_investment = self.financialplanning.patrimony.\
+            current_net_investment()
         total = numpy.pmt(rate_target_profitability, years_for_retirement,
                           current_net_investment, assets_required)
         total /= 12
@@ -54,10 +57,14 @@ class CostManager(models.Model):
     def total_cost(self):
         return self.total()
 
-    def flow(self, regular_cost_change):
+    def flow(self):
+        cost_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
-        total = self.total()
-        data = generic_flow(regular_cost_change, duration, total)
+        array_change = create_array_change_annual(cost_changes, duration,
+                                                  self.financialplanning.\
+                                                       init_year)
+        total_annual = self.total() * 12
+        data = generic_flow(array_change, duration, total_annual)
 
         return data
 
@@ -76,6 +83,19 @@ class RegularCost(models.Model):
         if self.cost_type_id is not None:
             return '{} {}'.format(self.cost_type.name, self.value)
         return str(self.value)
+
+
+class FlowUnitChange(models.Model):
+
+    annual_value = models.FloatField()
+
+    year = models.PositiveSmallIntegerField()
+
+    cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
+                                     null=True)
+
+    incomes = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
+                                null=True)
 
 
 class FinancialPlanning(models.Model):
@@ -106,37 +126,41 @@ class FinancialPlanning(models.Model):
         on_delete=models.CASCADE
     )
 
+    init_year = models.PositiveSmallIntegerField(null=True)
+
     cdi = models.FloatField()
 
     ipca = models.FloatField()
 
-    def duration(self):
+    target_profitability = models.PositiveSmallIntegerField()
+
+    def save(self, *args, **kwargs):
+        if not self.init_year:
+            self.init_year = datetime.datetime.now().year
+
+        super(FinancialPlanning, self).save(*args, **kwargs)
+
+    def end_year(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
         birthday_year = self.active_client.birthday.year
         actual_age = actual_year - birthday_year
-        duration = age_of_independence - actual_age
+        end_year = age_of_independence - actual_age + actual_year
+
+        return end_year
+
+    def duration(self):
+        duration = self.end_year() - self.init_year
 
         return duration
 
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def create_array_change_annual(self, change):
-        actual_year = datetime.datetime.now().year
-        data = [0] * self.duration()
-        for change_year in change.keys():
-            index_change = change_year - actual_year
-            data[index_change] += change[change_year]
+    def annual_leftovers_for_goal(self):
 
-        return data
-
-    def annual_leftovers_for_goal(self, change_income={}, change_cost={}):
-        array_change_income = self.create_array_change_annual(change_income)
-        array_change_cost = self.create_array_change_annual(change_cost)
-
-        income_flow = self.patrimony.income_flow(array_change_income)
-        regular_cost_flow = self.cost_manager.flow(array_change_cost)
+        income_flow = self.patrimony.income_flow()
+        regular_cost_flow = self.cost_manager.flow()
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
         remain_necessary_for_retirement = self.financial_independence.\
             remain_necessary_for_retirement()
@@ -160,6 +184,26 @@ class FinancialPlanning(models.Model):
         cdi_final = 205
         data = {}
         for rate in range(cdi_initial, cdi_final, 5):
-            cdi_rate = actual_rate(float(rate / 100) * self.cdi, self.ipca)
+            cdi_rate = actual_rate(rate / 100 * self.cdi, self.ipca)
             data[rate] = cdi_rate
         return data
+
+    @property
+    def total_resource_for_annual_goals(self):
+
+        annual_leftovers_for_goal = self.annual_leftovers_for_goal()
+        total_goals = self.goal_manager.value_total_by_year()
+        duration = self.duration()
+
+        resource_for_goal = [0] * (duration)
+        resource_for_goal[0] = annual_leftovers_for_goal[0]
+        rate_dic = self.real_gain_related_cdi()
+        real_gain = rate_dic[self.target_profitability] + 1
+
+        for index in range(duration - 1):
+            leftover_this_year = resource_for_goal[index] - total_goals[index]
+            resource_for_goal_monetized = leftover_this_year * real_gain
+            resource_for_goal[index + 1] = annual_leftovers_for_goal[index] +\
+                resource_for_goal_monetized
+
+        return resource_for_goal

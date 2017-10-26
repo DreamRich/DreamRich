@@ -1,6 +1,6 @@
+from functools import reduce
 from django.contrib.auth.models import User
 from rolepermissions.permissions import available_perm_status
-from functools import reduce
 
 
 class BaseUser(User):
@@ -17,8 +17,7 @@ class BaseUser(User):
                 return current
             elif current == '':
                 return item[0]
-            else:
-                return '{}, {}'.format(current, *item)
+            return '{}, {}'.format(current, *item)
 
         items = sorted(permissions.items())
         return reduce(reducer, items, '')
