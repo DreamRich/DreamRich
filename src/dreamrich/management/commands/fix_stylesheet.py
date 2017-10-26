@@ -7,9 +7,11 @@ class Command(BaseCommand):
 
     @staticmethod
     def _call_autopep8(module):
-        subprocess.call(['autopep8', '--in-place', '--aggressive',
-                         '--aggressive', '--recursive', '--verbose',
-                         '--verbose', '--exclude', 'migrations', module])
+        returncode = subprocess.call(['autopep8', '--in-place',
+                                      '--aggressive', '--aggressive',
+                                      '--recursive', '--verbose', '--verbose',
+                                      '--exclude', 'migrations', module])
+        return returncode
 
     def handle(self, *args, **unused_kwargs):
         script_name = get_script_name(__file__)

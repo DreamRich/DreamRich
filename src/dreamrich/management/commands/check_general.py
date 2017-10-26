@@ -10,7 +10,9 @@ class Command(BaseCommand):
     @staticmethod
     def _call_pylint(module):
         pylintrc_file = os.path.join(BASE_DIR, '.pylintrc')
-        subprocess.call(['pylint', '--rcfile', pylintrc_file, module])
+        returncode = subprocess.call(['pylint', '--rcfile',
+                                      pylintrc_file, module])
+        return returncode
 
     def handle(self, *args, **unused_kwargs):
         script_name = get_script_name(__file__)
