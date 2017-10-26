@@ -1,12 +1,12 @@
 from django.db import models
 from django.db.models import Sum
-from lib.financial_planning.flow import (
-    generic_flow,
-    create_array_change_annual,
-)
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
+)
+from lib.financial_planning.flow import (
+    generic_flow,
+    create_array_change_annual,
 )
 import patrimony.validators as patrimony_validators
 from patrimony.choices import AMORTIZATION_CHOICES
@@ -94,7 +94,7 @@ class ArrearageCalculator(models.Model):
     def calculate_arrearage(self):
         data = []
         outstanding_balance = self.calculate.value
-        for period in range(1,self.calculate.period+1):
+        for period in range(1, self.calculate.period+1):
             outstanding_balance = outstanding_balance - self.calculate_amortization(period)
             parameter_list = {
                 'period': period,
@@ -111,8 +111,8 @@ class ArrearageCalculator(models.Model):
         interest = 0
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             interest = (
-                (self.calculate.value - (((period - 1)*self.calculate.value)/self.calculate.period))
-                    *
+                (self.calculate.value -
+                 (((period - 1)*self.calculate.value)/self.calculate.period)) *
                 (self.calculate.rate/100)
             )
         else:
@@ -124,7 +124,10 @@ class ArrearageCalculator(models.Model):
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             amortization = self.calculate.value/self.calculate.period
         else:
-            first_amortization = self.calculate_provision(1) - (self.calculate.value*(self.calculate.rate/100))
+            first_amortization = (
+                self.calculate_provision(1) -
+                (self.calculate.value*(self.calculate.rate/100))
+            )
             amortization = first_amortization * ((1+(self.calculate.rate/100))**(period - 1))
         return amortization
 
@@ -136,7 +139,11 @@ class ArrearageCalculator(models.Model):
                 self.calculate_interest(period)
             )
         else:
-            provision = self.calculate.value * ((self.calculate.rate/100)/(1-(1+(self.calculate.rate/100))**(-self.calculate.period)))
+            provision = (
+                self.calculate.value *
+                ((self.calculate.rate/100) /
+                 (1-(1+(self.calculate.rate/100))**(-self.calculate.period)))
+            )
         return provision
 
 

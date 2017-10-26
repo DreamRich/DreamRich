@@ -1,12 +1,12 @@
 import factory
 from . import models
-from patrimony.choices import AMORTIZATION_CHOICES_LIST
+from .choices import AMORTIZATION_CHOICES_LIST
 
 
 class ActiveTypeFactory(factory.DjangoModelFactory):
 
     class Meta:
-            model = models.ActiveType
+        model = models.ActiveType
 
     name = factory.Faker('word')
 
