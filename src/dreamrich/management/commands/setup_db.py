@@ -6,6 +6,8 @@ from django.core.management import call_command
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        call_command("resetdb")
-        self.stdout.write("Execute seed")
-        call_command("seed")
+        self.stdout.write("Reseting database...")
+        call_command("reset_db")
+
+        self.stdout.write("Seeding database...")
+        call_command("seed_db")
