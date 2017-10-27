@@ -1,9 +1,15 @@
 from django.db import models
 from django.db.models import Sum
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
 from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
 )
+import patrimony.validators as patrimony_validators
+from patrimony.choices import AMORTIZATION_CHOICES
 
 
 class Patrimony(models.Model):
@@ -65,16 +71,115 @@ class Patrimony(models.Model):
         return total
 
 
+class ActiveType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 class Active(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    rate = models.FloatField(default=0)
+
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    active_type = models.ForeignKey(ActiveType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
+
+
+class ArrearageCalculator(models.Model):
+
+    @property
+    def calculate_arrearage(self):
+        data = []
+        outstanding_balance = self.calculate.value
+        for period in range(1, self.calculate.period+1):
+            outstanding_balance = outstanding_balance - self.calculate_amortization(period)
+            parameter_list = {
+                'period': period,
+                'provision': self.calculate_provision(period),
+                'interest': self.calculate_interest(period),
+                'amortization': self.calculate_amortization(period),
+                'outstanding_balance': outstanding_balance
+            }
+            data.append(parameter_list)
+
+        return data
+
+    def calculate_interest(self, period):
+        interest = 0
+        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+            interest = (
+                (self.calculate.value -
+                 (((period - 1)*self.calculate.value)/self.calculate.period)) *
+                (self.calculate.rate/100)
+            )
+        else:
+            interest = self.calculate_provision(period) - self.calculate_amortization(period)
+        return interest
+
+    def calculate_amortization(self, period):
+        amortization = 0
+        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+            amortization = self.calculate.value/self.calculate.period
+        else:
+            first_amortization = (
+                self.calculate_provision(1) -
+                (self.calculate.value*(self.calculate.rate/100))
+            )
+            amortization = first_amortization * ((1+(self.calculate.rate/100))**(period - 1))
+        return amortization
+
+    def calculate_provision(self, period):
+        provision = 0
+        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+            provision = (
+                self.calculate_amortization(period) +
+                self.calculate_interest(period)
+            )
+        else:
+            provision = (
+                self.calculate.value *
+                ((self.calculate.rate/100) /
+                 (1-(1+(self.calculate.rate/100))**(-self.calculate.period)))
+            )
+        return provision
 
 
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    period = models.PositiveIntegerField(default=0)
+    rate = models.FloatField(
+        default=0,
+        validators=[
+            MinValueValidator(
+                patrimony_validators.MIN_VALUE_RATE,
+                "A taxa de juros não pode ser menor que 0%"
+            ),
+            MaxValueValidator(
+                patrimony_validators.MAX_VALUE_RATE,
+                "A taxa de juros não pode ser maior que 100%"
+            )
+        ]
+    )
+    amortization_system = models.CharField(
+        max_length=5,
+        choices=AMORTIZATION_CHOICES,
+        default=AMORTIZATION_CHOICES[0][0]
+    )
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    arrearage_calculator = models.OneToOneField(
+        ArrearageCalculator,
+        related_name='calculate',
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 
 class RealEstate(models.Model):
@@ -83,18 +188,24 @@ class RealEstate(models.Model):
     salable = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
@@ -102,6 +213,8 @@ class LifeInsurance(models.Model):
     redeemable = models.BooleanField()
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
 
 class Income(models.Model):
     source = models.CharField(max_length=100)
@@ -120,4 +233,4 @@ class Income(models.Model):
         return round(total, 2)
 
     def __str__(self):
-        return "Annual {}".format(self.annual())
+        return "Annual({}) {}".format(self.source, self.annual())
