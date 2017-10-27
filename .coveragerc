@@ -1,11 +1,13 @@
 [run]
 branch = True
-source = .
+source = ./src
+data_file = src/dreamrich/management/coverage_data
 omit =
     manage.py,
     */settings.py,
     */wsgi.py,
     */__init__.py,
+	*/migrations/*
     */tests.py
 
 [report]
@@ -14,3 +16,7 @@ precision = 2
 exclude_lines =
     raise AssertionError,
     raise NotImplementedError
+
+[html]
+directory = src/dreamrich/management/coverage_html
+title = "Cobertura de testes - DreamRich"

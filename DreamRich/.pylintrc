@@ -1,8 +1,0 @@
-[MASTER]
-ignore=wsgi.py, manage.py
-
-[BASIC]
-docstring-min-lenght=-1
-
-[MESSAGES CONTROL]
-disable=missing-docstring
