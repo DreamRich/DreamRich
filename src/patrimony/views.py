@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from patrimony.serializers import (
     PatrimonySerializer,
     ActiveSerializer,
+    ActiveTypeSerializer,
     ArrearageSerializer,
     RealEstateSerializer,
     CompanyParticipationSerializer,
@@ -12,6 +13,7 @@ from patrimony.serializers import (
 
 from patrimony.models import (
     Patrimony,
+    ActiveType,
     Active,
     Arrearage,
     RealEstate,
@@ -25,6 +27,11 @@ from patrimony.models import (
 class PatrimonyViewSet(viewsets.ModelViewSet):
     serializer_class = PatrimonySerializer
     queryset = Patrimony.objects.all()
+
+
+class ActiveTypeViewSet(viewsets.ModelViewSet):
+    serializer_class = ActiveTypeSerializer
+    queryset = ActiveType.objects.all()
 
 
 class ActiveViewSet(viewsets.ModelViewSet):
