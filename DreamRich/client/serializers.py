@@ -62,6 +62,7 @@ class DependentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dependent
         fields = [
+            'id',
             'active_client_id',
             'birthday',
             'name',
@@ -76,6 +77,7 @@ class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccount
         fields = [
+            'id',
             'agency',
             'account',
             'active_client_id'

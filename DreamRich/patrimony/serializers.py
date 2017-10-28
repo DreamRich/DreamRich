@@ -30,15 +30,6 @@ class ActiveTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class ActiveManagerSerializer(serializers.ModelSerializer):
-
-    patrimony_id = serializers.IntegerField(write_only=True)
-
-    class Meta:
-        model = ActiveManager
-        fields = ['id', 'patrimony_id']
-
-
 class ActiveSerializer(serializers.ModelSerializer):
 
     active_manager_id = serializers.IntegerField(write_only=True)
@@ -52,10 +43,21 @@ class ActiveSerializer(serializers.ModelSerializer):
             'name',
             'value',
             'rate',
+            'equivalent_rate',
             'active_manager_id',
             'active_type_id',
             'active_type',
         ]
+
+
+class ActiveManagerSerializer(serializers.ModelSerializer):
+
+    patrimony_id = serializers.IntegerField(write_only=True)
+    actives = ActiveSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ActiveManager
+        fields = ['id', 'patrimony_id', 'actives']
 
 
 class ArrearageSerializer(serializers.ModelSerializer):
