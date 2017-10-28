@@ -12,5 +12,5 @@ class FlowTest(TestCase):
 
     def test_create_array_change_annual(self):
         array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
-        self.assertEqual(array_compare,create_array_change_annual(
-                                       self.changes,10))
+        self.assertEqual(array_compare, create_array_change_annual(
+            self.changes, 10, 2017))
