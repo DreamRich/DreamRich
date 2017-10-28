@@ -8,5 +8,8 @@ class Command(BaseCommand):
         self.stdout.write("Reseting database...")
         call_command("reset_db")
 
+        self.stdout.write("Creating database...")
+        call_command("make_db")
+
         self.stdout.write("Seeding database...")
         call_command("seed_db")
