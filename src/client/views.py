@@ -46,7 +46,7 @@ class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
 
     @list_route(methods=['get'])
-    def type_of_address(self, request):
+    def type_of_address(self, unused_request):
         addresses = self.queryset.values('type_of_address').distinct()
         mapped = map(lambda x: x['type_of_address'], addresses)
         return Response(list(mapped), 200)

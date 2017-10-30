@@ -7,6 +7,11 @@ load-plugins=pylint_django
 
 ignore=wsgi.py,manage.py,migrations,settings.py
 
+[BASIC]
+
+# Regular expression matching correct method names
+method-rgx=(([a-z][a-z0-9_]{2,55})|(_[a-z0-9_]*))$
+
 [SIMILARITIES]
 
 ignore-comments=no
