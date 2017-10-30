@@ -17,7 +17,8 @@ class Patrimony(models.Model):
 
     def current_net_investment(self):
         total_active = self.active_set.all().aggregate(Sum('value'))
-        total_arrearage = self.arrearage_set.all().aggregate(Sum('value'))
+        total_arrearage = self.arrearage_set.filter(period__lte=2).aggregate(
+                                                                Sum('value'))
         total = ((total_active['value__sum'] or 0)
                  - (total_arrearage['value__sum'] or 0))
 
