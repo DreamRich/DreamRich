@@ -10,8 +10,8 @@ class CountryFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Country
 
-    name = factory.Sequence(lambda n: 'country%s' % n)
-    abbreviation = factory.Sequence(lambda n: '%2d' % (n % 1000))
+    name = factory.Faker('country')
+    abbreviation = factory.Faker('country_code')
 
 
 class StateFactory(factory.DjangoModelFactory):
@@ -19,8 +19,8 @@ class StateFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.State
 
-    name = factory.Sequence(lambda n: 'state%s' % n)
-    abbreviation = factory.Sequence(lambda n: '%s' % (n % 100))
+    name = factory.Faker('state')
+    abbreviation = factory.Faker('state_abbr')
     country = factory.SubFactory(CountryFactory)
 
 
@@ -29,14 +29,14 @@ class AddressFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Address
 
-    city = factory.Faker('word')
-    type_of_address = factory.Sequence(lambda n: 'type%s' % n)
-    neighborhood = factory.Sequence(lambda n: 'neighborhood%s' % n)
-    detail = factory.Sequence(lambda n: 'detail%s' % n)
+    city = factory.Faker('city')
+    type_of_address = factory.Faker('random_letter')
+    neighborhood = factory.Faker('street_name')
+    detail = factory.Faker('word')
     cep = factory.Sequence(lambda n: '700000%s' % n)
     state = factory.SubFactory(StateFactory)
-    number = factory.Faker('pyint')
-    complement = factory.Sequence(lambda n: 'complement%s' % n)
+    number = factory.Faker('building_number')
+    complement = factory.Faker('secondary_address')
 
 
 class ClientFactory(factory.DjangoModelFactory):
@@ -45,13 +45,13 @@ class ClientFactory(factory.DjangoModelFactory):
         model = models.Client
         exclude = ('now',)
 
-    name = factory.Faker('name')
-    surname = factory.Faker('name')
+    name = factory.Faker('first_name')
+    surname = factory.Faker('last_name')
     birthday = factory.fuzzy.FuzzyNaiveDateTime(datetime.datetime(1967, 1, 1),
                                                 datetime.datetime(1987, 1, 1))
-    profession = factory.Sequence(lambda n: 'profession%s' % n)
+    profession = factory.Faker('job')
     telephone = factory.Sequence(lambda n: '(61) 91234-56%02d' % n)
-    hometown = factory.Faker('word')
+    hometown = factory.Faker('city')
     cpf = factory.LazyAttribute(gen_cpf)
 
 
@@ -60,8 +60,8 @@ class DependentFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Dependent
 
-    name = factory.Faker('name')
-    surname = factory.Faker('name')
+    name = factory.Faker('first_name')
+    surname = factory.Faker('last_name')
     birthday = factory.LazyFunction(datetime.datetime.now)
 
 

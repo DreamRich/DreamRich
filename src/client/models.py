@@ -129,7 +129,7 @@ class BankAccount(base_models.BaseModel):
 
     active_client = models.OneToOneField(
         ActiveClient,
-        related_name='client_bank_account',
+        related_name='bank_account',
         on_delete=models.CASCADE
     )
 
@@ -173,7 +173,7 @@ class Address(base_models.BaseModel):
 
     active_client = models.ForeignKey(
         ActiveClient,
-        related_name='address'
+        related_name='addresses'
     )
 
     city = models.CharField(
