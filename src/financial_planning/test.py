@@ -157,6 +157,12 @@ class FinancialPlanningTest(TestCase):
     def test_end_year(self):
         self.assertEqual(self.financial_planning.end_year(), 2027)
 
+    def test_add_from_arrearage(self):
+        ArrearageFactory(patrimony=self.patrimony, value=2000, period=2)
+        ArrearageFactory(patrimony=self.patrimony, value=2000, period=3)
+        ArrearageFactory(patrimony=self.patrimony, value=2000, period=4)
+        self.assertEqual(4000, self.cost_manager.add_from_arrearage())
+
 
 class RegularCostViewTest(TestCase):
 
