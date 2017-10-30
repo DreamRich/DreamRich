@@ -1,5 +1,6 @@
 import datetime
 import numpy
+from django.db.models import Sum
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
@@ -47,6 +48,14 @@ class CostType(models.Model):
 
 
 class CostManager(models.Model):
+
+    def add_from_arrearage(self):
+        arrearages = self.financialplanning.patrimony.arrearage_set.filter(
+                                                                 period__gt=2)
+        sum_arrearages = arrearages.aggregate(Sum('value'))
+        sum_arrearages = sum_arrearages['value__sum'] or 0
+
+        return sum_arrearages
 
     def total(self):
         total_query = self.regular_costs.aggregate(models.Sum('value'))
