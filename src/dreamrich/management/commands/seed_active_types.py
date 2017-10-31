@@ -10,7 +10,7 @@ class Command(BaseCommand):
             ActiveType.objects.get_or_create(
                 **active_type)
             print('Active type {name} was registered'
-                  .format(**type_cost))
+                  .format(**active_type))
 
     def handle(self, *args, **unused_kwargs):
-        seed_seed('cost_types_seed.yml', self._seed_cost_types)
+        seed_seed('active_types_seed.yml', self._seed_active_types)
