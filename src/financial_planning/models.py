@@ -134,7 +134,7 @@ class FinancialPlanning(models.Model):
 
     target_profitability = models.PositiveSmallIntegerField()
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs): # pylint: disable=arguments-differ
         if not self.init_year:
             self.init_year = datetime.datetime.now().year
 

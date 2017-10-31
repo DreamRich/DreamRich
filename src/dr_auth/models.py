@@ -18,7 +18,7 @@ class BaseUser(User):
 
         return permissions
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs): # pylint: disable=arguments-differ
         if not self.pk:
             if not self.password:
                 self.password = 'default123'
@@ -27,4 +27,4 @@ class BaseUser(User):
         self.username = self.cpf
         self.full_clean()
 
-        super(BaseUser, self).save()
+        super(BaseUser, self).save(*args, **kwargs)
