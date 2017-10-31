@@ -1,4 +1,3 @@
-from functools import reduce
 from django.contrib.auth.models import User
 from rolepermissions.permissions import available_perm_status
 
@@ -11,26 +10,21 @@ class BaseUser(User):
     @property
     def permissions(self):
         permissions = self.get_permissions()
+        permissions = sorted(permissions.items())
 
-        def reducer(current, item):
-            if not item[1]:
-                return current
-            elif current == '':
-                return item[0]
-            return '{}, {}'.format(current, *item)
+        permissions = [permission[0] for permission in permissions
+                       if permission[1]] # permission is like ('p1', True))
+        permissions = ', '.join(permissions)
 
-        items = sorted(permissions.items())
-        return reduce(reducer, items, '')
+        return permissions
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, *args, **kwargs):
         if not self.pk:
-            # TODO: Generate random password
             if not self.password:
                 self.password = 'default123'
             self.set_password(self.password)
+
         self.username = self.cpf
         self.full_clean()
 
-        super(BaseUser, self).save(force_insert, force_update, using,
-                                   update_fields)
+        super(BaseUser, self).save()
