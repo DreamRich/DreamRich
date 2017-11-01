@@ -4,6 +4,8 @@ from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
 )
+from django.contrib.contenttypes.fields import GenericRelation
+import abc
 from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
@@ -173,14 +175,104 @@ class Arrearage(models.Model):
         default=AMORTIZATION_CHOICES[0][0]
     )
     patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
-    arrearage_calculator = models.OneToOneField(
-        ArrearageCalculator,
-        related_name='calculate',
-        on_delete=models.CASCADE
-    )
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
+
+class AmortizationStrategy(models.Model):
+
+    arrearage = models.OneToOneField(
+        Arrearage,
+        related_name="%(class)s",
+    )
+
+    @property
+    def calculate_arrearage(self):
+        data = []
+        outstanding_balance = self.calculate.value
+        for period in range(1, self.calculate.period+1):
+            outstanding_balance = (
+                outstanding_balance -
+                self.calculate_amortization(period)
+            )
+            parameter_list = {
+                'period': period,
+                'provision': self.calculate_provision(period),
+                'interest': self.calculate_interest(period),
+                'amortization': self.calculate_amortization(period),
+                'outstanding_balance': outstanding_balance
+            }
+            data.append(parameter_list)
+
+        return data
+
+    @abc.abstractmethod
+    def calculate_interest(self, period):
+        pass
+
+    @abc.abstractmethod
+    def calculate_amortization(self, period):
+        pass
+
+    @abc.abstractmethod
+    def calculate_provision(self, period):
+        pass
+
+    class Meta:
+        abstract = True
+
+
+class AmortizationSac(AmortizationStrategy):
+
+    def calculate_interest(self, period):
+        interest = (
+            (self.calculate.value -
+             (((period - 1)*self.calculate.value)/self.calculate.period)) *
+            (self.calculate.rate/100)
+        )
+        return interest
+
+    def calculate_amortization(self, period):
+        amortization = self.calculate.value/self.calculate.period
+
+        return amortization
+
+    def calculate_provision(self, period):
+        provision = (
+            self.calculate_amortization(period) +
+            self.calculate_interest(period)
+        )
+        return provision
+
+
+class AmortizationPrice(AmortizationStrategy):
+
+    def calculate_interest(self, period):
+        interest = (
+            self.calculate_provision(period) -
+            self.calculate_amortization(period)
+        )
+        return interest
+
+    def calculate_amortization(self, period):
+        first_amortization = (
+            self.calculate_provision(1) -
+            (self.calculate.value*(self.calculate.rate/100))
+        )
+        amortization = (
+            first_amortization *
+            ((1+(self.calculate.rate/100))**(period - 1))
+        )
+        return amortization
+
+    def calculate_provision(self, period):
+        provision = (
+            self.calculate.value *
+            ((self.calculate.rate/100) /
+             (1-(1+(self.calculate.rate/100))**(-self.calculate.period)))
+        )
+        return provision
 
 
 class RealEstate(models.Model):

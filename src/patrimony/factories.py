@@ -39,7 +39,6 @@ class ArrearageFactory(factory.DjangoModelFactory):
     period = 2
     rate = factory.fuzzy.FuzzyDecimal(100)
     amortization_system = factory.fuzzy.FuzzyChoice(AMORTIZATION_CHOICES_LIST)
-    arrearage_calculator = factory.SubFactory(ArrearageCalculatorFactory)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):
