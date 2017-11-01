@@ -63,7 +63,7 @@ def apply_to_all_modules(function, script_name):
         module = os.path.join(SRC_FOLDER, module)
 
         returncode = function(module)
-        has_error = True if returncode else False
+        has_error = True if returncode or has_error else False
 
     if has_error:
         exit(1)
