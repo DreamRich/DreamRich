@@ -11,7 +11,6 @@ class ActiveTypeFactory(factory.DjangoModelFactory):
     name = factory.Faker('word')
 
 
-
 class ActiveFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -21,6 +20,15 @@ class ActiveFactory(factory.DjangoModelFactory):
     value = round(351200.00, 2)
     active_type = factory.SubFactory(ActiveTypeFactory)
     rate = factory.Faker('pyfloat')
+    equivalent_rate = factory.Faker('pyfloat')
+
+
+class ActiveManagerFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.ActiveManager
+
+    active = factory.RelatedFactory(ActiveFactory, 'active_manager')
 
 
 class ArrearageCalculatorFactory(factory.DjangoModelFactory):
@@ -97,7 +105,7 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
         model = models.Patrimony
 
     fgts = round(2.2, 2)
-    active = factory.RelatedFactory(ActiveFactory, 'patrimony')
+    activemanager = factory.RelatedFactory(ActiveManagerFactory, 'patrimony')
     arrearage = factory.RelatedFactory(ArrearageFactory, 'patrimony')
     real_estate = factory.RelatedFactory(RealEstateFactory, 'patrimony')
     company = factory.RelatedFactory(CompanyParticipationFactory, 'patrimony')

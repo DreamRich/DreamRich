@@ -1,6 +1,7 @@
 from patrimony.models import (
     Patrimony,
     ActiveType,
+    ActiveManager,
     Active,
     Arrearage,
     RealEstate,
@@ -31,7 +32,7 @@ class ActiveTypeSerializer(serializers.ModelSerializer):
 
 class ActiveSerializer(serializers.ModelSerializer):
 
-    patrimony_id = serializers.IntegerField(write_only=True)
+    active_manager_id = serializers.IntegerField(write_only=True)
     active_type_id = serializers.IntegerField(write_only=True)
     active_type = ActiveTypeSerializer(read_only=True)
 
@@ -42,10 +43,21 @@ class ActiveSerializer(serializers.ModelSerializer):
             'name',
             'value',
             'rate',
-            'patrimony_id',
+            'equivalent_rate',
+            'active_manager_id',
             'active_type_id',
             'active_type',
         ]
+
+
+class ActiveManagerSerializer(serializers.ModelSerializer):
+
+    patrimony_id = serializers.IntegerField(write_only=True)
+    actives = ActiveSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ActiveManager
+        fields = ['id', 'patrimony_id', 'actives']
 
 
 class ArrearageSerializer(serializers.ModelSerializer):

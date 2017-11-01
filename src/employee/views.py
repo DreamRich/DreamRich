@@ -7,7 +7,9 @@ from employee.models import (
     Employee,
     FinancialAdviser,
 )
-from dr_auth.permissions import EmployeesPermission, FinancialAdvisersPermission
+from dr_auth.permissions import (
+    EmployeesPermission, FinancialAdvisersPermission
+)
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
