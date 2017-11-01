@@ -1,9 +1,9 @@
 import datetime
 from django.test import TestCase
-from patrimony.factories import PatrimonyMainFactory, IncomeFactory
-from financial_planning.models import FlowUnitChange
 from client.factories import ActiveClientMainFactory
+from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
+from patrimony.factories import PatrimonyMainFactory, IncomeFactory
 
 
 class PatrimonyTest(TestCase):
@@ -13,7 +13,7 @@ class PatrimonyTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
         self.patrimony.income_set.all().update(value_monthly=1212.2)
-        FinancialPlanningFactory(  # NOQA
+        FinancialPlanningFactory(
             active_client=active_client,
             patrimony=self.patrimony)
         self.common_income = IncomeFactory(value_monthly=round(1200, 2),
