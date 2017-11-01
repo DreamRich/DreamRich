@@ -9,8 +9,8 @@ SRC_FOLDER = os.path.join(BASE_DIR, 'src')
 
 
 def get_modules():
-    get_abs_paths = subprocess.Popen(
-        ['find', SRC_FOLDER, '-name', '__init__.py'], stdout=subprocess.PIPE)
+    get_abs_paths = subprocess.Popen(['find', SRC_FOLDER, '-name',
+                                      '__init__.py'], stdout=subprocess.PIPE)
     find_error = get_abs_paths.wait()
 
     remove_leading = subprocess.Popen(['sed', 's@{}@@'.format(SRC_FOLDER)],
