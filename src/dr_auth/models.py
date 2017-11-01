@@ -13,12 +13,12 @@ class BaseUser(User):
         permissions = sorted(permissions.items())
 
         permissions = [permission[0] for permission in permissions
-                       if permission[1]] # permission is like ('p1', True))
+                       if permission[1]]  # permission is like ('p1', True))
         permissions = ', '.join(permissions)
 
         return permissions
 
-    def save(self, *args, **kwargs): # pylint: disable=arguments-differ
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.pk:
             if not self.password:
                 self.password = 'default123'

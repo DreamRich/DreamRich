@@ -6,7 +6,7 @@ class ClientConfig(AppConfig):
 
     def ready(self):
         try:
-            import client.signals # pylint: disable=unused-variable
+            import client.signals  # pylint: disable=unused-variable
         except ImportError:
             raise ImportError(
                 "Couldn't import client.signals. This file must exists."

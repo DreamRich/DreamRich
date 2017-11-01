@@ -11,7 +11,7 @@ def gen_cpf(unused_factory):
     while cpf == "":
         try:
             cpf = validate_cpf(
-                FAKE_GENERATOR.cpf() # pylint: disable=no-member
+                FAKE_GENERATOR.cpf()  # pylint: disable=no-member
             )
         except BaseException:
             pass

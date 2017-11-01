@@ -61,8 +61,8 @@ class CostManager(models.Model):
         cost_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
         array_change = create_array_change_annual(cost_changes, duration,
-                                                  self.financialplanning.\
-                                                       init_year)
+                                                  self.financialplanning.
+                                                  init_year)
         total_annual = self.total() * 12
         data = generic_flow(array_change, duration, total_annual)
 
@@ -134,7 +134,7 @@ class FinancialPlanning(models.Model):
 
     target_profitability = models.PositiveSmallIntegerField()
 
-    def save(self, *args, **kwargs): # pylint: disable=arguments-differ
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.init_year:
             self.init_year = datetime.datetime.now().year
 

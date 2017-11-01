@@ -81,7 +81,7 @@ class FinancialPlanningTest(TestCase):
     def test_remain_necessary_for_retirement_with_high_patrimony(self):
         ActiveFactory(patrimony=self.patrimony, value=30021200.00)
         self.assertEqual(self.financial_independece.
-                               remain_necessary_for_retirement(), 0)
+                         remain_necessary_for_retirement(), 0)
 
     def test_remain_necessary_for_retirement(self):
         self.financial_planning.active_client.\
@@ -122,9 +122,9 @@ class FinancialPlanningTest(TestCase):
 
     def test_annual_leftovers_for_goal_without_change(self):
         array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
-                607045.13144555257, 607045.13144555257, 607045.13144555257,
-                607045.13144555257, 607045.13144555257, 607045.13144555257,
-                607045.13144555257]
+                 607045.13144555257, 607045.13144555257, 607045.13144555257,
+                 607045.13144555257, 607045.13144555257, 607045.13144555257,
+                 607045.13144555257]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
 
@@ -137,9 +137,9 @@ class FinancialPlanningTest(TestCase):
                                       cost_manager=self.cost_manager)
 
         array = [605045.13144555257, 607045.13144555257, 607045.13144555257,
-                607045.13144555257, 607045.13144555257, 607045.13144555257,
-                607045.13144555257, 607045.13144555257, 607045.13144555257,
-                598045.13144555257]
+                 607045.13144555257, 607045.13144555257, 607045.13144555257,
+                 607045.13144555257, 607045.13144555257, 607045.13144555257,
+                 598045.13144555257]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
 
@@ -157,9 +157,9 @@ class FinancialPlanningTest(TestCase):
                                  value=65865,
                                  periodicity=1)
         array = [341585.13144555251, 413413.10143097816, 491145.17214779771,
-                573102.25206646265, 659513.98517549736, 750622.49741528649,
-                846683.07511569967, 947964.88030916872, 1054751.7049235257,
-                1167342.7659678517]
+                 573102.25206646265, 659513.98517549736, 750622.49741528649,
+                 846683.07511569967, 947964.88030916872, 1054751.7049235257,
+                 1167342.7659678517]
 
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
@@ -203,6 +203,7 @@ class RegularCostViewTest(TestCase):
         response = self.client.put('/api/financial_planning/cost_manager/'
                                    '{}/'.format(primary_key))
         self.assertEqual(response.status_code, 200)
+
 
 class FlowTest(TestCase):
     changes = []

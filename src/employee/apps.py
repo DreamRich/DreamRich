@@ -6,7 +6,7 @@ class EmployeeConfig(AppConfig):
 
     def ready(self):
         try:
-            import employee.signals # pylint: disable=unused-variable
+            import employee.signals  # pylint: disable=unused-variable
         except ImportError:
             raise ImportError(
                 "Couldn't import client.signals. This file must exists."

@@ -33,11 +33,11 @@ class AuthView(APIView):
 
             else:
                 response = Response(dumps({'detail': 'invalid password'}),
-                                          status=400)
+                                    status=400)
 
         except User.DoesNotExist:
             response = Response(dumps({'detail': 'user not found'}),
-                                      status=404)
+                                status=404)
 
         return response
 

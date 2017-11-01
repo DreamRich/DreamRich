@@ -1,1 +1,2 @@
-default_app_config = 'employee.apps.EmployeeConfig' # pylint: disable=invalid-name
+default_app_config = ('employee.apps'  # pylint: disable=invalid-name
+                      '.EmployeeConfig')

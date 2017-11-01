@@ -52,8 +52,8 @@ class Patrimony(models.Model):
         income_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
         array_change = create_array_change_annual(income_changes, duration,
-                                                  self.financialplanning.\
-                                                        init_year)
+                                                  self.financialplanning.
+                                                  init_year)
         total = self.total_annual_income()
         data = generic_flow(array_change, duration, total)
 
@@ -96,8 +96,9 @@ class ArrearageCalculator(models.Model):
     def calculate_arrearage(self):
         data = []
         outstanding_balance = self.calculate.value
-        for period in range(1, self.calculate.period+1):
-            outstanding_balance = outstanding_balance - self.calculate_amortization(period)
+        for period in range(1, self.calculate.period + 1):
+            outstanding_balance = outstanding_balance - \
+                self.calculate_amortization(period)
             parameter_list = {
                 'period': period,
                 'provision': self.calculate_provision(period),
@@ -111,41 +112,54 @@ class ArrearageCalculator(models.Model):
 
     def calculate_interest(self, period):
         interest = 0
+
+        value = self.calculate.value
+        calculated_period = self.calculate.period
+        rate = self.calculate.rate
+        provision = self.calculate_provision(period)
+        amortization = self.calculate_amortization(period)
+
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
-            interest = (
-                (self.calculate.value -
-                 (((period - 1)*self.calculate.value)/self.calculate.period)) *
-                (self.calculate.rate/100)
-            )
+            interest = ((
+                value - (
+                    (period - 1) * calculated_period / calculated_period
+                )
+            ) * (rate / 100))
         else:
-            interest = self.calculate_provision(period) - self.calculate_amortization(period)
+            interest = provision - amortization
+
         return interest
 
     def calculate_amortization(self, period):
         amortization = 0
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
-            amortization = self.calculate.value/self.calculate.period
+            amortization = self.calculate.value / self.calculate.period
         else:
             first_amortization = (
                 self.calculate_provision(1) -
-                (self.calculate.value*(self.calculate.rate/100))
+                (self.calculate.value * (self.calculate.rate / 100))
             )
-            amortization = first_amortization * ((1+(self.calculate.rate/100))**(period - 1))
+            amortization = first_amortization * \
+                ((1 + (self.calculate.rate / 100))**(period - 1))
         return amortization
 
     def calculate_provision(self, period):
         provision = 0
+
+        amortization = self.calculate_amortization(period)
+        interest = self.calculate_interest(period)
+        rate = self.calculate.rate
+        value = self.calculate.value
+        calculated_period = self.calculate.period
+
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
-            provision = (
-                self.calculate_amortization(period) +
-                self.calculate_interest(period)
-            )
+            provision = amortization + interest
         else:
             provision = (
-                self.calculate.value *
-                ((self.calculate.rate/100) /
-                 (1-(1+(self.calculate.rate/100))**(-self.calculate.period)))
+                value * (rate / 100) /
+                (1 - (1 + (rate / 100))**(-calculated_period))
             )
+
         return provision
 
 
@@ -191,6 +205,7 @@ class RealEstate(models.Model):
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
+
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
@@ -198,6 +213,7 @@ class CompanyParticipation(models.Model):
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
@@ -207,6 +223,7 @@ class Equipment(models.Model):
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
+
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
@@ -215,6 +232,7 @@ class LifeInsurance(models.Model):
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
 
 class Income(models.Model):
     source = models.CharField(max_length=100)
