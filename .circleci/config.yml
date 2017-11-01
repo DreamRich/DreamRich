@@ -9,6 +9,7 @@ jobs:
       only:
         - master
         - devel
+        - unstable
 
     steps:
       - checkout
@@ -27,18 +28,20 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            cd DreamRich
-            pylint --load-plugins pylint_django dreamrich --rcfile=../.pylintrc
+            python3 manage.py check_general
       - run:
           command: |
             . venv/bin/activate
-            radon cc ../DreamRich
+            python3 manage.py check_stylesheet
       - run:
           command: |
             . venv/bin/activate
-            cd DreamRich
-            coverage run manage.py test
-            coverage report
+            python3 manage.py check_complexity
+      - run:
+          command: |
+            . venv/bin/activate
+            python3 manage.py make_db
+            python3 manage.py test_report
       - store_artifacts:
           path: test-reports/
           destination: tr1
