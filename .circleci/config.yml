@@ -1,3 +1,6 @@
+# Check complexity is not used here yet because it will never return errorcode if complexity is high 
+# Most critical aspects are checked first
+
 version: 2
 
 jobs:
@@ -16,8 +19,6 @@ jobs:
 
       - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          # check complexity is not used here yet because it will never return
-          # errorcode if complexity is high 
       - run:
           command: |
             python3 -m venv venv
@@ -34,9 +35,14 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            python3 manage.py setup_db
+            python3 manage.py make_db
+      - run:
+          command:
+            . venv/bin/activate
+            python3 manage.py load_all
       - run:
           command: |
+            . venv/bin/activate
             python3 manage.py test_report
       - run:
           command: |
