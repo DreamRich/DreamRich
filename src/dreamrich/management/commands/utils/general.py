@@ -1,7 +1,9 @@
 import os
 import sys
 import subprocess
+from django.core.management.base import CommandError
 from dreamrich.settings import BASE_DIR
+
 
 SRC_FOLDER = os.path.join(BASE_DIR, 'src')
 
@@ -66,4 +68,4 @@ def apply_to_all_modules(function, script_name):
         has_error = True if returncode or has_error else False
 
     if has_error:
-        exit(1)
+        raise CommandError("Error while applying {}".format(script_name))

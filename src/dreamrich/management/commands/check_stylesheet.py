@@ -1,5 +1,5 @@
 import subprocess
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from .utils.general import apply_to_all_modules, get_script_name
 
 
@@ -13,4 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **unused_kwargs):
         script_name = get_script_name(__file__)
-        apply_to_all_modules(self._call_pycodestyle, script_name)
+
+        try:
+            apply_to_all_modules(self._call_pycodestyle, script_name)
+        except CommandError:
+            raise CommandError("There are stylesheet problems in your code")
