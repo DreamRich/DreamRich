@@ -1,4 +1,6 @@
-from financial_planning.models import RegularCost, CostManager, CostType, FinancialPlanning
+from financial_planning.models import (
+    RegularCost, CostManager, CostType, FinancialPlanning
+)
 from rest_framework import serializers
 
 

@@ -7,7 +7,7 @@ from dreamrich import models as base_models
 class Country(base_models.BaseModel):
 
     name = models.CharField(
-        max_length=50
+        max_length=55
     )
 
     abbreviation = models.CharField(
@@ -21,7 +21,7 @@ class Country(base_models.BaseModel):
 class State(base_models.BaseModel):
 
     name = models.CharField(
-        max_length=50
+        max_length=55
     )
 
     abbreviation = models.CharField(

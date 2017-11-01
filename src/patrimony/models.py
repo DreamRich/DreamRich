@@ -161,7 +161,8 @@ class ArrearageCalculator(models.Model):
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             interest = (
                 (self.calculate.value -
-                 (((period - 1) * self.calculate.value) / self.calculate.period)) *
+                 (((period - 1) * self.calculate.value)
+                     / self.calculate.period)) *
                 (self.calculate.rate / 100)
             )
         else:
@@ -193,7 +194,8 @@ class ArrearageCalculator(models.Model):
             provision = (
                 self.calculate.value *
                 ((self.calculate.rate / 100) /
-                 (1 - (1 + (self.calculate.rate / 100))**(-self.calculate.period)))
+                 (1 - (1 + (self.calculate.rate / 100)) **
+                     (- self.calculate.period)))
             )
         return provision
 
