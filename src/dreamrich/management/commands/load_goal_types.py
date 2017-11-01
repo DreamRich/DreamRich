@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def _seed_goal_types(goal_types):
         for goal_type in goal_types:
             GoalType.objects.create(**goal_type)
-            print('Goal {name} was registered'
+            print('\tGoal {name} was registered'
                   .format(**goal_type))
 
     def handle(self, *args, **unused_kwargs):

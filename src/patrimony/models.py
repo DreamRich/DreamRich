@@ -16,9 +16,10 @@ class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
 
     def current_net_investment(self):
-        total_active = self.active_set.all().aggregate(Sum('value'))
-        total_arrearage = self.arrearage_set.all().aggregate(Sum('value'))
-        total = ((total_active['value__sum'] or 0)
+        total_active = self.activemanager.total()
+        total_arrearage = self.arrearage_set.filter(period__lte=2).aggregate(
+            Sum('value'))
+        total = (total_active
                  - (total_arrearage['value__sum'] or 0))
 
         return total
@@ -78,13 +79,58 @@ class ActiveType(models.Model):
         return "{}".format(self.name)
 
 
+class ActiveManager(models.Model):
+
+    patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
+    CDI = 0.10
+
+    def total(self):
+        return self.actives.aggregate(Sum('value')).pop('value__sum', 0)
+
+    def _update_equivalent_rate(self):
+        total = self.total()
+        for active in self.actives.all():
+            active.update_equivalent_rate(total, self.CDI)
+
+    def real_profit_cdi(self):
+        self._update_equivalent_rate()
+        total_rate = self.actives.aggregate(
+            Sum('equivalent_rate')
+        ).pop(
+            'equivalent_rate__sum', 0
+        )
+
+        if self.CDI != 0:
+            return total_rate / self.CDI
+        return 0
+
+
 class Active(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     rate = models.FloatField(default=0)
+    equivalent_rate = models.FloatField(default=0, blank=True, null=True)
 
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
-    active_type = models.ForeignKey(ActiveType, on_delete=models.CASCADE)
+    active_type = models.ForeignKey(ActiveType,
+                                    on_delete=models.CASCADE,
+                                    related_name='actives')
+    active_manager = models.ForeignKey(ActiveManager,
+                                       on_delete=models.CASCADE,
+                                       related_name='actives')
+
+    def _equivalent_rate_calculate(self, total, cdi):
+        equivalent_rate = 0
+        if total != 0:
+            equivalent_rate = (self.value / total) * self.rate * cdi
+        return equivalent_rate
+
+    def update_equivalent_rate(self, total, cdi):
+        new_equivalent_rate = self._equivalent_rate_calculate(total, cdi)
+
+        percent = 0.0001  # Only update if has a change of 0.01%
+        if abs(self.equivalent_rate - new_equivalent_rate) > percent:
+            self.equivalent_rate = new_equivalent_rate
+            self.save()
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)

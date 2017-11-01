@@ -38,7 +38,6 @@ class CostManagerFactory(factory.DjangoModelFactory):
 
     @factory.post_generation
     def _regular_cost(self, create, *unused_args, **unused_kwargs):
-
         if create:
             return RegularCostFactory.create_batch(18,
                                                    cost_manager=self,

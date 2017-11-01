@@ -9,7 +9,7 @@ class Command(BaseCommand):
         for type_cost in cost_types:
             CostType.objects.get_or_create(
                 **type_cost)
-            print('Cost type {name} was registered'
+            print('\tCost type {name} was registered'
                   .format(**type_cost))
 
     def handle(self, *args, **unused_kwargs):

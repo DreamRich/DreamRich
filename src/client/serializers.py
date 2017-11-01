@@ -10,26 +10,6 @@ from client.models import (
 )
 
 
-class AddressSerializer(serializers.ModelSerializer):
-
-    state_id = serializers.IntegerField(write_only=True)
-    active_client_id = serializers.IntegerField(write_only=True)
-
-    class Meta:
-        model = Address
-        fields = [
-            'city',
-            'type_of_address',
-            'neighborhood',
-            'detail',
-            'cep',
-            'number',
-            'complement',
-            'state_id',
-            'active_client_id'
-        ]
-
-
 class StateSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -55,6 +35,29 @@ class CountrySerializer(serializers.ModelSerializer):
         ]
 
 
+class AddressSerializer(serializers.ModelSerializer):
+
+    state_id = serializers.IntegerField(write_only=True)
+    active_client_id = serializers.IntegerField(write_only=True)
+    state = StateSerializer(read_only=True)
+
+    class Meta:
+        model = Address
+        fields = [
+            'id',
+            'city',
+            'type_of_address',
+            'neighborhood',
+            'detail',
+            'cep',
+            'number',
+            'complement',
+            'state_id',
+            'active_client_id',
+            'state',
+        ]
+
+
 class DependentSerializer(serializers.ModelSerializer):
 
     active_client_id = serializers.IntegerField(write_only=True)
@@ -62,6 +65,7 @@ class DependentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dependent
         fields = [
+            'id',
             'active_client_id',
             'birthday',
             'name',
@@ -76,6 +80,7 @@ class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccount
         fields = [
+            'id',
             'agency',
             'account',
             'active_client_id'
@@ -87,6 +92,7 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = [
+            'id',
             'name',
             'surname',
             'birthday',
@@ -99,9 +105,9 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class ActiveClientSerializer(serializers.ModelSerializer):
     dependents = DependentSerializer(many=True, read_only=True)
-    client_address = AddressSerializer(many=True, read_only=True)
+    addresses = AddressSerializer(many=True, read_only=True)
     spouse = ClientSerializer(read_only=True)
-    client_bank_account = BankAccountSerializer(read_only=True)
+    bank_account = BankAccountSerializer(read_only=True)
 
     id_document = serializers.ImageField(read_only=True)
     proof_of_address = serializers.ImageField(read_only=True)
@@ -111,10 +117,12 @@ class ActiveClientSerializer(serializers.ModelSerializer):
         model = ActiveClient
         fields = ClientSerializer.Meta.fields + [
             'id',
-            'client_address',
+            'addresses',
             'dependents',
             'id_document',
             'proof_of_address',
-            'client_bank_account',
-            'spouse'
+            'bank_account',
+            'spouse',
+            'email',
+            'birthday',
         ]

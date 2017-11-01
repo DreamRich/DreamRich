@@ -2,7 +2,7 @@ import subprocess
 from django.core.management.base import BaseCommand
 from .utils.general import apply_to_all_modules, get_script_name
 
-EXCLUDE_COMMAND = ['--exlude manage.py, __init__.py, migrations']
+EXCLUDE_COMMAND = ['--ignore', 'manage.py,__init__.py,migrations']
 
 
 class Command(BaseCommand):

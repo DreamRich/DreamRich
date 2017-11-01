@@ -9,7 +9,7 @@ class Command(BaseCommand):
         for active_type in active_types:
             ActiveType.objects.get_or_create(
                 **active_type)
-            print('Active type {name} was registered'
+            print('\tActive type {name} was registered'
                   .format(**active_type))
 
     def handle(self, *args, **unused_kwargs):
