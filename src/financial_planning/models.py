@@ -1,6 +1,5 @@
 import datetime
 import numpy
-from django.db.models import Sum
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
@@ -135,7 +134,7 @@ class FinancialPlanning(models.Model):
 
     target_profitability = models.PositiveSmallIntegerField()
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.init_year:
             self.init_year = datetime.datetime.now().year
 

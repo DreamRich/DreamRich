@@ -186,6 +186,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Setting path for files uploaded by the user
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public')
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

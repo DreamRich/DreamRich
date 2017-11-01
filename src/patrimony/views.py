@@ -13,16 +13,16 @@ from patrimony.serializers import (
 )
 
 from patrimony.models import (
-    Patrimony,
-    ActiveType,
     Active,
+    ActiveType,
     ActiveManager,
     Arrearage,
-    RealEstate,
     CompanyParticipation,
     Equipment,
-    LifeInsurance,
     Income,
+    LifeInsurance,
+    Patrimony,
+    RealEstate,
 )
 
 

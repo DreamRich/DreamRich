@@ -75,19 +75,17 @@ class ClientBase(base_models.BaseModel):
     )
 
     def __str__(self):
-        return "{} cpf: ".format(self.name, self.cpf)
+        return "{} cpf: {}".format(self.name, self.cpf)
 
 
 class ActiveClient(BaseUser, ClientBase):
 
     id_document = models.ImageField(
-        upload_to='public/id_documents',
         null=True,
         blank=True
     )
 
     proof_of_address = models.ImageField(
-        upload_to='public/proof_of_address',
         null=True,
         blank=True
     )

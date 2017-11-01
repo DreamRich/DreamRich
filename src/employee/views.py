@@ -8,7 +8,8 @@ from employee.models import (
     FinancialAdviser,
 )
 from dr_auth.permissions import (
-    EmployeesPermission, FinancialAdvisersPermission
+    EmployeesPermission,
+    FinancialAdvisersPermission
 )
 
 

@@ -4,7 +4,7 @@ import yaml
 from dreamrich.settings import BASE_DIR
 
 
-def seed_seed(seed_file_name, seed_function):
+def load_seed(seed_file_name, seed_function):
     file_path = os.path.join(BASE_DIR, 'src', 'dreamrich',
                              'seeds', seed_file_name)
 

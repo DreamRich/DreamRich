@@ -15,8 +15,8 @@ class Command(BaseCommand):
 
     @staticmethod
     def _call_radon_cc(module):
-        returncode = subprocess.call(
-            ['radon', 'cc', '--average', module] + EXCLUDE_COMMAND)
+        returncode = subprocess.call(['radon', 'cc', '--average',
+                                      module] + EXCLUDE_COMMAND)
         return returncode
 
     def handle(self, *args, **unused_kwargs):

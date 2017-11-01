@@ -1,7 +1,6 @@
 """
 All attributes of this file have the annual order of magnitude
 """
-import datetime
 from django.db import models
 
 

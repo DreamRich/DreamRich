@@ -1,27 +1,28 @@
 import datetime
 from django.test import TestCase
+from client.factories import ActiveClientMainFactory
+from financial_planning.models import FlowUnitChange
+from financial_planning.factories import FinancialPlanningFactory
+from patrimony.models import Active
 from patrimony.factories import (
     PatrimonyMainFactory,
     IncomeFactory,
     ActiveManagerFactory,
     ActiveFactory,
-    ArrearageFactory,
+    ArrearageFactory
 )
-from patrimony.models import Active
-from financial_planning.models import FlowUnitChange
-from client.factories import ActiveClientMainFactory
-from financial_planning.factories import FinancialPlanningFactory
 
 
 def _flatten(array):
     def inner(array):
         for item in array:
-            if isinstance(item, list) or isinstance(item, tuple):
-                for x in inner(item):
-                    yield x
+            if isinstance(item, (list, tuple)):
+                for inner_item in inner(item):
+                    yield inner_item
             else:
                 yield item
-    return [x for x in inner(array)]
+
+    return list(inner(array))
 
 
 class PatrimonyTest(TestCase):
@@ -31,7 +32,7 @@ class PatrimonyTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
         self.patrimony.income_set.all().update(value_monthly=1212.2)
-        FinancialPlanningFactory(  # NOQA
+        FinancialPlanningFactory(
             active_client=active_client,
             patrimony=self.patrimony)
         self.common_income = IncomeFactory(value_monthly=round(1200, 2),
@@ -90,32 +91,40 @@ class ActiveManagerTest(TestCase):
         self.active_manager = ActiveManagerFactory(
             patrimony=PatrimonyMainFactory(activemanager=None)
         )
-        [active.delete() for active in self.active_manager.actives.all()]
+
+        for active in self.active_manager.actives.all():
+            active.delete()
+
         data = [{'value': 27000.00, 'rate': 1.1879},
                 {'value': 125000.00, 'rate': 0.7500},
                 {'value': 95000.00, 'rate': 0.9000}]
+
         for active in data:
             ActiveFactory(**active, active_manager=self.active_manager)
-        self.active_manager._update_equivalent_rate()
+
+        self.active_manager.real_profit_cdi()
 
     def test_total_manager(self):
         self.assertAlmostEqual(self.active_manager.total(), 247000, 2)
 
+    # Use real_profit because update_equivalent_rate is internal
     def test_update_equivalent_rates(self):
         equivalents = self.active_manager.actives.values_list(
             'equivalent_rate')
         self.active_manager.CDI = 0.12
-        self.active_manager._update_equivalent_rate()
+        self.active_manager.real_profit_cdi()
         new_equivalents = self.active_manager.actives.values_list(
             'equivalent_rate'
         )
-        self.assertNotEquals(equivalents, new_equivalents)
+
+        self.assertNotEqual(equivalents, new_equivalents)
 
     def test_update_rates_values(self):
         equivalents = [(0.0156,), (0.0455,), (0.0415, )]
         self.active_manager.CDI = 0.12
-        self.active_manager._update_equivalent_rate()
+        self.active_manager.real_profit_cdi()
         new = self.active_manager.actives.values_list('equivalent_rate')
+
         for values in zip(_flatten(equivalents), _flatten(new)):
             self.assertAlmostEqual(values[0], values[1], 4)
 
@@ -141,11 +150,6 @@ class ActiveTest(TestCase):
         self.active.update_equivalent_rate(1000, 0.12)
         new_rate = Active.objects.get(pk=self.active.pk).equivalent_rate
         self.assertNotEqual(new_rate, last_rate)
-
-    def test_update_equivalent_rate(self):
-        self.active.update_equivalent_rate(1000, 0.12)
-        new_rate = Active.objects.get(pk=self.active.pk).equivalent_rate
-        self.assertAlmostEqual(new_rate, 0.0132, 4)
 
     def test_not_update_rate(self):
         self.active.update_equivalent_rate(1000, 0.12)

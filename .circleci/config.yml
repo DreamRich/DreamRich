@@ -1,3 +1,6 @@
+# Check complexity is not used here yet because it will never return errorcode if complexity is high 
+# Most critical aspects are checked first
+
 version: 2
 
 jobs:
@@ -26,6 +29,22 @@ jobs:
           paths:
             - "venv"
       - run:
+          command:
+            . venv/bin/activate
+            python3 manage.py check
+      - run:
+          command: |
+            . venv/bin/activate
+            python3 manage.py make_db
+      - run:
+          command:
+            . venv/bin/activate
+            python3 manage.py load_all
+      - run:
+          command: |
+            . venv/bin/activate
+            python3 manage.py test_report
+      - run:
           command: |
             . venv/bin/activate
             python3 manage.py check_general
@@ -33,15 +52,6 @@ jobs:
           command: |
             . venv/bin/activate
             python3 manage.py check_stylesheet
-      - run:
-          command: |
-            . venv/bin/activate
-            python3 manage.py check_complexity
-      - run:
-          command: |
-            . venv/bin/activate
-            python3 manage.py make_db
-            python3 manage.py test_report
       - store_artifacts:
           path: test-reports/
           destination: tr1

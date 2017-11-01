@@ -8,9 +8,9 @@ from goal.factories import (
 from patrimony.factories import (
     PatrimonyMainFactory,
     ActiveFactory,
-    ActiveManagerFactory,
     ArrearageFactory,
 )
+from lib.financial_planning.flow import create_array_change_annual
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
     CostManagerFactory,
@@ -66,12 +66,13 @@ class FinancialPlanningTest(TestCase):
                                       cost_manager=self.cost_manager)
         FlowUnitChange.objects.create(annual_value=-123.40, year=2022,
                                       cost_manager=self.cost_manager)
-        change_regular_cost = [0, 0, 0, 0, 123.40, -123.40, 0, 0, 0, 0]
+
         flow_regular_cost_change = [2635.1999999999994, 2635.1999999999994,
                                     2635.1999999999994, 2635.1999999999994,
                                     2758.5999999999995, 2635.1999999999994,
                                     2635.1999999999994, 2635.1999999999994,
                                     2635.1999999999994, 2635.1999999999994]
+
         self.assertEqual(flow_regular_cost_change, self.cost_manager.flow())
 
     def test_assets_required(self):
@@ -169,9 +170,9 @@ class RegularCostViewTest(TestCase):
         self.manager = CostManagerFactory()
 
     def test_get_view(self):
-        pk = self.manager.pk
+        primary_key = self.manager.pk
         response = self.client.get('/api/financial_planning/cost_manager/'
-                                   '{}/'.format(pk))
+                                   '{}/'.format(primary_key))
         self.assertEqual(response.status_code, 200)
 
     def test_post_view(self):
@@ -182,13 +183,26 @@ class RegularCostViewTest(TestCase):
                          [('/api/financial_planning/cost_manager/', 301)])
 
     def test_delete_view(self):
-        pk = self.manager.pk
+        primary_key = self.manager.pk
         response = self.client.delete('/api/financial_planning/cost_manager/'
-                                      '{}/'.format(pk))
+                                      '{}/'.format(primary_key))
         self.assertEqual(response.status_code, 204)
 
     def test_update_view(self):
-        pk = self.manager.pk
+        primary_key = self.manager.pk
         response = self.client.put('/api/financial_planning/cost_manager/'
-                                   '{}/'.format(pk))
+                                   '{}/'.format(primary_key))
         self.assertEqual(response.status_code, 200)
+
+
+class FlowTest(TestCase):
+    changes = []
+    change1 = FlowUnitChange(year=2018, annual_value=2000)
+    changes.append(change1)
+    change2 = FlowUnitChange(year=2020, annual_value=-5000)
+    changes.append(change2)
+
+    def test_create_array_change_annual(self):
+        array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
+        self.assertEqual(array_compare, create_array_change_annual(
+            self.changes, 10, 2017))

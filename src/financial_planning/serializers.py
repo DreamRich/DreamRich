@@ -1,7 +1,10 @@
-from financial_planning.models import (
-    RegularCost, CostManager, CostType, FinancialPlanning
-)
 from rest_framework import serializers
+from financial_planning.models import (
+    RegularCost,
+    CostManager,
+    CostType,
+    FinancialPlanning
+)
 
 
 class CostTypeSerializer(serializers.ModelSerializer):

@@ -44,6 +44,9 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+public/*
+src/dreamrich/management/coverage_html/*
+src/dreamrich/management/coverage_data
 
 # Translations
 *.mo

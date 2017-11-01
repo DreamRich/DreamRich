@@ -9,15 +9,15 @@ from client.views import (
     DependentViewSet,
 )
 
-app_name = 'client'  # pylint: disable=invalid-name
+APP_NAME = 'client'
 
-router = routers.DefaultRouter()  # pylint: disable=invalid-name
-router.register(r'^active', ActiveClientViewSet)
-router.register(r'^address', AddressViewSet)
-router.register(r'^state', StateViewSet)
-router.register(r'^country', CountryViewSet)
-router.register(r'^bank-account', BankAccountViewSet)
-router.register(r'^dependent', DependentViewSet)
-router.register(r'', ClientViewSet)
+ROUTER = routers.DefaultRouter()
+ROUTER.register(r'^active', ActiveClientViewSet)
+ROUTER.register(r'^address', AddressViewSet)
+ROUTER.register(r'^state', StateViewSet)
+ROUTER.register(r'^country', CountryViewSet)
+ROUTER.register(r'^bank-account', BankAccountViewSet)
+ROUTER.register(r'^dependent', DependentViewSet)
+ROUTER.register(r'', ClientViewSet)
 
-urlpatterns = router.urls
+urlpatterns = ROUTER.urls

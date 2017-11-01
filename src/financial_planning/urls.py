@@ -8,11 +8,11 @@ from financial_planning.views import (
 )
 
 
-app_name = 'financial_planning'  # pylint: disable=invalid-name
+APP_NAME = 'financial_planning'
 
-router = routers.DefaultRouter()  # pylint: disable=invalid-name
-router.register(r'^regular_cost', RegularCostViewSet)
-router.register(r'^cost_manager', CostManagerViewSet)
-router.register(r'financial_planning', FinancialPlanningViewSet)
+ROUTER = routers.DefaultRouter()
+ROUTER.register(r'^regular_cost', RegularCostViewSet)
+ROUTER.register(r'^cost_manager', CostManagerViewSet)
+ROUTER.register(r'financial_planning', FinancialPlanningViewSet)
 
-urlpatterns = [url(r'cost_type/$', CostTypeViewList.as_view())] + router.urls
+urlpatterns = [url(r'cost_type/$', CostTypeViewList.as_view())] + ROUTER.urls

@@ -1,12 +1,12 @@
+from json import dumps
 from django.test import TestCase, Client as ClientTest
+from django.contrib.auth.models import User
+from rest_framework_jwt.settings import api_settings
+from client.factories import ActiveClientMainFactory
 from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory,
 )
-from client.factories import ActiveClientMainFactory
-from django.contrib.auth.models import User
-from rest_framework_jwt.settings import api_settings
-from json import dumps
 
 
 class AuthTest(TestCase):

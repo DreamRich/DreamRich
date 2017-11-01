@@ -158,16 +158,22 @@ class ArrearageCalculator(models.Model):
 
     def calculate_interest(self, period):
         interest = 0
+
+        value = self.calculate.value
+        calculated_period = self.calculate.period
+        rate = self.calculate.rate
+        provision = self.calculate_provision(period)
+        amortization = self.calculate_amortization(period)
+
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
-            interest = (
-                (self.calculate.value -
-                 (((period - 1) * self.calculate.value)
-                     / self.calculate.period)) *
-                (self.calculate.rate / 100)
-            )
+            interest = ((
+                value - (
+                    (period - 1) * calculated_period / calculated_period
+                )
+            ) * (rate / 100))
         else:
-            interest = self.calculate_provision(
-                period) - self.calculate_amortization(period)
+            interest = provision - amortization
+
         return interest
 
     def calculate_amortization(self, period):
@@ -185,18 +191,21 @@ class ArrearageCalculator(models.Model):
 
     def calculate_provision(self, period):
         provision = 0
+
+        amortization = self.calculate_amortization(period)
+        interest = self.calculate_interest(period)
+        rate = self.calculate.rate
+        value = self.calculate.value
+        calculated_period = self.calculate.period
+
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
-            provision = (
-                self.calculate_amortization(period) +
-                self.calculate_interest(period)
-            )
+            provision = amortization + interest
         else:
             provision = (
-                self.calculate.value *
-                ((self.calculate.rate / 100) /
-                 (1 - (1 + (self.calculate.rate / 100)) **
-                     (- self.calculate.period)))
+                value * (rate / 100) /
+                (1 - (1 + (rate / 100))**(-calculated_period))
             )
+
         return provision
 
 
