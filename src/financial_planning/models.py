@@ -1,5 +1,6 @@
 import datetime
 import numpy
+from django.db.models import Sum
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony

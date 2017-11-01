@@ -4,7 +4,9 @@ from patrimony.factories import (
     PatrimonyMainFactory,
     IncomeFactory,
     ActiveManagerFactory,
-    ActiveFactory)
+    ActiveFactory,
+    ArrearageFactory,
+    )
 from patrimony.models import Active
 from financial_planning.models import FlowUnitChange
 from client.factories import ActiveClientMainFactory
@@ -45,6 +47,7 @@ class PatrimonyTest(TestCase):
                                                   vacation=True)
 
     def test_current_net_investment(self):
+        ArrearageFactory(patrimony=self.patrimony, value=351200.00, period=3)
         self.assertEqual(321200.00, self.patrimony.current_net_investment())
 
     def test_current_property_investment(self):
