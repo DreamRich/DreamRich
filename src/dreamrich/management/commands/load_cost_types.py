@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from financial_planning.models import CostType
-from .utils.seeds import seed_seed
+from .utils.load_general import load_seed
 
 
 class Command(BaseCommand):
@@ -13,4 +13,4 @@ class Command(BaseCommand):
                   .format(**type_cost))
 
     def handle(self, *args, **unused_kwargs):
-        seed_seed('cost_types_seed.yml', self._seed_cost_types)
+        load_seed('cost_types_seed.yml', self._seed_cost_types)

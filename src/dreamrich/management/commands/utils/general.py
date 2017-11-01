@@ -1,5 +1,4 @@
 import os
-import sys
 import subprocess
 from django.core.management.base import CommandError
 from dreamrich.settings import BASE_DIR
@@ -26,9 +25,10 @@ def get_modules():
     modules, _ = remove_trailing.communicate()
 
     if find_error or sed_error or cut_error:
-        print("Some bash command returned an error, is not possible to get" +
-              " the modules list", file=sys.stderr)
-        exit(1)
+        raise CommandError(
+            "Some bash command returned an error, is not possible to get"
+            " the modules list"
+        )
     else:
         modules = modules.decode('utf-8')
         modules = set(modules.split('\n'))
