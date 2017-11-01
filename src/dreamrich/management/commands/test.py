@@ -56,7 +56,7 @@ class Command(BaseCommand):
         local_testrunner = get_runner(settings, options['testrunner'])
 
         test_labels = ('src',) if not test_labels else test_labels
-        
+
         test_runner = local_testrunner(**options)
         failures = test_runner.run_tests(test_labels)
 

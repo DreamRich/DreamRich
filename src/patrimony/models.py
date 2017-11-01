@@ -18,7 +18,7 @@ class Patrimony(models.Model):
     def current_net_investment(self):
         total_active = self.activemanager.total()
         total_arrearage = self.arrearage_set.filter(period__lte=2).aggregate(
-                                                                Sum('value'))
+            Sum('value'))
         total = (total_active
                  - (total_arrearage['value__sum'] or 0))
 
@@ -53,8 +53,8 @@ class Patrimony(models.Model):
         income_changes = self.flowunitchange_set.all()
         duration = self.financialplanning.duration()
         array_change = create_array_change_annual(income_changes, duration,
-                                                  self.financialplanning.\
-                                                        init_year)
+                                                  self.financialplanning.
+                                                  init_year)
         total = self.total_annual_income()
         data = generic_flow(array_change, duration, total)
 
@@ -95,13 +95,13 @@ class ActiveManager(models.Model):
     def real_profit_cdi(self):
         self._update_equivalent_rate()
         total_rate = self.actives.aggregate(
-                Sum('equivalent_rate')
-            ).pop(
-                'equivalent_rate__sum', 0
-            )
+            Sum('equivalent_rate')
+        ).pop(
+            'equivalent_rate__sum', 0
+        )
 
         if self.CDI != 0:
-            return total_rate/self.CDI
+            return total_rate / self.CDI
         return 0
 
 
@@ -112,11 +112,11 @@ class Active(models.Model):
     equivalent_rate = models.FloatField(default=0, blank=True, null=True)
 
     active_type = models.ForeignKey(ActiveType,
-        on_delete=models.CASCADE,
-        related_name='actives')
-    active_manager = models.ForeignKey(ActiveManager, 
-        on_delete=models.CASCADE,
-        related_name='actives')
+                                    on_delete=models.CASCADE,
+                                    related_name='actives')
+    active_manager = models.ForeignKey(ActiveManager,
+                                       on_delete=models.CASCADE,
+                                       related_name='actives')
 
     def _equivalent_rate_calculate(self, total, cdi):
         equivalent_rate = 0
@@ -142,8 +142,9 @@ class ArrearageCalculator(models.Model):
     def calculate_arrearage(self):
         data = []
         outstanding_balance = self.calculate.value
-        for period in range(1, self.calculate.period+1):
-            outstanding_balance = outstanding_balance - self.calculate_amortization(period)
+        for period in range(1, self.calculate.period + 1):
+            outstanding_balance = outstanding_balance - \
+                self.calculate_amortization(period)
             parameter_list = {
                 'period': period,
                 'provision': self.calculate_provision(period),
@@ -160,23 +161,25 @@ class ArrearageCalculator(models.Model):
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             interest = (
                 (self.calculate.value -
-                 (((period - 1)*self.calculate.value)/self.calculate.period)) *
-                (self.calculate.rate/100)
+                 (((period - 1) * self.calculate.value) / self.calculate.period)) *
+                (self.calculate.rate / 100)
             )
         else:
-            interest = self.calculate_provision(period) - self.calculate_amortization(period)
+            interest = self.calculate_provision(
+                period) - self.calculate_amortization(period)
         return interest
 
     def calculate_amortization(self, period):
         amortization = 0
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
-            amortization = self.calculate.value/self.calculate.period
+            amortization = self.calculate.value / self.calculate.period
         else:
             first_amortization = (
                 self.calculate_provision(1) -
-                (self.calculate.value*(self.calculate.rate/100))
+                (self.calculate.value * (self.calculate.rate / 100))
             )
-            amortization = first_amortization * ((1+(self.calculate.rate/100))**(period - 1))
+            amortization = first_amortization * \
+                ((1 + (self.calculate.rate / 100))**(period - 1))
         return amortization
 
     def calculate_provision(self, period):
@@ -189,8 +192,8 @@ class ArrearageCalculator(models.Model):
         else:
             provision = (
                 self.calculate.value *
-                ((self.calculate.rate/100) /
-                 (1-(1+(self.calculate.rate/100))**(-self.calculate.period)))
+                ((self.calculate.rate / 100) /
+                 (1 - (1 + (self.calculate.rate / 100))**(-self.calculate.period)))
             )
         return provision
 
@@ -237,6 +240,7 @@ class RealEstate(models.Model):
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
+
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
@@ -244,6 +248,7 @@ class CompanyParticipation(models.Model):
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
@@ -253,6 +258,7 @@ class Equipment(models.Model):
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
+
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
@@ -261,6 +267,7 @@ class LifeInsurance(models.Model):
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
 
 class Income(models.Model):
     source = models.CharField(max_length=100)

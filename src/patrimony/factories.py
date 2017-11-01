@@ -11,7 +11,6 @@ class ActiveTypeFactory(factory.DjangoModelFactory):
     name = factory.Faker('word')
 
 
-
 class ActiveFactory(factory.DjangoModelFactory):
 
     class Meta:
