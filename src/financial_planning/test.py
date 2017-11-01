@@ -80,7 +80,8 @@ class FinancialPlanningTest(TestCase):
                                4)
 
     def test_remain_necessary_for_retirement_with_high_patrimony(self):
-        ActiveFactory(patrimony=self.patrimony, value=30021200.00)
+        active_manager = self.patrimony.activemanager
+        active_manager.actives.update(value=30021200.00)
         self.assertEqual(self.financial_independece.
                                remain_necessary_for_retirement(), 0)
 

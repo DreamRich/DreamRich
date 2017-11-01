@@ -7,7 +7,7 @@ from dreamrich import models as base_models
 class Country(base_models.BaseModel):
 
     name = models.CharField(
-        max_length=30
+        max_length=50
     )
 
     abbreviation = models.CharField(
@@ -21,7 +21,7 @@ class Country(base_models.BaseModel):
 class State(base_models.BaseModel):
 
     name = models.CharField(
-        max_length=30
+        max_length=50
     )
 
     abbreviation = models.CharField(
@@ -75,7 +75,7 @@ class ClientBase(base_models.BaseModel):
     )
 
     def __str__(self):
-        return "name: {} cpf: {}".format(self.name, self.cpf)
+        return "{} cpf: ".format(self.name, self.cpf)
 
 
 class ActiveClient(BaseUser, ClientBase):
@@ -91,6 +91,9 @@ class ActiveClient(BaseUser, ClientBase):
         null=True,
         blank=True
     )
+
+    def __str__(self):
+        return "{0.name} {0.username}".format(self)
 
 
 class Client(ClientBase):

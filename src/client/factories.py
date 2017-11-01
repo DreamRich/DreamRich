@@ -84,7 +84,7 @@ class ActiveClientMainFactory(ClientFactory):
     client_bank_account = factory.RelatedFactory(BankAccountFactory,
                                                  'active_client')
 
-    username = factory.Faker('word')
+    username = factory.Faker('first_name')
     password = factory.PostGenerationMethodCall('set_password',
                                                 'default123')
     email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))
