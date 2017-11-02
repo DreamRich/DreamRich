@@ -166,6 +166,15 @@ class ActiveChartTest(TestCase):
         data = {'Fundo': 247000, 'Previdencia': 125000}
         self.assertEqual(data, self.active_manager.sum_active_same_type())
 
+    def test_active_type_labels(self):
+        data = ['Fundo', 'Previdencia']
+        self.assertEqual(data, self.active_manager.active_type_labels())
+
+    def test_active_type_data(self):
+        data = [247000, 125000]
+        self.assertEqual(data, self.active_manager.active_type_data())
+
+
 class ActiveTest(TestCase):
 
     def setUp(self):

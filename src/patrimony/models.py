@@ -115,6 +115,18 @@ class ActiveManager(models.Model):
 
         return data
 
+    def active_type_labels(self):
+        data = self.sum_active_same_type()
+        keys = list(data.keys())
+
+        return keys
+
+    def active_type_data(self):
+        data = self.sum_active_same_type()
+        values = list(data.values())
+
+        return values
+
 
 class Active(models.Model):
     name = models.CharField(max_length=100)
