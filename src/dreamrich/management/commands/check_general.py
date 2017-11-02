@@ -20,4 +20,4 @@ class Command(BaseCommand):
         try:
             apply_to_all_modules(self._call_pylint, script_name)
         except CommandError:
-            CommandError("Pylint found errors in your code")
+            raise CommandError("Pylint found errors in your code")
