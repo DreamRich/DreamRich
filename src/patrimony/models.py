@@ -82,7 +82,7 @@ class ActiveType(models.Model):
 class ActiveManager(models.Model):
 
     patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
-    CDI = 0.10
+    cdi = 0.10
 
     def total(self):
         return self.actives.aggregate(Sum('value')).pop('value__sum', 0)
@@ -90,7 +90,7 @@ class ActiveManager(models.Model):
     def _update_equivalent_rate(self):
         total = self.total()
         for active in self.actives.all():
-            active.update_equivalent_rate(total, self.CDI)
+            active.update_equivalent_rate(total, self.cdi)
 
     def real_profit_cdi(self):
         self._update_equivalent_rate()
@@ -100,8 +100,8 @@ class ActiveManager(models.Model):
             'equivalent_rate__sum', 0
         )
 
-        if self.CDI != 0:
-            return total_rate / self.CDI
+        if self.cdi != 0:
+            return total_rate / self.cdi
         return 0
 
 

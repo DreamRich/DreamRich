@@ -111,7 +111,7 @@ class ActiveManagerTest(TestCase):
     def test_update_equivalent_rates(self):
         equivalents = self.active_manager.actives.values_list(
             'equivalent_rate')
-        self.active_manager.CDI = 0.12
+        self.active_manager.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new_equivalents = self.active_manager.actives.values_list(
             'equivalent_rate'
@@ -121,7 +121,7 @@ class ActiveManagerTest(TestCase):
 
     def test_update_rates_values(self):
         equivalents = [(0.0156,), (0.0455,), (0.0415, )]
-        self.active_manager.CDI = 0.12
+        self.active_manager.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new = self.active_manager.actives.values_list('equivalent_rate')
 
@@ -133,7 +133,7 @@ class ActiveManagerTest(TestCase):
             self.active_manager.real_profit_cdi(), 0.8556, 4)
 
     def test_real_profit_cdi_zero(self):
-        self.active_manager.CDI = 0
+        self.active_manager.cdi = 0
         self.assertAlmostEqual(self.active_manager.real_profit_cdi(), 0, 4)
 
 
