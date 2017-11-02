@@ -48,7 +48,8 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
 
         if int(pk) in clients_ids_list:
             try:
-                financial_planning_pk = current_FinancialAdviser.clients.filter(
+                financial_adviser_clients = current_FinancialAdviser.clients
+                financial_planning_pk = financial_adviser_clients.filter(
                     id=pk).get().financialplanning.pk
                 goal_manager_pk = current_FinancialAdviser.clients.filter(
                     id=pk).get().financialplanning.goal_manager.pk
