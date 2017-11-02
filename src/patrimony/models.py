@@ -104,6 +104,29 @@ class ActiveManager(models.Model):
             return total_rate / self.cdi
         return 0
 
+    def sum_active_same_type(self):
+        data = {}
+        actives_type = ActiveType.objects.all()
+        for active_type in actives_type:
+            actives = active_type.actives.filter(active_manager=self)
+            if actives:
+                data[active_type.name] = actives.aggregate(Sum('value')).\
+                    pop('value__sum', 0)
+
+        return data
+
+    def active_type_labels(self):
+        data = self.sum_active_same_type()
+        keys = list(data.keys())
+
+        return keys
+
+    def active_type_data(self):
+        data = self.sum_active_same_type()
+        values = list(data.values())
+
+        return values
+
 
 class Active(models.Model):
     name = models.CharField(max_length=100)
