@@ -9,6 +9,7 @@ from patrimony.factories import (
     IncomeFactory,
     ActiveManagerFactory,
     ActiveFactory,
+    ActiveTypeFactory,
     ArrearageFactory
 )
 
@@ -136,6 +137,34 @@ class ActiveManagerTest(TestCase):
         self.active_manager.cdi = 0
         self.assertAlmostEqual(self.active_manager.real_profit_cdi(), 0, 4)
 
+
+class ActiveChartTest(TestCase):
+    def setUp(self):
+        self.active_manager = ActiveManagerFactory(
+            patrimony=PatrimonyMainFactory(activemanager=None)
+        )
+        fundos = ActiveTypeFactory(name='Fundo')
+        previdencia = ActiveTypeFactory(name='Previdencia')
+
+        for active in self.active_manager.actives.all():
+            active.delete()
+
+        data = [{'value': 27000.00, 'rate': 1.1879},
+                {'value': 125000.00, 'rate': 0.7500},
+                {'value': 95000.00, 'rate': 0.9000}]
+
+        for active in data:
+            ActiveFactory(**active, active_manager=self.active_manager,
+                          active_type=fundos)
+
+        active = ActiveFactory(active_manager=self.active_manager,
+                               active_type=previdencia,
+                               value=125000,
+                               rate = 0.7500)
+
+    def test_sum_active_same_type(self):
+        data = {'Fundo': 247000, 'Previdencia': 125000}
+        self.assertEqual(data, self.active_manager.sum_active_same_type())
 
 class ActiveTest(TestCase):
 
