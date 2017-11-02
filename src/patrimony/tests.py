@@ -160,7 +160,7 @@ class ActiveChartTest(TestCase):
         active = ActiveFactory(active_manager=self.active_manager,
                                active_type=previdencia,
                                value=125000,
-                               rate = 0.7500)
+                               rate=0.7500)
 
     def test_sum_active_same_type(self):
         data = {'Fundo': 247000, 'Previdencia': 125000}
