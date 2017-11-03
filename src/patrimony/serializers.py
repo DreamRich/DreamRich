@@ -13,16 +13,6 @@ from patrimony.models import (
 from rest_framework import serializers
 
 
-class PatrimonySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Patrimony
-        fields = [
-            'fgts',
-            'id',
-        ]
-
-
 class ActiveTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -145,4 +135,30 @@ class IncomeSerializer(serializers.ModelSerializer):
             'thirteenth',
             'vacation',
             'patrimony_id',
+        ]
+
+
+class PatrimonySerializer(serializers.ModelSerializer):
+
+    activemanager = ActiveManagerSerializer(read_only=True)
+    arrearanges = ArrearageSerializer(read_only=True, many=True)
+    realestates = RealEstateSerializer(read_only=True, many=True)
+    companyparticipations = CompanyParticipationSerializer(many=True,
+                                                           read_only=True)
+    equipaments = EquipmentSerializer(many=True, read_only=True)
+    lifeinsurances = LifeInsuranceSerializer(many=True, read_only=True)
+    incomes = IncomeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Patrimony
+        fields = [
+            'fgts',
+            'id',
+            'activemanager',
+            'arrearanges',
+            'realestates',
+            'companyparticipations',
+            'equipaments',
+            'lifeinsurances',
+            'incomes',
         ]

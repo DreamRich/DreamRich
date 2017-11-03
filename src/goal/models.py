@@ -27,7 +27,7 @@ class GoalManager(models.Model):
     def goals_flow_dic(self):
 
         data = []
-        goals = list(self.goal_set.all())
+        goals = list(self.goals.all())
 
         for goal in goals:
             goal_flow_dic = {
@@ -40,7 +40,7 @@ class GoalManager(models.Model):
 
     def matrix_flow_goals(self):
         matrix = []
-        goals = list(self.goal_set.all())
+        goals = list(self.goals.all())
 
         for goal in goals:
             matrix.append(goal.flow)
@@ -63,7 +63,8 @@ class Goal(models.Model):
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
         GoalManager,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='goals'
     )
     goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
 
@@ -90,7 +91,6 @@ class Goal(models.Model):
     def flow(self):
         init_year = self.goal_manager.financialplanning.init_year
         goal_array_flow = []
-        index_goal_end = self.year_end - init_year
 
         if not self.has_end_date:
             index_goal_end = self.goal_manager.financialplanning.duration()

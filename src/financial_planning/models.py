@@ -109,21 +109,25 @@ class FinancialPlanning(models.Model):
     patrimony = models.OneToOneField(
         Patrimony,
         on_delete=models.CASCADE,
+        null=True,
     )
 
     financial_independence = models.OneToOneField(
         FinancialIndependence,
         on_delete=models.CASCADE,
+        null=True,
     )
 
     goal_manager = models.OneToOneField(
         GoalManager,
         on_delete=models.CASCADE,
+        null=True,
     )
 
     cost_manager = models.OneToOneField(
         CostManager,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
     )
 
     init_year = models.PositiveSmallIntegerField(null=True)
