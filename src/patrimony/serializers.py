@@ -57,7 +57,13 @@ class ActiveManagerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ActiveManager
-        fields = ['id', 'patrimony_id', 'actives']
+        fields = [
+            'id',
+            'patrimony_id',
+            'actives',
+            'active_type_labels',
+            'active_type_data',
+        ]
 
 
 class ArrearageSerializer(serializers.ModelSerializer):

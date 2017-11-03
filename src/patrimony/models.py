@@ -111,16 +111,18 @@ class ActiveManager(models.Model):
             actives = active_type.actives.filter(active_manager=self)
             if actives:
                 data[active_type.name] = actives.aggregate(Sum('value')).\
-                    pop('value__sum', 0)
+                                                       pop('value__sum', 0)
 
         return data
 
+    @property
     def active_type_labels(self):
         data = self.sum_active_same_type()
         keys = list(data.keys())
 
         return keys
 
+    @property
     def active_type_data(self):
         data = self.sum_active_same_type()
         values = list(data.values())
