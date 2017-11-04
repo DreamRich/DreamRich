@@ -25,9 +25,9 @@ class FinancialPlanningTest(TestCase):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
-        self.patrimony.income_set.all().update(value_monthly=55000,
-                                               thirteenth=False,
-                                               vacation=False)
+        self.patrimony.incomes.all().update(value_monthly=55000,
+                                            thirteenth=False,
+                                            vacation=False)
         ActiveFactory(value=30000.00,
                       active_manager=self.patrimony.activemanager)
         ActiveFactory(value=321200.00,

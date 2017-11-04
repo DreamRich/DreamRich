@@ -17,7 +17,7 @@ class Patrimony(models.Model):
 
     def current_net_investment(self):
         total_active = self.activemanager.total()
-        total_arrearage = self.arrearage_set.filter(period__lte=2).aggregate(
+        total_arrearage = self.arrearages.filter(period__lte=2).aggregate(
             Sum('value'))
         total = (total_active
                  - (total_arrearage['value__sum'] or 0))
@@ -25,16 +25,16 @@ class Patrimony(models.Model):
         return total
 
     def current_property_investment(self):
-        non_salable_total = self.realestate_set.filter(
+        non_salable_total = self.realestates.filter(
             salable=False).aggregate(Sum('value'))
         non_salable_total = (non_salable_total['value__sum'] or 0)
 
         return non_salable_total
 
     def possible_income_generation(self):
-        total_company_participation = self.companyparticipation_set.all(
+        total_company_participation = self.companyparticipations.all(
         ).aggregate(Sum('value'))
-        total_equipment = self.equipment_set.all().aggregate(Sum('value'))
+        total_equipment = self.equipments.all().aggregate(Sum('value'))
         total = (total_company_participation['value__sum'] or 0) + \
             (total_equipment['value__sum'] or 0) + self.fgts
 
@@ -42,7 +42,7 @@ class Patrimony(models.Model):
 
     def total_annual_income(self):
         total = 0
-        incomes = list(self.income_set.all())
+        incomes = list(self.incomes.all())
 
         for income in incomes:
             total += income.annual()
@@ -64,7 +64,7 @@ class Patrimony(models.Model):
         total_movable_property = self.movableproperty_set.all().aggregate(
             Sum('value'))
         total_movable_property = (total_movable_property['value__sum'] or 0)
-        salable_total = self.realestate_set.filter(
+        salable_total = self.realestates.filter(
             salable=True).aggregate(Sum('value'))
         salable_total = (salable_total['value__sum'] or 0)
 
@@ -111,7 +111,7 @@ class ActiveManager(models.Model):
             actives = active_type.actives.filter(active_manager=self)
             if actives:
                 data[active_type.name] = actives.aggregate(Sum('value')).\
-                                                       pop('value__sum', 0)
+                    pop('value__sum', 0)
 
         return data
 
@@ -256,7 +256,9 @@ class Arrearage(models.Model):
         choices=AMORTIZATION_CHOICES,
         default=AMORTIZATION_CHOICES[0][0]
     )
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.ForeignKey(
+        Patrimony, on_delete=models.CASCADE,
+        related_name='arrearages')
     arrearage_calculator = models.OneToOneField(
         ArrearageCalculator,
         related_name='calculate',
@@ -271,7 +273,10 @@ class RealEstate(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     salable = models.BooleanField()
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='realestates')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
@@ -280,7 +285,11 @@ class RealEstate(models.Model):
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='companyparticipations'
+    )
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
@@ -289,7 +298,10 @@ class CompanyParticipation(models.Model):
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='equipments')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
@@ -299,7 +311,10 @@ class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     redeemable = models.BooleanField()
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='lifeinsurances')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
@@ -310,7 +325,10 @@ class Income(models.Model):
     value_monthly = models.FloatField(default=0)
     thirteenth = models.BooleanField()
     vacation = models.BooleanField()
-    patrimony = models.ForeignKey(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='incomes')
 
     def annual(self):
         total = self.value_monthly * 12

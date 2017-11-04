@@ -111,4 +111,4 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     company = factory.RelatedFactory(CompanyParticipationFactory, 'patrimony')
     equipment = factory.RelatedFactory(EquipmentFactory, 'patrimony')
     life_insurance = factory.RelatedFactory(LifeInsuranceFactory, 'patrimony')
-    income = factory.RelatedFactory(IncomeFactory, 'patrimony')
+    incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')

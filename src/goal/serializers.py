@@ -32,10 +32,13 @@ class GoalSerializer(serializers.ModelSerializer):
 
 class GoalManagerSerializer(serializers.ModelSerializer):
 
+    goals = GoalSerializer(many=True, read_only=True)
+
     class Meta:
         model = GoalManager
         fields = [
             'id',
             'goals_flow_dic',
             'year_init_to_year_end',
+            'goals',
         ]
