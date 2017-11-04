@@ -113,21 +113,13 @@ class ActiveManager(models.Model):
                 data[active_type.name] = actives.aggregate(Sum('value')).\
                                                        pop('value__sum', 0)
 
+        return list(data.keys()), list(data.values())
+
+    @property
+    def active_type_chart(self):
+        labels, values = self.sum_active_same_type()
+        data = {'labels': labels, 'data': values}
         return data
-
-    @property
-    def active_type_labels(self):
-        data = self.sum_active_same_type()
-        keys = list(data.keys())
-
-        return keys
-
-    @property
-    def active_type_data(self):
-        data = self.sum_active_same_type()
-        values = list(data.values())
-
-        return values
 
 
 class Active(models.Model):
