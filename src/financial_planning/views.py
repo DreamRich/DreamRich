@@ -13,6 +13,7 @@ from financial_planning.models import (
     CostType,
     FinancialPlanning,
 )
+from employee.models import FinancialAdviser
 
 
 class CostTypeViewList(generics.ListAPIView):
@@ -36,22 +37,23 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
     queryset = FinancialPlanning.objects.all()
 
     @detail_route(methods=['get'])
+    # pylint: disable=invalid-name, no-self-use
     def respective_clients(self, request, pk=None):
-        current_FinancialAdviser = FinancialAdviser.objects.filter(
+        current_financial_adviser = FinancialAdviser.objects.filter(
             id=request.user.id).get()
         clients_ids_list = []
         # fp = Financial Planning and gm = Goal Manager
         fp_and_gm_pks = {}
-        clients_ids = current_FinancialAdviser.clients.all().values('id')
-        for i in clients_ids:
-            clients_ids_list.append(list(i.values())[0])
+        clients_ids = current_financial_adviser.clients.all().values('id')
+        for ids in clients_ids:
+            clients_ids_list.append(list(ids.values())[0])
 
         if int(pk) in clients_ids_list:
             try:
-                financial_adviser_clients = current_FinancialAdviser.clients
+                financial_adviser_clients = current_financial_adviser.clients
                 financial_planning_pk = financial_adviser_clients.filter(
                     id=pk).get().financialplanning.pk
-                goal_manager_pk = current_FinancialAdviser.clients.filter(
+                goal_manager_pk = current_financial_adviser.clients.filter(
                     id=pk).get().financialplanning.goal_manager.pk
                 fp_and_gm_pks = (
                     {'fp': financial_planning_pk, 'gm': goal_manager_pk})
