@@ -51,8 +51,15 @@ class ActiveManagerSerializer(serializers.ModelSerializer):
             'id',
             'patrimony_id',
             'actives',
-            'active_type_labels',
-            'active_type_data',
+        ]
+
+
+class ActiveChartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ActiveManager
+        fields = [
+            'active_type_chart',
         ]
 
 
