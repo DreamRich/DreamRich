@@ -1,18 +1,20 @@
 - name: Casa
-- name: Conta de luz
+- name: Conta de Luz/Agua
 - name: Academia/Esportes
-- name: taxes
+- name: Impostos
 - name: Combustível/Abastecimento
-- name: insurance
-- name: Telefônia
-- name: Seguro de vida
-- name: Compras de mercado
-- name: housekeeper
-- name: beauty
-- name: Internet
+- name: Seguro(Casa, Carro, Vida)
+- name: Plano de Saude
+- name: Compras de Mercado
+- name: Secretária do Lar
+- name: Estética
+- name: Internet/Cabo/Celular
 - name: Netflix
 - name: Lazer
-- name: meals
-- name: appointments
-- name: drugstore
+- name: Refeições
+- name: Mensalidades
+- name: Farmácia
+- name: Conselhos Regionais
+- name: Ubber
+- name: Pet
 - name: Extras
