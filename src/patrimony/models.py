@@ -262,7 +262,9 @@ class Arrearage(models.Model):
     arrearage_calculator = models.OneToOneField(
         ArrearageCalculator,
         related_name='calculate',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):

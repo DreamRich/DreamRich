@@ -58,10 +58,14 @@ class ActiveManagerSerializer(serializers.ModelSerializer):
 
 class ArrearageSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Arrearage
         fields = [
+            'id',
             'name',
+            'patrimony_id',
             'value',
             'period',
             'rate',
