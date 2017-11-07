@@ -179,16 +179,16 @@ class ArrearageCalculator(models.Model):
         value = self.calculate.value
         calculated_period = self.calculate.period
         rate = self.calculate.rate
-        provision = self.calculate_provision(period)
-        amortization = self.calculate_amortization(period)
 
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             interest = ((
                 value - (
-                    (period - 1) * calculated_period / calculated_period
+                    (period - 1) * value / calculated_period
                 )
             ) * (rate / 100))
         else:
+            provision = self.calculate_provision(period)
+            amortization = self.calculate_amortization(period)
             interest = provision - amortization
 
         return interest
@@ -209,13 +209,13 @@ class ArrearageCalculator(models.Model):
     def calculate_provision(self, period):
         provision = 0
 
-        amortization = self.calculate_amortization(period)
-        interest = self.calculate_interest(period)
         rate = self.calculate.rate
         value = self.calculate.value
         calculated_period = self.calculate.period
 
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+            amortization = self.calculate_amortization(period)
+            interest = self.calculate_interest(period)
             provision = amortization + interest
         else:
             provision = (
