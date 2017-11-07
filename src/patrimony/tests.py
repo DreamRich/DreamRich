@@ -172,8 +172,7 @@ class ActiveChartTest(TestCase):
 
     def test_active_type_labels(self):
         data = ['Fundo', 'Previdencia']
-        data_test = self.active_manager.active_type_chart['labels']
-        data_test.sort()
+        data_test = sorted(self.active_manager.active_type_chart['labels'])
         self.assertEqual(data, data_test)
 
     def test_active_type_data(self):
