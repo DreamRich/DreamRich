@@ -135,6 +135,9 @@ class Active(models.Model):
                                        on_delete=models.CASCADE,
                                        related_name='actives')
 
+    class Meta:
+        unique_together = ('name', 'active_type',)
+
     def _equivalent_rate_calculate(self, total, cdi):
         equivalent_rate = 0
         if total != 0:
