@@ -104,7 +104,8 @@ class ActiveManager(models.Model):
             return total_rate / self.cdi
         return 0
 
-    def sum_active_same_type(self):
+    @property
+    def active_type_chart(self):
         data = {}
         actives_type = ActiveType.objects.all()
         for active_type in actives_type:
@@ -113,13 +114,24 @@ class ActiveManager(models.Model):
                 data[active_type.name] = actives.aggregate(Sum('value')).\
                     pop('value__sum', 0)
 
-        return list(data.keys()), list(data.values())
+        dataset = {'labels': list(data.keys()), 'data': list(data.values())}
+        return dataset
 
-    @property
-    def active_type_chart(self):
-        labels, values = self.sum_active_same_type()
-        data = {'labels': labels, 'data': values}
-        return data
+    def active_chart_dataset(self):
+        data = {}
+        actives_type_name = self.sum_active_same_type['label']
+        print(actives_type_name)
+        for name in actives_type_name:
+            active_type = ActiveType.objects.filter(name=name)[0]
+            print(active_type)
+            print()
+            actives = Active.objects.filter(active_type=active_type,
+                                            active_manager=self)
+            for active in actives:
+                print(active)
+                data[active.name] = active.value
+
+        return list(data.keys()), list(data.values())
 
 
 class Active(models.Model):
