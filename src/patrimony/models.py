@@ -148,7 +148,7 @@ class Active(models.Model):
                                        related_name='actives')
 
     class Meta:
-        unique_together = ('name', 'active_type',)
+        unique_together = ('name', 'active_manager', 'active_type',)
 
     def _equivalent_rate_calculate(self, total, cdi):
         equivalent_rate = 0
