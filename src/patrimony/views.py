@@ -1,8 +1,10 @@
 from rest_framework import viewsets
+# from django.views.generic.detail import DetailView
 from patrimony.serializers import (
     PatrimonySerializer,
     ActiveSerializer,
     ActiveManagerSerializer,
+    ActiveChartSerializer,
     ActiveTypeSerializer,
     ArrearageSerializer,
     RealEstateSerializer,
@@ -33,6 +35,11 @@ class PatrimonyViewSet(viewsets.ModelViewSet):
 
 class ActiveManagerViewSet(viewsets.ModelViewSet):
     serializer_class = ActiveManagerSerializer
+    queryset = ActiveManager.objects.all()
+
+
+class ActiveChartDetailView(viewsets.ModelViewSet):
+    serializer_class = ActiveChartSerializer
     queryset = ActiveManager.objects.all()
 
 

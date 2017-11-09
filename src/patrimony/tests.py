@@ -163,16 +163,24 @@ class ActiveChartTest(TestCase):
                                rate=0.7500)
 
     def test_sum_active_same_type(self):
-        data = {'Fundo': 247000, 'Previdencia': 125000}
-        self.assertEqual(data, self.active_manager.sum_active_same_type())
+        data = (['Fundo', 'Previdencia'], [247000.0, 125000.0])
+        labels, values = self.active_manager.sum_active_same_type()
+        labels.sort()
+        values.sort(reverse=True)
+        test_data = (labels, values)
+        self.assertEqual(data, test_data)
 
     def test_active_type_labels(self):
         data = ['Fundo', 'Previdencia']
-        self.assertEqual(data, self.active_manager.active_type_labels)
+        data_test = self.active_manager.active_type_chart['labels']
+        data_test.sort()
+        self.assertEqual(data, data_test)
 
     def test_active_type_data(self):
         data = [247000, 125000]
-        self.assertEqual(data, self.active_manager.active_type_data)
+        data_test = self.active_manager.active_type_chart['data']
+        data_test.sort(reverse=True)
+        self.assertEqual(data, data_test)
 
 
 class ActiveTest(TestCase):

@@ -10,6 +10,7 @@ from patrimony.views import (
     IncomeViewSet,
     ActiveTypeViewSet,
     ActiveManagerViewSet,
+    ActiveChartDetailView,
 )
 
 
@@ -19,6 +20,7 @@ ROUTER = routers.DefaultRouter()
 ROUTER.register(r'^active', ActiveViewSet)
 ROUTER.register(r'^active_type', ActiveTypeViewSet)
 ROUTER.register(r'^active_manager', ActiveManagerViewSet)
+ROUTER.register(r'^active_chart', ActiveChartDetailView)
 ROUTER.register(r'^arrearage', ArrearageViewSet)
 ROUTER.register(r'^realestate', RealEstateViewSet)
 ROUTER.register(r'^companyparticipation', CompanyParticipationViewSet)
