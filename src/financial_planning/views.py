@@ -17,6 +17,7 @@ from financial_planning.models import (
 from employee.models import FinancialAdviser
 from dr_auth.permissions import FinancialPlanningPermission
 
+
 class CostTypeViewList(generics.ListAPIView):
     serializer_class = CostTypeSerializer
     queryset = CostType.objects.all()
@@ -36,17 +37,18 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
     serializer_class = FinancialPlanningSerializer
     queryset = FinancialPlanning.objects.all()
 
+    # pylint: disable=invalid-name, unused-argument, no-self-use
     @detail_route(methods=['get'])
     def total_resource_for_annual_goals(self, request, pk=None):
-        return Response(FinancialPlanning.objects.filter(pk=pk).get().total_resource_for_annual_goals)
-
+        return Response(FinancialPlanning.objects.filter(pk=pk).get()
+                        .total_resource_for_annual_goals)
 
     @detail_route(methods=['get'])
-    # pylint: disable=invalid-name, no-self-use
     def respective_clients(self, request, pk=None):
-        if FinancialPlanningPermission.has_permission_to_see_chart(request):
+        if FinancialPlanningPermission.has_permission_to_see_chart(
+                request.user):
             current_financial_adviser = FinancialAdviser.objects.filter(
-                id=request.user.id).get()
+                id=self.request.user.id).get()
 
             # fp = Financial Planning and gm = Goal Manager
             fp_and_gm_pks = ()

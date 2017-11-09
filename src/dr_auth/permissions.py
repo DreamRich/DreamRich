@@ -26,7 +26,11 @@ class ClientsPermission(permissions.BasePermission):
 
 
 class FinancialPlanningPermission:
-    def has_permission_to_see_chart(request):
-        if checkers.has_permission(request.user, 'see_own_client_data') and checkers.has_permission(request.user, 'see_financial_adviser_data'):
-            
+
+    @staticmethod
+    def has_permission_to_see_chart(request_user):
+        if checkers.has_permission(request_user, 'see_own_client_data') and \
+                checkers.has_permission(
+                request_user, 'see_financial_adviser_data'):
+
             return True
