@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from django.views.generic.detail import DetailView
+# from django.views.generic.detail import DetailView
 from patrimony.serializers import (
     PatrimonySerializer,
     ActiveSerializer,
@@ -33,7 +33,7 @@ class PatrimonyViewSet(viewsets.ModelViewSet):
     queryset = Patrimony.objects.all()
 
 
-class ActiveManagerViewSet(DetailView):
+class ActiveManagerViewSet(viewsets.ModelViewSet):
     serializer_class = ActiveManagerSerializer
     queryset = ActiveManager.objects.all()
 
