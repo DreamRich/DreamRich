@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.decorators import detail_route
 from django.views.generic.detail import DetailView
 from patrimony.serializers import (
     PatrimonySerializer,
@@ -56,6 +58,14 @@ class ActiveViewSet(viewsets.ModelViewSet):
 class ArrearageViewSet(viewsets.ModelViewSet):
     serializer_class = ArrearageSerializer
     queryset = Arrearage.objects.all()
+
+    # pylint: disable=invalid-name, unused-argument, no-self-use
+    @detail_route(methods=['get'])
+    def list_calculator(self, request, pk=None):
+        arrearage = Arrearage.objects.get(pk=pk)
+        return Response(
+            arrearage.arrearage_calculator.calculate_arrearage
+        )
 
 
 class RealEstateViewSet(viewsets.ModelViewSet):
