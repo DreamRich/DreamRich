@@ -1,6 +1,4 @@
 from rest_framework import viewsets
-from django.views.generic.detail import DetailView
-
 from patrimony.serializers import (
     PatrimonySerializer,
     ActiveSerializer,
