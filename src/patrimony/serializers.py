@@ -65,10 +65,14 @@ class ActiveChartSerializer(serializers.ModelSerializer):
 
 class ArrearageSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Arrearage
         fields = [
+            'id',
             'name',
+            'patrimony_id',
             'value',
             'period',
             'rate',
@@ -152,7 +156,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
     realestates = RealEstateSerializer(read_only=True, many=True)
     companyparticipations = CompanyParticipationSerializer(many=True,
                                                            read_only=True)
-    equipaments = EquipmentSerializer(many=True, read_only=True)
+    equipments = EquipmentSerializer(many=True, read_only=True)
     lifeinsurances = LifeInsuranceSerializer(many=True, read_only=True)
     incomes = IncomeSerializer(many=True, read_only=True)
 
@@ -165,7 +169,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
             'arrearanges',
             'realestates',
             'companyparticipations',
-            'equipaments',
+            'equipments',
             'lifeinsurances',
             'incomes',
         ]
