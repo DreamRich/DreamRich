@@ -58,7 +58,6 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
         model = FinancialPlanning
         fields = [
             'pk',
-            #            'total_resource_for_annual_goals',
             'active_client_id',
             'patrimony_id',
             'financial_independence_id',
