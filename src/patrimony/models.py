@@ -127,7 +127,7 @@ class ActiveManager(models.Model):
     def active_chart_dataset(self):
         data = self.actives.values('name', 'value').order_by('active_type_id')
         keys, values = self.transform_querryset_in_two_list(
-            'name', 'value', data)
+            'value', 'name', data)
         dataset = {'labels': keys, 'data': values}
         return dataset
 

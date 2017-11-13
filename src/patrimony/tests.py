@@ -149,20 +149,19 @@ class ActiveChartTest(TestCase):
         for active in self.active_manager.actives.all():
             active.delete()
 
-        data = [{'value': 27000.00, 'rate': 1.1879},
-                {'value': 125000.00, 'rate': 0.7500},
-                {'value': 95000.00, 'rate': 0.9000}]
+        data = [{'value': 27000.00, 'rate': 1.1879, 'name': 'ativo1'},
+                {'value': 125000.00, 'rate': 0.7500, 'name': 'ativo2'},
+                {'value': 95000.00, 'rate': 0.9000, 'name': 'ativo3'}]
 
         for active in data:
             ActiveFactory(**active, active_manager=self.active_manager,
                           active_type=fundos)
 
         active = ActiveFactory(active_manager=self.active_manager,
-                               active_type=previdencia,
-                               value=125000,
-                               rate=0.7500)
+                               active_type=previdencia, name='ativo4',
+                               value=125000, rate=0.7500)
 
-    def test_sum_active_same_type(self):
+    def test_active_type_chart(self):
         data = {'labels': ['Fundo', 'Previdencia'],
                 'data': [247000.0, 125000.0]}
         data_compare = self.active_manager.active_type_chart
@@ -176,6 +175,12 @@ class ActiveChartTest(TestCase):
     def test_active_type_data(self):
         data = [247000, 125000]
         data_test = self.active_manager.active_type_chart['data']
+        self.assertEqual(data, data_test)
+
+    def test_active_chart_dataset(self):
+        data = {'labels': [27000.00, 125000.00, 95000.00, 125000],
+                'data': ['ativo1', 'ativo2', 'ativo3', 'ativo4']}
+        data_test = self.active_manager.active_chart_dataset
         self.assertEqual(data, data_test)
 
 
