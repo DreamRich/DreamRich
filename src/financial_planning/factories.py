@@ -19,7 +19,7 @@ class CostTypeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.CostType
 
-    name = factory.Faker('word')
+    name = factory.Sequence(lambda n: "RegularCost %03d" % n)
 
 
 class RegularCostFactory(factory.DjangoModelFactory):
