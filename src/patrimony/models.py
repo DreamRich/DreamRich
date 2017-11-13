@@ -114,31 +114,22 @@ class ActiveManager(models.Model):
 
         return keys, values
 
-
     @property
     def active_type_chart(self):
         data = self.actives.order_by('active_type_id').values(
-                    'active_type__name').annotate(Sum('value'))
+            'active_type__name').annotate(Sum('value'))
         keys, values = self.transform_querryset_in_two_list(
-                            'active_type__name', 'value__sum', data)
+            'active_type__name', 'value__sum', data)
         dataset = {'labels': keys, 'data': values}
         return dataset
 
+    @property
     def active_chart_dataset(self):
-        data = {}
-        actives_type_name = self.sum_active_same_type['label']
-        print(actives_type_name)
-        for name in actives_type_name:
-            active_type = ActiveType.objects.filter(name=name)[0]
-            print(active_type)
-            print()
-            actives = Active.objects.filter(active_type=active_type,
-                                            active_manager=self)
-            for active in actives:
-                print(active)
-                data[active.name] = active.value
-
-        return list(data.keys()), list(data.values())
+        data = self.actives.values('name', 'value').order_by('active_type_id')
+        keys, values = self.transform_querryset_in_two_list(
+            'name', 'value', data)
+        dataset = {'labels': keys, 'data': values}
+        return dataset
 
 
 class Active(models.Model):
