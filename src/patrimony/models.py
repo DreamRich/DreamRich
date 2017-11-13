@@ -104,15 +104,23 @@ class ActiveManager(models.Model):
             return total_rate / self.cdi
         return 0
 
+    @staticmethod
+    def transform_querryset_in_two_list(str_key, str_value, data):
+        keys = []
+        values = []
+        for element in data:
+            keys.append(element[str_key])
+            values.append(element[str_value])
+
+        return keys, values
+
+
     @property
     def active_type_chart(self):
         data = self.actives.order_by('active_type_id').values(
                     'active_type__name').annotate(Sum('value'))
-        keys = []
-        values = []
-        for element in data:
-            keys.append(element['active_type__name'])
-            values.append(element['value__sum'])
+        keys, values = self.transform_querryset_in_two_list(
+                            'active_type__name', 'value__sum', data)
         dataset = {'labels': keys, 'data': values}
         return dataset
 

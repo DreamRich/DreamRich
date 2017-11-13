@@ -166,20 +166,16 @@ class ActiveChartTest(TestCase):
         data = {'labels': ['Fundo', 'Previdencia'],
                 'data': [247000.0, 125000.0]}
         data_compare = self.active_manager.active_type_chart
-        data_compare['labels'].sort()
-        data_compare['data'].sort(reverse=True)
         self.assertEqual(data, data_compare)
 
     def test_active_type_labels(self):
         data = ['Fundo', 'Previdencia']
         data_test = self.active_manager.active_type_chart['labels']
-        data_test.sort()
         self.assertEqual(data, data_test)
 
     def test_active_type_data(self):
         data = [247000, 125000]
         data_test = self.active_manager.active_type_chart['data']
-        data_test.sort(reverse=True)
         self.assertEqual(data, data_test)
 
 
