@@ -106,15 +106,14 @@ class ActiveManager(models.Model):
 
     @property
     def active_type_chart(self):
-        data = {}
-        actives_type = ActiveType.objects.all()
-        for active_type in actives_type:
-            actives = active_type.actives.filter(active_manager=self)
-            if actives:
-                data[active_type.name] = actives.aggregate(Sum('value')).\
-                    pop('value__sum', 0)
-
-        dataset = {'labels': list(data.keys()), 'data': list(data.values())}
+        data = self.actives.order_by('active_type_id').values(
+                    'active_type__name').annotate(Sum('value'))
+        keys = []
+        values = []
+        for element in data:
+            keys.append(element['active_type__name'])
+            values.append(element['value__sum'])
+        dataset = {'labels': keys, 'data': values}
         return dataset
 
     def active_chart_dataset(self):
