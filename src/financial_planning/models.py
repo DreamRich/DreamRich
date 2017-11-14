@@ -135,6 +135,7 @@ class FinancialPlanning(models.Model):
         ProtectionManager,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     init_year = models.PositiveSmallIntegerField(null=True)

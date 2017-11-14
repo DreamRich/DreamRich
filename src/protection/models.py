@@ -16,16 +16,35 @@ class EmergencyReserve(models.Model):
 
     mounth_of_protection = models.PositiveSmallIntegerField()
 
+    def necessery_value(self):
+        regular_cost_mounthly = self.protection_manager.financial_planning.\
+                                regular_cost.total
+        total = self.mounth_of_protection*regular_cost_mounthly
+
+        return total
+
+    def risk_gap(self):
+        current_patrimony = self.protection_manager.financial_planning.\
+                            patrimony.current_net_investment
+        necessery_value = self.necessery_value()
+        if current_patrimony < necessery_value:
+            total = current_patrimony - necessery_value
+        else:
+            total = 0
+
+        return total
+
 
 class ProtectionManager(models.Model):
 
     reserve_in_lack = models.OneToOneField(
         ReserveInLack,
         on_delete=models.CASCADE,
+        related_name='protection_manager',
     )
 
     emergency_reserve = models.OneToOneField(
         EmergencyReserve,
         on_delete=models.CASCADE,
-        null=True
+        related_name='protection_manager',
     )
