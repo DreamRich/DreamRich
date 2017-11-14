@@ -19,12 +19,12 @@ class BaseUser(User):
         return permissions
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        if not self.pk:
-            if not self.password:
-                self.password = 'default123'
+        if not self.pk:  # not registered
+            self.username = self.cpf  # user can't change password
+
+            self.password = 'default123' if not self.password \
+                else self.password  # must generate random, not ok yetd
             self.set_password(self.password)
 
-        self.username = self.cpf
         self.full_clean()
-
         super(BaseUser, self).save(*args, **kwargs)
