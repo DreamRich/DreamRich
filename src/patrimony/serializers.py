@@ -144,6 +144,7 @@ class IncomeSerializer(serializers.ModelSerializer):
             'source',
             'value_monthly',
             'thirteenth',
+            'fourteenth',
             'vacation',
             'patrimony_id',
         ]
