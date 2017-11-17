@@ -18,17 +18,17 @@ class EmergencyReserve(models.Model):
 
     def necessery_value(self):
         regular_cost_mounthly = self.protection_manager.financial_planning.\
-                                regular_cost.total
-        total = self.mounth_of_protection*regular_cost_mounthly
+            cost_manager.total()
+        total = self.mounth_of_protection * regular_cost_mounthly
 
         return total
 
     def risk_gap(self):
         current_patrimony = self.protection_manager.financial_planning.\
-                            patrimony.current_net_investment
+            patrimony.current_net_investment()
         necessery_value = self.necessery_value()
         if current_patrimony < necessery_value:
-            total = current_patrimony - necessery_value
+            total = necessery_value - current_patrimony
         else:
             total = 0
 
