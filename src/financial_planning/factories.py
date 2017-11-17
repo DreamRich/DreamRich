@@ -2,6 +2,7 @@ import factory
 from client.factories import ActiveClientMainFactory
 from patrimony.factories import PatrimonyMainFactory
 from goal.factories import GoalManagerFactory, GoalFactory
+from protection.factories import ProtectionManagerFactory
 from . import models
 
 
@@ -56,6 +57,7 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
     cost_manager = factory.SubFactory(CostManagerFactory)
+    protection_manager = factory.SubFactory(ProtectionManagerFactory)
     target_profitability = 110
     cdi = round(0.1213, 4)
     ipca = round(0.075, 4)

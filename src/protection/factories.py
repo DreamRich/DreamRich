@@ -1,4 +1,8 @@
-from protection.models import ReserveInLack, EmergencyReserve
+from protection.models import (
+    ReserveInLack,
+    EmergencyReserve,
+    ProtectionManager,
+)
 import factory
 
 
@@ -19,3 +23,13 @@ class EmergencyReserveFactory(factory.DjangoModelFactory):
         model = EmergencyReserve
 
     mounth_of_protection = factory.fuzzy.FuzzyInteger(0, 12)
+
+
+class ProtectionManagerFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = ProtectionManager
+
+    reserve_in_lack = factory.SubFactory(ReserveInLackFactory)
+
+    emergency_reserve = factory.SubFactory(EmergencyReserveFactory)

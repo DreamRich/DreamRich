@@ -9,6 +9,7 @@ from lib.financial_planning.flow import (
     create_array_change_annual,
 )
 from lib.profit.profit import actual_rate
+from protection.models import ProtectionManager
 
 
 class FinancialIndependence(models.Model):
@@ -128,6 +129,13 @@ class FinancialPlanning(models.Model):
         CostManager,
         on_delete=models.CASCADE,
         null=True,
+    )
+
+    protection_manager = models.OneToOneField(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='financial_planning'
     )
 
     init_year = models.PositiveSmallIntegerField(null=True)
