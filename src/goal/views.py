@@ -13,8 +13,29 @@ from goal.models import (
 
 
 class GoalViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a goal instance.
+
+    list:
+        Return all goals, ordered by most recently joined.
+
+    create:
+        Create a new goal.
+
+    delete:
+        Remove an existing goal.
+
+    partial_update:
+        Update one or more fields on an existing goal.
+
+    update:
+        Update a goal.
+    """
+
     serializer_class = GoalSerializer
     queryset = Goal.objects.all()
+   
 
 
 class GoalTypeViewSet(viewsets.ModelViewSet):
