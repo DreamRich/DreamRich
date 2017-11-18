@@ -173,3 +173,63 @@ class ClientPermissionsTest(TestCase):
                                           'password': 'default123'})
 
         self.assertEqual(response.status_code, 403)
+
+    def test_client_get_other_client_data(self):
+        address_other_client_id = self.other_active_client.addresses.last().id
+
+        route = '/api/client/address/' + str(address_other_client_id) + '/'
+
+        response = self.django_client.get(route,
+                                          {'username':
+                                          self.active_client.username,
+                                          'password': 'default123'})
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_client_put_other_client_data(self):
+        other_client_id = self.other_active_client.pk
+        other_state_id = self.other_active_client.addresses.last().state_id
+        other_address_client_id = self.other_active_client.addresses.last().id
+
+        route = ('/api/client/address/' + str(address_client_id) + '/')
+
+        response = self.django_client.put(
+            route,
+            json.dumps({
+                'username': self.active_client.username,
+                'password': 'default123',
+                'id': address_client_id,
+                'city': 'Gama',
+                'type_of_address': 'type0',
+                'neighborhood': 'neighborhood0',
+                'detail': 'detail0',
+                'cep': '7000000',
+                'number': 9965,
+                'complement': 'complement0',
+                'state_id': state_id,
+                'active_client_id': client_id,
+             }),
+             content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_client_permissions_data_post(self):
+        route = '/api/client/address/'
+
+        response = self.django_client.post(
+                    route,
+                    json.dumps({
+                        'city': 'asdf',
+                        'type_of_address': 'asdf',
+                        'neighborhood': 'This field is re',
+                        'detail': 'This field is required.',
+                        'cep': '71963000',
+                        'number': '8787',
+                        'complement': 'Ts required.',
+                        'state_id': '1',
+                        'active_client_id': str(self.active_client.pk)
+                    }),
+                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 403)
