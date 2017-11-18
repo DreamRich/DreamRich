@@ -1,8 +1,8 @@
 from json import dumps
 from django.test import TestCase, Client as DjangoClient
 from django.contrib.auth.models import User
-from rest_framework_jwt.settings import api_settings
 from client.factories import ActiveClientMainFactory
+from dreamrich.utils import get_token
 from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory,
@@ -17,31 +17,26 @@ class AuthTest(TestCase):
         self.active_client = ActiveClientMainFactory()
         self.django_client = DjangoClient()
 
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        payload = jwt_payload_handler(self.employee)
-        self.token = jwt_encode_handler(payload)
-
     def test_get_token(self):
         response = self.django_client.post('/api/auth/',
                                          {'username': self.employee.username,
                                           'password': 'default123'})
-        self.assertEqual(response.status_code, 200)
 
+        self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data['token'] is not None)
 
-    def test_permission_employee(self):
+    def test_assign_permissions_employee(self):
         response = self.django_client.post('/api/auth/',
                                          {'username': self.employee.username,
                                           'password': 'default123'})
+
         response_permissions = response.data['permissions']
         must_have_permissions = ('allow_any, see_all_basic_client_data, '
                                  'see_employee_data')
 
         self.assertEqual(response_permissions, must_have_permissions)
 
-    def test_permission_financial_adviser(self):
+    def test_assign_permissions_financial_adviser(self):
         response = self.django_client.post('/api/auth/',
                                          {'username': self.financial_adviser
                                           .username,
@@ -58,7 +53,7 @@ class AuthTest(TestCase):
         self.assertEqual(response_permissions, must_have_permissions)
 
 
-    def test_permission_active_client(self):
+    def test_assign_permissions_active_client(self):
         response = self.django_client.post('/api/auth/',
                                          {'username': self.active_client
                                           .username,
@@ -84,13 +79,14 @@ class PasswordChange(TestCase):
         self.django_client = DjangoClient()
 
     def test_user_change_password(self):
-        response = self.django_client.post('/api/auth/password/',
-                                         {'userid': self.user.pk,
-                                          'password': 'default123',
-                                          'new_password': 'DEFAULT123',
-                                          'new_password_confirmation':
-                                          'DEFAULT123',
-                                          })
+        header = 'Authorization: JWT ' + get_token(self.user),
+        response = self.django_client.post( '/api/auth/',
+                                           {'userid': self.user.pk,
+                                            'password': 'default123',
+                                            'new_password': 'DEFAULT123',
+                                            'new_password_confirmation':
+                                            'DEFAULT123',
+                                            })
 
         self.assertEqual(response.data, dumps({'detail': 'password changed'}))
 
