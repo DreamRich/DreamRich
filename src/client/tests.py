@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client as DjangoClient
 from django.core.exceptions import ValidationError
 from client.models import (
     ActiveClient,
@@ -9,6 +9,7 @@ from client.factories import (
     ActiveClientMainFactory,
     ClientFactory,
 )
+import json
 
 
 class ClientModelTest(TestCase):
@@ -91,3 +92,84 @@ class ClientModelTest(TestCase):
 
         with self.assertRaises(ValidationError):
             active_client2.save()
+
+
+class ClientPermissionsTest(TestCase):
+    # Not special reasons on choices for routes, just ordinarys
+
+    def setUp(self):
+        self.django_client = DjangoClient()
+
+        self.active_client = ActiveClientMainFactory()
+        self.other_active_client = ActiveClientMainFactory()
+
+    def test_client_own_data_get(self):
+        address_client_id = self.active_client.addresses.last().id
+        route = ('/api/client/address/' + str(address_client_id) + '/')
+        response = self.django_client.get(route,
+                                         {'username':
+                                           self.active_client.username,
+                                          'password': 'default123'})
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_client_own_data_put(self):
+        client_id = self.active_client.pk
+        state_id = self.active_client.addresses.last().state_id
+        address_client_id = self.active_client.addresses.last().id
+
+        route = ('/api/client/address/' + str(address_client_id) + '/')
+
+        response = self.django_client.put(
+            route,
+            json.dumps({
+                'username': self.active_client.username,
+                'password': 'default123',
+                'id': address_client_id,
+                'city': 'Gama',
+                'type_of_address': 'type0',
+                'neighborhood': 'neighborhood0',
+                'detail': 'detail0',
+                'cep': '7000000',
+                'number': 9965,
+                'complement': 'complement0',
+                'state_id': state_id,
+                'active_client_id': client_id,
+             }),
+             content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_client_own_data_patch(self):
+        client_id = self.active_client.pk
+        address_client_id = self.active_client.addresses.last().id
+        state_id = self.active_client.addresses.last().state_id
+
+        route = ('/api/client/address/' + str(address_client_id) + '/')
+
+        response = self.django_client.patch(
+            route,
+            json.dumps({
+                'username': self.active_client.username,
+                'password': 'default123',
+                'city': 'Gama',
+                'state_id': state_id,
+                'active_client_id': client_id,
+             }),
+             content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_client_own_data_delete(self):
+        address_client_id = self.active_client.addresses.last().id
+
+        route = ('/api/client/address/' + str(address_client_id) + '/')
+
+        response = self.django_client.get(route,
+                                         {'username':
+                                           self.active_client.username,
+                                          'password': 'default123'})
+
+        self.assertEqual(response.status_code, 403)
