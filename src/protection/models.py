@@ -1,4 +1,5 @@
 from django.db import models
+import numpy
 
 
 class ReserveInLack(models.Model):
@@ -10,6 +11,25 @@ class ReserveInLack(models.Model):
     value_60_to_120_mounth = models.PositiveSmallIntegerField()
 
     value_120_to_240_mounth = models.PositiveSmallIntegerField()
+
+    def patrimony_necessery_in_period(self, mounth_quantities, value):
+        rate = self.protection_manager.financial_planning.real_gain()
+        return numpy.pv(rate, mounth_quantities, -value)
+
+    def patrimony_necessery_total(self):
+        portion_0_to_24_mounth = self.patrimony_necessery_in_period(
+            24, self.value_0_to_24_mounth)
+        portion_24_to_60_mounth = self.patrimony_necessery_in_period(
+            36, self.value_24_to_60_mounth)
+        portion_60_to_120_mounth = self.patrimony_necessery_in_period(
+            60, self.value_60_to_120_mounth)
+        portion_120_to_240_mounth = self.patrimony_necessery_in_period(
+            120, self.value_120_to_240_mounth)
+
+        total = portion_0_to_24_mounth + portion_24_to_60_mounth +\
+            portion_60_to_120_mounth + portion_120_to_240_mounth
+
+        return total
 
 
 class EmergencyReserve(models.Model):
