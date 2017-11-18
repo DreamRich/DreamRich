@@ -1,25 +1,21 @@
-from rest_framework import permissions
-from rolepermissions import checkers
+from rest_framework.permissions import BasePermission
+from rolepermissions.checkers import has_permission
 
 
-class FinancialAdvisersPermission(permissions.BasePermission):
+class FinancialAdvisersPermission(BasePermission):
     def has_permission(self, request, view):
-        if checkers.has_permission(request.user, 'see_financial_adviser_data'):
+        has_permission(request.user, 'see_financial_adviser_data')
+
+
+class EmployeesPermission(BasePermission):
+    def has_permission(self, request, view):
+        if (has_permission(request.user, 'see_employee_data') and not
+            has_permission(request.user, 'see_financial_adviser_data')):
+            view.queryset = view.queryset.filter(id=request.user.id)
             return True
         return False
 
 
-class EmployeesPermission(permissions.BasePermission):
+class ClientsPermission(BasePermission):
     def has_permission(self, request, view):
-        if checkers.has_permission(request.user, 'see_employee_data') \
-            and not checkers.has_permission(
-                request.user, 'see_financial_adviser_data'):
-            view.queryset = view.queryset.values().filter(id=request.user.id)
-        return True
-
-
-class ClientsPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if checkers.has_permission(request.user, 'change_own_client_data'):
-            return True
-        return False
+        has_permission(request.user, 'change_own_client_data')
