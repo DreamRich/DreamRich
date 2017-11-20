@@ -106,12 +106,14 @@ class FinancialPlanning(models.Model):
         ActiveClient,
         on_delete=models.CASCADE,
         primary_key=True,
+        related_name='financial_planning'
     )
 
     patrimony = models.OneToOneField(
         Patrimony,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     financial_independence = models.OneToOneField(
