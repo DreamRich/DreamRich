@@ -16,6 +16,7 @@ class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
+    rate = models.FloatField()
 
     def assets_required(self):
         rate = self.financialplanning.real_gain()
@@ -169,14 +170,11 @@ class FinancialPlanning(models.Model):
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def annual_leftovers_for_goal(self):
-
+    def annual_leftovers(self, remain_necessary_for_retirement,
+                         spent_with_annual_protection):
         income_flow = self.patrimony.income_flow()
         regular_cost_flow = self.cost_manager.flow()
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
-        remain_necessary_for_retirement = self.financial_independence.\
-            remain_necessary_for_retirement()
-        spent_with_annual_protection = 2000
 
         data = []
 
@@ -188,6 +186,18 @@ class FinancialPlanning(models.Model):
                 spent_with_annual_protection
 
             data.append(actual_leftovers_for_goals)
+
+        return data
+
+
+    def annual_leftovers_for_goal(self):
+
+        remain_necessary_for_retirement = self.financial_independence.\
+            remain_necessary_for_retirement()
+        spent_with_annual_protection = 2000
+
+        data = self.annual_leftovers(remain_necessary_for_retirement,
+                                     spent_with_annual_protection)
 
         return data
 
