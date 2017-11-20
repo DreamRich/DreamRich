@@ -17,6 +17,9 @@ from financial_planning.factories import (
     FinancialIndependenceFactory,
     FinancialPlanningFactory
 )
+from rest_framework.test import APIClient
+from dreamrich.utils import get_token
+from employee.factories import FinancialAdviserMainFactory
 
 
 class FinancialPlanningTest(TestCase):
@@ -166,8 +169,11 @@ class FinancialPlanningTest(TestCase):
 class RegularCostViewTest(TestCase):
 
     def setUp(self):
-        self.client = Client()
+        self.client = APIClient()
         self.manager = CostManagerFactory()
+        financial_adviser = FinancialAdviserMainFactory()
+        self.client.credentials(HTTP_AUTHORIZATION='JWT '
+                                '{}'.format(get_token(financial_adviser)))
 
     def test_get_view(self):
         primary_key = self.manager.pk

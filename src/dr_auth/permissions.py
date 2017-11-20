@@ -4,7 +4,7 @@ from rolepermissions.checkers import has_permission
 
 class FinancialAdvisersPermission(BasePermission):
     def has_permission(self, request, view):
-        has_permission(request.user, 'see_financial_adviser_data')
+        return has_permission(request.user, 'see_financial_adviser_data')
 
 
 class EmployeesPermission(BasePermission):
@@ -18,4 +18,4 @@ class EmployeesPermission(BasePermission):
 
 class ClientsPermission(BasePermission):
     def has_permission(self, request, view):
-        has_permission(request.user, 'change_own_client_data')
+        return has_permission(request.user, 'change_own_client_data')

@@ -1,19 +1,13 @@
 from json import dumps
 from django.test import TestCase, Client as DjangoClient
+from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from client.factories import ActiveClientMainFactory
-# from dreamrich.utils import get_token
-from rest_framework_jwt.settings import api_settings
+from dreamrich.utils import get_token
 from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory,
 )
-
-
-def get_token(user):
-    payload = api_settings.JWT_PAYLOAD_HANDLER(user)
-    token = api_settings.JWT_ENCODE_HANDLER(payload)
-    return token
 
 
 class AuthTest(TestCase):
@@ -82,8 +76,9 @@ class PasswordChange(TestCase):
 
     def setUp(self):
         self.user = EmployeeMainFactory()
-        self.django_client = DjangoClient()
         self.token = 'JWT {}'.format(get_token(self.user))
+        self.django_client = APIClient()
+        self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     def test_user_change_password(self):
         response = self.django_client.post('/api/auth/password/',
@@ -93,8 +88,7 @@ class PasswordChange(TestCase):
                                                'new_password': 'DEFAULT123',
                                                'new_password_confirmation':
                                                'DEFAULT123',
-                                           },
-                                           HTTP_AUTHORIZATION=self.token)
+                                           })
 
         self.assertEqual(response.data, dumps({'detail': 'password changed'}))
 
@@ -104,8 +98,7 @@ class PasswordChange(TestCase):
                                  'password': 'default123',
                                  'new_password': 'DEFAULT123',
                                  'new_password_confirmation': 'DEFAULT123',
-                                 },
-                                HTTP_AUTHORIZATION=self.token)
+                                 })
 
         user = User.objects.get(pk=self.user.pk)
         self.assertTrue(user.check_password('DEFAULT123'))
@@ -117,8 +110,7 @@ class PasswordChange(TestCase):
                                             'new_password': 'default123',
                                             'new_password_confirmation':
                                             'DEFAULT123',
-                                            },
-                                           HTTP_AUTHORIZATION=self.token)
+                                            })
 
         self.assertEqual(
             response.data, dumps({'detail': 'different password'})
@@ -131,8 +123,7 @@ class PasswordChange(TestCase):
                                             'new_password': 'DEFAULT123',
                                             'new_password_confirmation':
                                             'DEFAULT123',
-                                            },
-                                           HTTP_AUTHORIZATION=self.token)
+                                            })
         self.assertEqual(
             response.data, dumps({'detail': 'invalid password'})
         )
@@ -144,8 +135,7 @@ class PasswordChange(TestCase):
                                             'new_password': 'DEFAULT123',
                                             'new_password_confirmation':
                                             'DEFAULT123',
-                                            },
-                                           HTTP_AUTHORIZATION=self.token)
+                                            })
 
         self.assertEqual(
             response.data, dumps({'detail': 'user not found'})
