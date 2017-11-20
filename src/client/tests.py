@@ -107,9 +107,9 @@ class ClientPermissionsTest(TestCase):
         address_client_id = self.active_client.addresses.last().id
         route = ('/api/client/address/' + str(address_client_id) + '/')
         response = self.django_client.get(route,
-                                         {'username':
+                                          {'username':
                                            self.active_client.username,
-                                          'password': 'default123'})
+                                           'password': 'default123'})
 
         self.assertEqual(response.status_code, 200)
 
@@ -135,8 +135,8 @@ class ClientPermissionsTest(TestCase):
                 'complement': 'complement0',
                 'state_id': state_id,
                 'active_client_id': client_id,
-             }),
-             content_type='application/json'
+            }),
+            content_type='application/json'
         )
 
         self.assertEqual(response.status_code, 403)
@@ -156,8 +156,8 @@ class ClientPermissionsTest(TestCase):
                 'city': 'Gama',
                 'state_id': state_id,
                 'active_client_id': client_id,
-             }),
-             content_type='application/json'
+            }),
+            content_type='application/json'
         )
 
         self.assertEqual(response.status_code, 403)
@@ -168,9 +168,9 @@ class ClientPermissionsTest(TestCase):
         route = ('/api/client/address/' + str(address_client_id) + '/')
 
         response = self.django_client.get(route,
-                                         {'username':
+                                          {'username':
                                            self.active_client.username,
-                                          'password': 'default123'})
+                                           'password': 'default123'})
 
         self.assertEqual(response.status_code, 403)
 
@@ -181,8 +181,8 @@ class ClientPermissionsTest(TestCase):
 
         response = self.django_client.get(route,
                                           {'username':
-                                          self.active_client.username,
-                                          'password': 'default123'})
+                                           self.active_client.username,
+                                           'password': 'default123'})
 
         self.assertEqual(response.status_code, 403)
 
@@ -208,8 +208,8 @@ class ClientPermissionsTest(TestCase):
                 'complement': 'complement0',
                 'state_id': state_id,
                 'active_client_id': client_id,
-             }),
-             content_type='application/json'
+            }),
+            content_type='application/json'
         )
 
         self.assertEqual(response.status_code, 403)
@@ -218,9 +218,9 @@ class ClientPermissionsTest(TestCase):
         route = '/api/client/address/'
 
         response = self.django_client.post(
-                    route,
-                    json.dumps({
-                        'city': 'asdf',
+            route,
+            json.dumps({
+                'city': 'asdf',
                         'type_of_address': 'asdf',
                         'neighborhood': 'This field is re',
                         'detail': 'This field is required.',
@@ -229,7 +229,7 @@ class ClientPermissionsTest(TestCase):
                         'complement': 'Ts required.',
                         'state_id': '1',
                         'active_client_id': str(self.active_client.pk)
-                    }),
-                    content_type='application/json')
+            }),
+            content_type='application/json')
 
         self.assertEqual(response.status_code, 403)

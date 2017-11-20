@@ -62,7 +62,7 @@ class StateViewSet(viewsets.ModelViewSet):
         country_id = request.query_params.get('country_id', None)
 
         states = State.objects.filter(country_id=country_id) if country_id \
-                else self.queryset
+            else self.queryset
 
         serializer = StateSerializer(states, many=True)
 
