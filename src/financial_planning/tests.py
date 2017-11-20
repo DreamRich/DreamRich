@@ -118,6 +118,11 @@ class FinancialPlanningTest(TestCase):
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
 
+    def test_annual_leftovers_without_change(self):
+        array = [647364.8, 647364.8, 647364.8, 647364.8, 647364.8, 647364.8,
+                 647364.8, 647364.8, 647364.8, 647364.8]
+        self.assertEqual(self.financial_planning.annual_leftovers(), array)
+
     def test_annual_leftovers_for_goal_with_change(self):
         FlowUnitChange.objects.create(annual_value=2000.00, year=2018,
                                       incomes=self.patrimony)
@@ -153,6 +158,15 @@ class FinancialPlanningTest(TestCase):
 
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
+
+    def test_flow_patrimony(self):
+        array = [647364.8, 1319372.6002455815, 2027906.368647767,
+                2774951.418992036, 3562600.973793622, 4393062.0295134,
+                5268661.54056872, 6191852.939466794, 7165223.011330091,
+                8191499.142076154]
+
+        self.assertEqual(self.financial_planning.flow_patrimony, array)
+
 
     def test_save_financial_planning(self):
         financial_planning = FinancialPlanningFactory(init_year=None)
