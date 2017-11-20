@@ -19,18 +19,18 @@ class FinancialIndependence(models.Model):
     rate = models.FloatField()
 
     def assets_required(self):
-        rate = self.financialplanning.real_gain()
+        rate = self.financial_planning.real_gain()
 
         return numpy.pv(rate, self.duration_of_usufruct,
                         -self.remain_patrimony * 12)
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
-        rate_dic = self.financialplanning.real_gain_related_cdi()
-        target_profitability = self.financialplanning.target_profitability
+        rate_dic = self.financial_planning.real_gain_related_cdi()
+        target_profitability = self.financial_planning.target_profitability
         rate_target_profitability = rate_dic[target_profitability]
-        years_for_retirement = self.financialplanning.duration()
-        current_net_investment = self.financialplanning.patrimony.\
+        years_for_retirement = self.financial_planning.duration()
+        current_net_investment = self.financial_planning.patrimony.\
             current_net_investment()
         total = numpy.pmt(rate_target_profitability, years_for_retirement,
                           current_net_investment, assets_required)
@@ -61,9 +61,9 @@ class CostManager(models.Model):
 
     def flow(self):
         cost_changes = self.flowunitchange_set.all()
-        duration = self.financialplanning.duration()
+        duration = self.financial_planning.duration()
         array_change = create_array_change_annual(cost_changes, duration,
-                                                  self.financialplanning.
+                                                  self.financial_planning.
                                                   init_year)
         total_annual = self.total() * 12
         data = generic_flow(array_change, duration, total_annual)
@@ -118,6 +118,7 @@ class FinancialPlanning(models.Model):
         FinancialIndependence,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     goal_manager = models.OneToOneField(
@@ -131,6 +132,7 @@ class FinancialPlanning(models.Model):
         CostManager,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     protection_manager = models.OneToOneField(
