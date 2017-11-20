@@ -19,6 +19,38 @@ from financial_planning.factories import (
 )
 
 
+class FinancialIndependence(TestCase):
+    def setUp(self):
+        self.financial_independece = FinancialIndependenceFactory(
+            duration_of_usufruct=35,
+            remain_patrimony=30000,
+        )
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        self.financial_planning = FinancialPlanningFactory(
+            active_client=active_client,
+            financial_independence=self.financial_independece,
+        )
+
+    def test_assets_required(self):
+        self.assertAlmostEqual(self.financial_independece.assets_required(),
+                               6447963.5463578859,
+                               4)
+
+    def test_remain_necessary_for_retirement_with_high_patrimony(self):
+        active_manager = self.financial_planning.patrimony.activemanager
+        active_manager.actives.update(value=30021200.00)
+        self.assertEqual(self.financial_independece.
+                         remain_necessary_for_retirement(), 0)
+
+    def test_remain_necessary_for_retirement(self):
+        self.financial_planning.active_client.\
+            birthday = datetime.datetime(1978, 1, 1)
+        self.assertAlmostEqual(self.financial_independece.
+                               remain_necessary_for_retirement(),
+                               12156.118288258309, 4)
+
+
 class FinancialPlanningTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
@@ -74,24 +106,6 @@ class FinancialPlanningTest(TestCase):
                                     2635.1999999999994, 2635.1999999999994]
 
         self.assertEqual(flow_regular_cost_change, self.cost_manager.flow())
-
-    def test_assets_required(self):
-        self.assertAlmostEqual(self.financial_independece.assets_required(),
-                               6447963.5463578859,
-                               4)
-
-    def test_remain_necessary_for_retirement_with_high_patrimony(self):
-        active_manager = self.patrimony.activemanager
-        active_manager.actives.update(value=30021200.00)
-        self.assertEqual(self.financial_independece.
-                         remain_necessary_for_retirement(), 0)
-
-    def test_remain_necessary_for_retirement(self):
-        self.financial_planning.active_client.\
-            birthday = datetime.datetime(1978, 1, 1)
-        self.assertAlmostEqual(self.financial_independece.
-                               remain_necessary_for_retirement(),
-                               12156.118288258309, 4)
 
     def test_real_gain_related_cdi(self):
         data = {80: 0.02050232558139542, 85: 0.026144186046511697,

@@ -1,7 +1,8 @@
-- name: Moradia/Mobília
+- name: Moradia
 - name: Compra De Cotas Societárias
 - name: Reforma e Manutenção Da Casa
 - name: Casa Extra
+- name: Mobília
 - name: Carro
 - name: Viagens
 - name: Presentes
