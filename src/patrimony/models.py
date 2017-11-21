@@ -242,6 +242,7 @@ class ArrearageCalculator(models.Model):
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    actual_period = models.PositiveIntegerField(default=0)
     period = models.PositiveIntegerField(default=0)
     rate = models.FloatField(
         default=0,
@@ -330,8 +331,9 @@ class LifeInsurance(models.Model):
 class Income(models.Model):
     source = models.CharField(max_length=100)
     value_monthly = models.FloatField(default=0)
-    thirteenth = models.BooleanField()
-    vacation = models.BooleanField()
+    thirteenth = models.BooleanField(default=False)
+    fourteenth = models.BooleanField(default=False)
+    vacation = models.BooleanField(default=False)
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
