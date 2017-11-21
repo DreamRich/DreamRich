@@ -3,7 +3,7 @@ import numpy
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
-from goal.models import GoalManager
+from goal.models import GoalManager, GoalType
 from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
@@ -16,20 +16,21 @@ class FinancialIndependence(models.Model):
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
+    rate = models.FloatField()
 
     def assets_required(self):
-        rate = self.financialplanning.real_gain()
+        rate = self.financial_planning.real_gain()
 
         return numpy.pv(rate, self.duration_of_usufruct,
                         -self.remain_patrimony * 12)
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
-        rate_dic = self.financialplanning.real_gain_related_cdi()
-        target_profitability = self.financialplanning.target_profitability
+        rate_dic = self.financial_planning.real_gain_related_cdi()
+        target_profitability = self.financial_planning.target_profitability
         rate_target_profitability = rate_dic[target_profitability]
-        years_for_retirement = self.financialplanning.duration()
-        current_net_investment = self.financialplanning.patrimony.\
+        years_for_retirement = self.financial_planning.duration()
+        current_net_investment = self.financial_planning.patrimony.\
             current_net_investment()
         total = numpy.pmt(rate_target_profitability, years_for_retirement,
                           current_net_investment, assets_required)
@@ -38,6 +39,26 @@ class FinancialIndependence(models.Model):
             total = 0
 
         return total
+
+    # Will be considerate only goals that represent properties and equity
+    # interests
+    def filter_goals_that_will_be_monetized(self):
+
+        goal_manager = self.financial_planning.goal_manager
+        type_home = GoalType.objects.filter(name='Moradia').first()
+        type_society_participation = GoalType.objects.filter(
+            name='Compra De Cotas Societárias').first()
+        type_extra_home = GoalType.objects.filter(name='Casa Extra').first()
+        type_house_reform = GoalType.objects.filter(
+            name='Reforma e Manutenção Da Casa').first()
+
+        goals = goal_manager.goals.filter(
+            models.Q(
+                goal_type=type_home) | models.Q(
+                goal_type=type_society_participation) | models.Q(
+                goal_type=type_extra_home) | models.Q(
+                    goal_type=type_house_reform))
+        return list(goals)
 
 
 class CostType(models.Model):
@@ -60,9 +81,9 @@ class CostManager(models.Model):
 
     def flow(self):
         cost_changes = self.flowunitchange_set.all()
-        duration = self.financialplanning.duration()
+        duration = self.financial_planning.duration()
         array_change = create_array_change_annual(cost_changes, duration,
-                                                  self.financialplanning.
+                                                  self.financial_planning.
                                                   init_year)
         total_annual = self.total() * 12
         data = generic_flow(array_change, duration, total_annual)
@@ -105,30 +126,35 @@ class FinancialPlanning(models.Model):
         ActiveClient,
         on_delete=models.CASCADE,
         primary_key=True,
+        related_name='financial_planning'
     )
 
     patrimony = models.OneToOneField(
         Patrimony,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     financial_independence = models.OneToOneField(
         FinancialIndependence,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     goal_manager = models.OneToOneField(
         GoalManager,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     cost_manager = models.OneToOneField(
         CostManager,
         on_delete=models.CASCADE,
         null=True,
+        related_name='financial_planning'
     )
 
     protection_manager = models.OneToOneField(
@@ -169,14 +195,11 @@ class FinancialPlanning(models.Model):
     def real_gain(self):
         return actual_rate(self.cdi, self.ipca)
 
-    def annual_leftovers_for_goal(self):
-
+    def generic_annual_leftovers(self, remain_necessary_for_retirement,
+                                 spent_with_annual_protection):
         income_flow = self.patrimony.income_flow()
         regular_cost_flow = self.cost_manager.flow()
         goal_value_total_by_year = self.goal_manager.value_total_by_year()
-        remain_necessary_for_retirement = self.financial_independence.\
-            remain_necessary_for_retirement()
-        spent_with_annual_protection = 2000
 
         data = []
 
@@ -191,6 +214,22 @@ class FinancialPlanning(models.Model):
 
         return data
 
+    def annual_leftovers_for_goal(self):
+
+        remain_necessary_for_retirement = self.financial_independence.\
+            remain_necessary_for_retirement()
+        spent_with_annual_protection = 2000
+
+        data = self.generic_annual_leftovers(remain_necessary_for_retirement,
+                                             spent_with_annual_protection)
+
+        return data
+
+    def annual_leftovers(self):
+        data = self.generic_annual_leftovers(0, 0)
+
+        return data
+
     def real_gain_related_cdi(self):
         cdi_initial = 80
         cdi_final = 205
@@ -200,22 +239,33 @@ class FinancialPlanning(models.Model):
             data[rate] = cdi_rate
         return data
 
-    @property
-    def total_resource_for_annual_goals(self):
-
-        annual_leftovers_for_goal = self.annual_leftovers_for_goal()
+    def resource_monetization(self, flow):
         total_goals = self.goal_manager.value_total_by_year()
         duration = self.duration()
 
-        resource_for_goal = [0] * (duration)
-        resource_for_goal[0] = annual_leftovers_for_goal[0]
+        resource = [0] * (duration)
+        resource[0] = flow[0]
         rate_dic = self.real_gain_related_cdi()
         real_gain = rate_dic[self.target_profitability] + 1
 
         for index in range(duration - 1):
-            leftover_this_year = resource_for_goal[index] - total_goals[index]
-            resource_for_goal_monetized = leftover_this_year * real_gain
-            resource_for_goal[index + 1] = annual_leftovers_for_goal[index] +\
-                resource_for_goal_monetized
+            leftover_this_year = resource[index] - total_goals[index]
+            resource_monetized = leftover_this_year * real_gain
+            resource[index + 1] = flow[index] + resource_monetized
+
+        return resource
+
+    @property
+    def total_resource_for_annual_goals(self):
+        annual_leftovers_for_goal = self.annual_leftovers_for_goal()
+        resource_for_goal = self.resource_monetization(
+            annual_leftovers_for_goal)
 
         return resource_for_goal
+
+    @property
+    def flow_patrimony(self):
+        annual_leftovers = self.annual_leftovers()
+        flow = self.resource_monetization(annual_leftovers)
+
+        return flow

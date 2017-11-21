@@ -14,6 +14,7 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
+    rate = factory.Faker('pyfloat')
 
 
 class CostTypeFactory(factory.DjangoModelFactory):
