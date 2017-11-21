@@ -35,7 +35,7 @@ class PatrimonyViewSet(viewsets.ModelViewSet):
     queryset = Patrimony.objects.all()
 
 
-class ActiveManagerViewSet(DetailView):
+class ActiveManagerViewSet(viewsets.ModelViewSet):
     serializer_class = ActiveManagerSerializer
     queryset = ActiveManager.objects.all()
 

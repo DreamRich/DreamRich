@@ -24,7 +24,7 @@ class ActiveTypeSerializer(serializers.ModelSerializer):
 class ActiveSerializer(serializers.ModelSerializer):
 
     active_manager_id = serializers.IntegerField(write_only=True)
-    active_type_id = serializers.IntegerField(write_only=True)
+    active_type_id = serializers.IntegerField()
     active_type = ActiveTypeSerializer(read_only=True)
 
     class Meta:
@@ -79,16 +79,20 @@ class ArrearageSerializer(serializers.ModelSerializer):
         many=False,
         read_only=True
     )
+    patrimony_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Arrearage
         fields = [
+            'id',
             'name',
+            'patrimony_id',
             'value',
             'period',
             'rate',
             'amortization_system',
             'arrearage_calculator',
+            'actual_period',
         ]
 
 
@@ -156,6 +160,7 @@ class IncomeSerializer(serializers.ModelSerializer):
             'source',
             'value_monthly',
             'thirteenth',
+            'fourteenth',
             'vacation',
             'patrimony_id',
         ]
@@ -168,7 +173,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
     realestates = RealEstateSerializer(read_only=True, many=True)
     companyparticipations = CompanyParticipationSerializer(many=True,
                                                            read_only=True)
-    equipaments = EquipmentSerializer(many=True, read_only=True)
+    equipments = EquipmentSerializer(many=True, read_only=True)
     lifeinsurances = LifeInsuranceSerializer(many=True, read_only=True)
     incomes = IncomeSerializer(many=True, read_only=True)
 
@@ -181,7 +186,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
             'arrearanges',
             'realestates',
             'companyparticipations',
-            'equipaments',
+            'equipments',
             'lifeinsurances',
             'incomes',
         ]

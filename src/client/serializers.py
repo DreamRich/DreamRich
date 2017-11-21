@@ -82,6 +82,7 @@ class BankAccountSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'agency',
+            'joint_account',
             'account',
             'active_client_id'
         ]

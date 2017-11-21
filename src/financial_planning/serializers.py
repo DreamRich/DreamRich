@@ -19,7 +19,7 @@ class CostTypeSerializer(serializers.ModelSerializer):
 
 class RegularCostSerializer(serializers.ModelSerializer):
 
-    cost_type_id = serializers.IntegerField(write_only=True)
+    cost_type_id = serializers.IntegerField()
     cost_manager_id = serializers.IntegerField(write_only=True)
     cost_type = CostTypeSerializer(read_only=True)
 
@@ -58,7 +58,6 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
         model = FinancialPlanning
         fields = [
             'pk',
-            #            'total_resource_for_annual_goals',
             'active_client_id',
             'patrimony_id',
             'financial_independence_id',

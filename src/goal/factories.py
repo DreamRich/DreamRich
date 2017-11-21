@@ -9,7 +9,7 @@ class GoalTypeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.GoalType
 
-    name = factory.Faker('word')
+    name = factory.Sequence(lambda n: "GoalType %03d" % n)
 
 
 class GoalManagerFactory(factory.DjangoModelFactory):

@@ -12,4 +12,4 @@ class Command(BaseCommand):
         call_command("make_db")
 
         self.stdout.write("Seeding database...")
-        call_command("seed_db")
+        call_command("load_db")

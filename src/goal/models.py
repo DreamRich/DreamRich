@@ -5,7 +5,7 @@ from django.db import models
 
 
 class GoalType(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -16,8 +16,8 @@ class GoalManager(models.Model):
     @property
     def year_init_to_year_end(self):
         array = []
-        init_year = self.financialplanning.init_year
-        duration_goals = self.financialplanning.duration()
+        init_year = self.financial_planning.init_year
+        duration_goals = self.financial_planning.duration()
         for index in range(duration_goals):
             array.append(init_year + index)
 
@@ -68,12 +68,16 @@ class Goal(models.Model):
     )
     goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
 
+    def __str__(self):
+        string_format = "Goal type = {} value = {}"
+        return string_format.format(self.goal_type.name, self.value)
+
     def generic_flow_goal(self, index_goal_end):
 
-        init_year = self.goal_manager.financialplanning.init_year
+        init_year = self.goal_manager.financial_planning.init_year
         index_goal_init = self.year_init - init_year
         mod_period = 0
-        duration_goals = self.goal_manager.financialplanning.duration()
+        duration_goals = self.goal_manager.financial_planning.duration()
         goal_array_flow = []
         for index in range(duration_goals):
             if index > index_goal_init:
@@ -89,11 +93,11 @@ class Goal(models.Model):
 
     @property
     def flow(self):
-        init_year = self.goal_manager.financialplanning.init_year
+        init_year = self.goal_manager.financial_planning.init_year
         goal_array_flow = []
 
         if not self.has_end_date:
-            index_goal_end = self.goal_manager.financialplanning.duration()
+            index_goal_end = self.goal_manager.financial_planning.duration()
             goal_array_flow = self.generic_flow_goal(index_goal_end)
         else:
             index_goal_end = self.year_end - init_year
@@ -101,6 +105,7 @@ class Goal(models.Model):
 
         return goal_array_flow
 
-    def __str__(self):
-        string_format = "Goal type = {} value = {}"
-        return string_format.format(self.goal_type.name, self.value)
+    def total(self):
+        total = sum(self.flow)
+
+        return total

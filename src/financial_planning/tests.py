@@ -4,6 +4,7 @@ from client.factories import ActiveClientMainFactory
 from goal.factories import (
     GoalManagerFactory,
     GoalFactory,
+    GoalTypeFactory,
 )
 from patrimony.factories import (
     PatrimonyMainFactory,
@@ -19,7 +20,144 @@ from financial_planning.factories import (
 )
 
 
-class FinancialPlanningTest(TestCase):
+class FinancialIndependencePlanningTest(TestCase):
+    def setUp(self):
+        self.financial_independece = FinancialIndependenceFactory(
+            duration_of_usufruct=35,
+            remain_patrimony=30000,
+        )
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        self.financial_planning = FinancialPlanningFactory(
+            active_client=active_client,
+            financial_independence=self.financial_independece,
+        )
+
+    def test_assets_required(self):
+        self.assertAlmostEqual(self.financial_independece.assets_required(),
+                               6447963.5463578859,
+                               4)
+
+    def test_remain_necessary_for_retirement_with_high_patrimony(self):
+        active_manager = self.financial_planning.patrimony.activemanager
+        active_manager.actives.update(value=30021200.00)
+        self.assertEqual(self.financial_independece.
+                         remain_necessary_for_retirement(), 0)
+
+    def test_remain_necessary_for_retirement(self):
+        self.financial_planning.active_client.\
+            birthday = datetime.datetime(1978, 1, 1)
+        self.assertAlmostEqual(self.financial_independece.
+                               remain_necessary_for_retirement(),
+                               12156.118288258309, 4)
+
+
+class FinancialIndependencePatrimonyTest(TestCase):
+    def setUp(self):
+        financial_planning = FinancialPlanningFactory()
+        goal_manager = financial_planning.goal_manager
+        self.financial_independence = financial_planning.financial_independence
+#    self.financial_independence.rate = 0.2
+
+        goals_type = [{'name': 'Casa Extra'},
+                      {'name': 'Compra De Cotas Societárias'},
+                      {'name': 'Moradia'},
+                      {'name': 'Reforma e Manutenção Da Casa'},
+                      {'name': 'Viagens'}]
+
+        data_goal_type = []
+        for goal_type in goals_type:
+            data_goal_type.append(GoalTypeFactory(**goal_type))
+
+        goals = [{'value': 200000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 500000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 1000000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 140000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 50000, 'year_init': 2018, 'year_end': 2018}]
+
+        self.data_goals = []
+        for goal_type, goal in zip(data_goal_type, goals):
+            self.data_goals.append(GoalFactory(**goal, goal_type=goal_type,
+                                               goal_manager=goal_manager))
+
+    def test_filter_goals_that_will_be_monetized(self):
+        data = self.financial_independence.\
+            filter_goals_that_will_be_monetized()
+        sorted(data, key=lambda goal: goal.goal_type.name)
+        # Remove 'Viagens', because this goal won't be monetized
+        del self.data_goals[-1]
+        self.assertEqual(self.data_goals, data)
+
+
+class RegularCostTest(TestCase):
+    def setUp(self):
+        self.cost_manager = CostManagerFactory()
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        self.financial_planning = FinancialPlanningFactory(
+            active_client=active_client,
+            cost_manager=self.cost_manager,
+        )
+
+    def test_cost_manager_total(self):
+        total = 219.5999999999994
+        self.assertAlmostEqual(self.cost_manager.total(), total, 4)
+
+    def test_regular_cost_flow_with_change(self):
+        FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                      cost_manager=self.cost_manager)
+        FlowUnitChange.objects.create(annual_value=-123.40, year=2022,
+                                      cost_manager=self.cost_manager)
+
+        flow_regular_cost_change = [2635.1999999999994, 2635.1999999999994,
+                                    2635.1999999999994, 2635.1999999999994,
+                                    2758.5999999999995, 2635.1999999999994,
+                                    2635.1999999999994, 2635.1999999999994,
+                                    2635.1999999999994, 2635.1999999999994]
+
+        self.assertEqual(flow_regular_cost_change, self.cost_manager.flow())
+
+
+class FinancialPlanningModelTest(TestCase):
+    def setUp(self):
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        self.financial_planning = FinancialPlanningFactory(
+            active_client=active_client,
+            target_profitability=110,
+        )
+
+    def test_duration_financial_planning(self):
+        self.assertEqual(
+            self.financial_planning.duration(), 10)
+
+    def test_real_gain_related_cdi(self):
+        data = {80: 0.02050232558139542, 85: 0.026144186046511697,
+                90: 0.031786046511627974, 95: 0.03742790697674425,
+                100: 0.04306976744186053, 105: 0.04871162790697681,
+                110: 0.054353488372093084, 115: 0.05999534883720936,
+                120: 0.06563720930232564, 125: 0.07127906976744192,
+                130: 0.0769209302325582, 135: 0.08256279069767447,
+                140: 0.08820465116279075, 145: 0.09384651162790703,
+                150: 0.0994883720930233, 155: 0.10513023255813958,
+                160: 0.11077209302325586, 165: 0.11641395348837213,
+                170: 0.12205581395348841, 175: 0.1276976744186047,
+                180: 0.13333953488372097, 185: 0.13898139534883724,
+                190: 0.14462325581395352, 195: 0.1502651162790698,
+                200: 0.15590697674418608}
+        self.assertAlmostEqual(self.financial_planning.
+                               real_gain_related_cdi(), data)
+
+    def test_save_financial_planning(self):
+        financial_planning = FinancialPlanningFactory(init_year=None)
+        self.assertEqual(financial_planning.init_year,
+                         datetime.datetime.now().year)
+
+    def test_end_year(self):
+        self.assertEqual(self.financial_planning.end_year(), 2027)
+
+
+class FinancialPlanningFlowTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
         active_client = ActiveClientMainFactory(
@@ -50,65 +188,7 @@ class FinancialPlanningTest(TestCase):
             patrimony=self.patrimony,
             financial_independence=self.financial_independece,
             goal_manager=self.goal_manager,
-            target_profitability=110,
         )
-
-    def test_duration_financial_planning(self):
-        self.assertEqual(
-            self.financial_planning.duration(), 10)
-
-    def test_cost_manager_total(self):
-        total = 219.5999999999994
-        self.assertAlmostEqual(self.cost_manager.total(), total, 4)
-
-    def test_regular_cost_flow_with_change(self):
-        FlowUnitChange.objects.create(annual_value=123.40, year=2021,
-                                      cost_manager=self.cost_manager)
-        FlowUnitChange.objects.create(annual_value=-123.40, year=2022,
-                                      cost_manager=self.cost_manager)
-
-        flow_regular_cost_change = [2635.1999999999994, 2635.1999999999994,
-                                    2635.1999999999994, 2635.1999999999994,
-                                    2758.5999999999995, 2635.1999999999994,
-                                    2635.1999999999994, 2635.1999999999994,
-                                    2635.1999999999994, 2635.1999999999994]
-
-        self.assertEqual(flow_regular_cost_change, self.cost_manager.flow())
-
-    def test_assets_required(self):
-        self.assertAlmostEqual(self.financial_independece.assets_required(),
-                               6447963.5463578859,
-                               4)
-
-    def test_remain_necessary_for_retirement_with_high_patrimony(self):
-        active_manager = self.patrimony.activemanager
-        active_manager.actives.update(value=30021200.00)
-        self.assertEqual(self.financial_independece.
-                         remain_necessary_for_retirement(), 0)
-
-    def test_remain_necessary_for_retirement(self):
-        self.financial_planning.active_client.\
-            birthday = datetime.datetime(1978, 1, 1)
-        self.assertAlmostEqual(self.financial_independece.
-                               remain_necessary_for_retirement(),
-                               12156.118288258309, 4)
-
-    def test_real_gain_related_cdi(self):
-        data = {80: 0.02050232558139542, 85: 0.026144186046511697,
-                90: 0.031786046511627974, 95: 0.03742790697674425,
-                100: 0.04306976744186053, 105: 0.04871162790697681,
-                110: 0.054353488372093084, 115: 0.05999534883720936,
-                120: 0.06563720930232564, 125: 0.07127906976744192,
-                130: 0.0769209302325582, 135: 0.08256279069767447,
-                140: 0.08820465116279075, 145: 0.09384651162790703,
-                150: 0.0994883720930233, 155: 0.10513023255813958,
-                160: 0.11077209302325586, 165: 0.11641395348837213,
-                170: 0.12205581395348841, 175: 0.1276976744186047,
-                180: 0.13333953488372097, 185: 0.13898139534883724,
-                190: 0.14462325581395352, 195: 0.1502651162790698,
-                200: 0.15590697674418608}
-        self.assertAlmostEqual(self.financial_planning.
-                               real_gain_related_cdi(), data)
 
     def test_annual_leftovers_for_goal_without_change(self):
         array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
@@ -117,6 +197,11 @@ class FinancialPlanningTest(TestCase):
                  607045.13144555257]
         self.assertEqual(self.financial_planning.annual_leftovers_for_goal(),
                          array)
+
+    def test_annual_leftovers_without_change(self):
+        array = [647364.8, 647364.8, 647364.8, 647364.8, 647364.8, 647364.8,
+                 647364.8, 647364.8, 647364.8, 647364.8]
+        self.assertEqual(self.financial_planning.annual_leftovers(), array)
 
     def test_annual_leftovers_for_goal_with_change(self):
         FlowUnitChange.objects.create(annual_value=2000.00, year=2018,
@@ -154,13 +239,13 @@ class FinancialPlanningTest(TestCase):
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
 
-    def test_save_financial_planning(self):
-        financial_planning = FinancialPlanningFactory(init_year=None)
-        self.assertEqual(financial_planning.init_year,
-                         datetime.datetime.now().year)
+    def test_flow_patrimony(self):
+        array = [647364.8, 1319372.6002455815, 2027906.368647767,
+                 2774951.418992036, 3562600.973793622, 4393062.0295134,
+                 5268661.54056872, 6191852.939466794, 7165223.011330091,
+                 8191499.142076154]
 
-    def test_end_year(self):
-        self.assertEqual(self.financial_planning.end_year(), 2027)
+        self.assertEqual(self.financial_planning.flow_patrimony, array)
 
 
 class RegularCostViewTest(TestCase):

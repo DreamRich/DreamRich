@@ -51,9 +51,9 @@ class Patrimony(models.Model):
 
     def income_flow(self):
         income_changes = self.flowunitchange_set.all()
-        duration = self.financialplanning.duration()
+        duration = self.financial_planning.duration()
         array_change = create_array_change_annual(income_changes, duration,
-                                                  self.financialplanning.
+                                                  self.financial_planning.
                                                   init_year)
         total = self.total_annual_income()
         data = generic_flow(array_change, duration, total)
@@ -73,7 +73,7 @@ class Patrimony(models.Model):
 
 
 class ActiveType(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -104,22 +104,32 @@ class ActiveManager(models.Model):
             return total_rate / self.cdi
         return 0
 
-    def sum_active_same_type(self):
-        data = {}
-        actives_type = ActiveType.objects.all()
-        for active_type in actives_type:
-            actives = active_type.actives.filter(active_manager=self)
-            if actives:
-                data[active_type.name] = actives.aggregate(Sum('value')).\
-                    pop('value__sum', 0)
+    @staticmethod
+    def transform_querryset_in_two_list(str_key, str_value, data):
+        keys = []
+        values = []
+        for element in data:
+            keys.append(element[str_key])
+            values.append(element[str_value])
 
-        return list(data.keys()), list(data.values())
+        return keys, values
 
     @property
     def active_type_chart(self):
-        labels, values = self.sum_active_same_type()
-        data = {'labels': labels, 'data': values}
-        return data
+        data = self.actives.order_by('active_type_id').values(
+            'active_type__name').annotate(Sum('value'))
+        keys, values = self.transform_querryset_in_two_list(
+            'active_type__name', 'value__sum', data)
+        dataset = {'labels': keys, 'data': values}
+        return dataset
+
+    @property
+    def active_chart_dataset(self):
+        data = self.actives.values('name', 'value').order_by('active_type_id')
+        keys, values = self.transform_querryset_in_two_list(
+            'value', 'name', data)
+        dataset = {'labels': keys, 'data': values}
+        return dataset
 
 
 class Active(models.Model):
@@ -134,6 +144,9 @@ class Active(models.Model):
     active_manager = models.ForeignKey(ActiveManager,
                                        on_delete=models.CASCADE,
                                        related_name='actives')
+
+    class Meta:
+        unique_together = ('name', 'active_manager', 'active_type',)
 
     def _equivalent_rate_calculate(self, total, cdi):
         equivalent_rate = 0
@@ -229,6 +242,7 @@ class ArrearageCalculator(models.Model):
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    actual_period = models.PositiveIntegerField(default=0)
     period = models.PositiveIntegerField(default=0)
     rate = models.FloatField(
         default=0,
@@ -254,7 +268,9 @@ class Arrearage(models.Model):
     arrearage_calculator = models.OneToOneField(
         ArrearageCalculator,
         related_name='calculate',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
@@ -315,8 +331,9 @@ class LifeInsurance(models.Model):
 class Income(models.Model):
     source = models.CharField(max_length=100)
     value_monthly = models.FloatField(default=0)
-    thirteenth = models.BooleanField()
-    vacation = models.BooleanField()
+    thirteenth = models.BooleanField(default=False)
+    fourteenth = models.BooleanField(default=False)
+    vacation = models.BooleanField(default=False)
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,

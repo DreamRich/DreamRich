@@ -2,6 +2,7 @@ import factory
 from client.factories import ActiveClientMainFactory
 from patrimony.factories import PatrimonyMainFactory
 from goal.factories import GoalManagerFactory, GoalFactory
+from protection.factories import ProtectionManagerFactory
 from . import models
 
 
@@ -13,13 +14,14 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
+    rate = factory.Faker('pyfloat')
 
 
 class CostTypeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.CostType
 
-    name = factory.Faker('word')
+    name = factory.Sequence(lambda n: "RegularCost %03d" % n)
 
 
 class RegularCostFactory(factory.DjangoModelFactory):
@@ -56,6 +58,7 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
     cost_manager = factory.SubFactory(CostManagerFactory)
+    protection_manager = factory.SubFactory(ProtectionManagerFactory)
     target_profitability = 110
     cdi = round(0.1213, 4)
     ipca = round(0.075, 4)
