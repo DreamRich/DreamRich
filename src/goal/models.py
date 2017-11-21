@@ -59,7 +59,7 @@ class Goal(models.Model):
     has_end_date = models.BooleanField()
     year_init = models.PositiveSmallIntegerField()
     year_end = models.PositiveSmallIntegerField(null=True, blank=True)
-    periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
+    periodicity = models.PositiveSmallIntegerField()
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
         GoalManager,
@@ -67,6 +67,10 @@ class Goal(models.Model):
         related_name='goals'
     )
     goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        string_format = "Goal type = {} value = {}"
+        return string_format.format(self.goal_type.name, self.value)
 
     def generic_flow_goal(self, index_goal_end):
 
@@ -101,6 +105,7 @@ class Goal(models.Model):
 
         return goal_array_flow
 
-    def __str__(self):
-        string_format = "Goal type = {} value = {}"
-        return string_format.format(self.goal_type.name, self.value)
+    def total(self):
+        total = sum(self.flow)
+
+        return total
