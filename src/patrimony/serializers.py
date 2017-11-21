@@ -23,7 +23,7 @@ class ActiveTypeSerializer(serializers.ModelSerializer):
 class ActiveSerializer(serializers.ModelSerializer):
 
     active_manager_id = serializers.IntegerField(write_only=True)
-    active_type_id = serializers.IntegerField(write_only=True)
+    active_type_id = serializers.IntegerField()
     active_type = ActiveTypeSerializer(read_only=True)
 
     class Meta:
@@ -77,6 +77,7 @@ class ArrearageSerializer(serializers.ModelSerializer):
             'period',
             'rate',
             'amortization_system',
+            'actual_period',
         ]
 
 

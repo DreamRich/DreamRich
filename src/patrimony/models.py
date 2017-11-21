@@ -242,6 +242,7 @@ class ArrearageCalculator(models.Model):
 class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    actual_period = models.PositiveIntegerField(default=0)
     period = models.PositiveIntegerField(default=0)
     rate = models.FloatField(
         default=0,
