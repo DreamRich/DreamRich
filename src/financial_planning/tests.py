@@ -4,6 +4,7 @@ from client.factories import ActiveClientMainFactory
 from goal.factories import (
     GoalManagerFactory,
     GoalFactory,
+    GoalTypeFactory,
 )
 from patrimony.factories import (
     PatrimonyMainFactory,
@@ -19,7 +20,7 @@ from financial_planning.factories import (
 )
 
 
-class FinancialIndependenceTest(TestCase):
+class FinancialIndependencePlanningTest(TestCase):
     def setUp(self):
         self.financial_independece = FinancialIndependenceFactory(
             duration_of_usufruct=35,
@@ -49,6 +50,43 @@ class FinancialIndependenceTest(TestCase):
         self.assertAlmostEqual(self.financial_independece.
                                remain_necessary_for_retirement(),
                                12156.118288258309, 4)
+
+
+class FinancialIndependencePatrimonyTest(TestCase):
+    def setUp(self):
+        financial_planning = FinancialPlanningFactory()
+        goal_manager = financial_planning.goal_manager
+        self.financial_independence = financial_planning.financial_independence
+#    self.financial_independence.rate = 0.2
+
+        goals_type = [{'name': 'Casa Extra'},
+                      {'name': 'Compra De Cotas Societárias'},
+                      {'name': 'Moradia'},
+                      {'name': 'Reforma e Manutenção Da Casa'},
+                      {'name': 'Viagens'}]
+
+        data_goal_type = []
+        for goal_type in goals_type:
+            data_goal_type.append(GoalTypeFactory(**goal_type))
+
+        goals = [{'value': 200000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 500000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 1000000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 140000, 'year_init': 2018, 'year_end': 2018},
+                 {'value': 50000, 'year_init': 2018, 'year_end': 2018}]
+
+        self.data_goals = []
+        for goal_type, goal in zip(data_goal_type, goals):
+            self.data_goals.append(GoalFactory(**goal, goal_type=goal_type,
+                                               goal_manager=goal_manager))
+
+    def test_filter_goals_that_will_be_monetized(self):
+        data = self.financial_independence.\
+            filter_goals_that_will_be_monetized()
+        sorted(data, key=lambda goal: goal.goal_type.name)
+        # Remove 'Viagens', because this goal won't be monetized
+        del self.data_goals[-1]
+        self.assertEqual(self.data_goals, data)
 
 
 class RegularCostTest(TestCase):
@@ -152,7 +190,6 @@ class FinancialPlanningFlowTest(TestCase):
             goal_manager=self.goal_manager,
         )
 
-
     def test_annual_leftovers_for_goal_without_change(self):
         array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
                  607045.13144555257, 607045.13144555257, 607045.13144555257,
@@ -204,9 +241,9 @@ class FinancialPlanningFlowTest(TestCase):
 
     def test_flow_patrimony(self):
         array = [647364.8, 1319372.6002455815, 2027906.368647767,
-                2774951.418992036, 3562600.973793622, 4393062.0295134,
-                5268661.54056872, 6191852.939466794, 7165223.011330091,
-                8191499.142076154]
+                 2774951.418992036, 3562600.973793622, 4393062.0295134,
+                 5268661.54056872, 6191852.939466794, 7165223.011330091,
+                 8191499.142076154]
 
         self.assertEqual(self.financial_planning.flow_patrimony, array)
 

@@ -3,7 +3,7 @@ import numpy
 from django.db import models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
-from goal.models import GoalManager
+from goal.models import GoalManager, GoalType
 from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
@@ -39,6 +39,26 @@ class FinancialIndependence(models.Model):
             total = 0
 
         return total
+
+    # Will be considerate only goals that represent properties and equity
+    # interests
+    def filter_goals_that_will_be_monetized(self):
+
+        goal_manager = self.financial_planning.goal_manager
+        type_home = GoalType.objects.filter(name='Moradia').first()
+        type_society_participation = GoalType.objects.filter(
+            name='Compra De Cotas Societárias').first()
+        type_extra_home = GoalType.objects.filter(name='Casa Extra').first()
+        type_house_reform = GoalType.objects.filter(
+            name='Reforma e Manutenção Da Casa').first()
+
+        goals = goal_manager.goals.filter(
+            models.Q(
+                goal_type=type_home) | models.Q(
+                goal_type=type_society_participation) | models.Q(
+                goal_type=type_extra_home) | models.Q(
+                    goal_type=type_house_reform))
+        return list(goals)
 
 
 class CostType(models.Model):
@@ -194,7 +214,6 @@ class FinancialPlanning(models.Model):
 
         return data
 
-
     def annual_leftovers_for_goal(self):
 
         remain_necessary_for_retirement = self.financial_independence.\
@@ -240,7 +259,7 @@ class FinancialPlanning(models.Model):
     def total_resource_for_annual_goals(self):
         annual_leftovers_for_goal = self.annual_leftovers_for_goal()
         resource_for_goal = self.resource_monetization(
-                                 annual_leftovers_for_goal)
+            annual_leftovers_for_goal)
 
         return resource_for_goal
 
