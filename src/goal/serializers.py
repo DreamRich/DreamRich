@@ -13,7 +13,7 @@ class GoalSerializer(serializers.ModelSerializer):
 
     goal_manager_id = serializers.IntegerField(write_only=True)
     goal_type = GoalTypeSerializer(read_only=True)
-    goal_type_id = serializers.IntegerField(write_only=True)
+    goal_type_id = serializers.IntegerField()
 
     class Meta:
         model = Goal

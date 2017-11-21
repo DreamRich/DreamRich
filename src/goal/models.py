@@ -59,7 +59,7 @@ class Goal(models.Model):
     has_end_date = models.BooleanField()
     year_init = models.PositiveSmallIntegerField()
     year_end = models.PositiveSmallIntegerField(null=True, blank=True)
-    periodicity = models.PositiveSmallIntegerField()
+    periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
         GoalManager,
