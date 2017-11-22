@@ -57,8 +57,8 @@ class GoalManager(models.Model):
 
 class Goal(models.Model):
     has_end_date = models.BooleanField()
-    year_init = models.PositiveSmallIntegerField()
-    year_end = models.PositiveSmallIntegerField(null=True, blank=True)
+    init_year = models.PositiveSmallIntegerField()
+    end_year = models.PositiveSmallIntegerField(null=True, blank=True)
     periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
     value = models.PositiveIntegerField()
     goal_manager = models.ForeignKey(
@@ -71,7 +71,7 @@ class Goal(models.Model):
     def generic_flow_goal(self, index_goal_end):
 
         init_year = self.goal_manager.financial_planning.init_year
-        index_goal_init = self.year_init - init_year
+        index_goal_init = self.init_year - init_year
         mod_period = 0
         duration_goals = self.goal_manager.financial_planning.duration()
         goal_array_flow = []
@@ -96,7 +96,7 @@ class Goal(models.Model):
             index_goal_end = self.goal_manager.financial_planning.duration()
             goal_array_flow = self.generic_flow_goal(index_goal_end)
         else:
-            index_goal_end = self.year_end - init_year
+            index_goal_end = self.end_year - init_year
             goal_array_flow = self.generic_flow_goal(index_goal_end)
 
         return goal_array_flow

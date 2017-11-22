@@ -17,16 +17,16 @@ class GoalTest(TestCase):
         goal_type2 = GoalTypeFactory(name='Vestuário')
         self.goal_has_end_date = GoalFactory(has_end_date=False,
                                              goal_type=goal_type1,
-                                             year_init=2021,
+                                             init_year=2021,
                                              periodicity=3,
                                              value=50000,
                                              goal_manager=self.goal_manager)
         self.goal_hasnt_end_date = GoalFactory(has_end_date=True,
                                                goal_type=goal_type2,
-                                               year_init=2021,
+                                               init_year=2021,
                                                periodicity=3,
                                                value=50000,
-                                               year_end=2031,
+                                               end_year=2031,
                                                goal_manager=self.goal_manager)
         self.array_flow_withot_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
                                        50000, 0, 0, 50000, 0, 0, 50000, 0, 0,

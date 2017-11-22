@@ -69,11 +69,11 @@ class FinancialIndependencePatrimonyTest(TestCase):
         for goal_type in goals_type:
             data_goal_type.append(GoalTypeFactory(**goal_type))
 
-        goals = [{'value': 200000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 500000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 1000000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 140000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 50000, 'year_init': 2018, 'year_end': 2018}]
+        goals = [{'value': 200000, 'init_year': 2018, 'end_year': 2018},
+                 {'value': 500000, 'init_year': 2018, 'end_year': 2018},
+                 {'value': 1000000, 'init_year': 2018, 'end_year': 2018},
+                 {'value': 140000, 'init_year': 2018, 'end_year': 2018},
+                 {'value': 50000, 'init_year': 2018, 'end_year': 2018}]
 
         self.data_goals = []
         for goal_type, goal in zip(data_goal_type, goals):
@@ -174,8 +174,8 @@ class FinancialPlanningFlowTest(TestCase):
         self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
                                  goal_manager=self.goal_manager,
-                                 year_init=2017,
-                                 year_end=2027,
+                                 init_year=2017,
+                                 end_year=2027,
                                  value=2500,
                                  periodicity=1)
         self.financial_independece = FinancialIndependenceFactory(
@@ -227,8 +227,8 @@ class FinancialPlanningFlowTest(TestCase):
                                       cost_manager=self.cost_manager)
         GoalFactory.create_batch(4,
                                  goal_manager=self.goal_manager,
-                                 year_init=2017,
-                                 year_end=2027,
+                                 init_year=2017,
+                                 end_year=2027,
                                  value=65865,
                                  periodicity=1)
         array = [341585.13144555251, 413413.10143097816, 491145.17214779771,
