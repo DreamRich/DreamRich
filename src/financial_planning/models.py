@@ -251,13 +251,12 @@ class FinancialPlanning(models.Model):
         return data
 
     def real_gain_related_cdi(self):
-        cdi_initial = 80
-        cdi_final = 205
-        data = {}
-        for rate in range(cdi_initial, cdi_final, 5):
-            cdi_rate = actual_rate(rate / 100 * self.cdi, self.ipca)
-            data[rate] = cdi_rate
+        cdi_rate = actual_rate(rate / 100 * self.cdi, self.ipca)
         return data
+
+    def suggested_gain(self):
+        return actual_rate(self.target_profitability / 100 * self.cdi, 
+                self.ipca) 
 
     def resource_monetization(self, flow):
         total_goals = self.goal_manager.value_total_by_year()
