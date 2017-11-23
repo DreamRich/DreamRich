@@ -315,6 +315,18 @@ class Equipment(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
+class MovableProperty(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.FloatField(default=0)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='movable_property')
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
+
+
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
