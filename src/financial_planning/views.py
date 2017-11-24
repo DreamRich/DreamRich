@@ -53,6 +53,7 @@ class RegularCostViewSet(viewsets.ModelViewSet):
 
     create:
         Create a new regular cost.
+        
     delete:
         Remove an existing regular cost.
 
@@ -77,6 +78,7 @@ class CostManagerViewSet(viewsets.ModelViewSet):
 
     create:
         Create a new cost manager.
+
     delete:
         Remove an existing cost manager.
 
@@ -101,6 +103,7 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
 
     create:
         Create a new regular financial planning.
+
     delete:
         Remove an existing regular financial planning.
 
@@ -125,6 +128,9 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['get'])
     def respective_clients(self, request, pk=None):
+        """
+        Return the pk from financial planning and pk goal manager.
+        """
         if FinancialPlanningPermission.has_permission_to_see_chart(
                 request.user):
             current_financial_adviser = FinancialAdviser.objects.filter(
