@@ -19,27 +19,107 @@ from dr_auth.permissions import FinancialPlanningPermission
 
 
 class CostTypeViewList(generics.ListAPIView):
+    """
+    retrieve:
+        Return a cost type instance.
+
+    list:
+        Return all cost types, ordered by most recently joined.
+
+    create:
+        Create a new cost type.
+
+    delete:
+        Remove an existing cost type.
+
+    partial_update:
+        Update one or more fields on an existing cost type.
+
+    update:
+        Update a cost type.
+    """
+
     serializer_class = CostTypeSerializer
     queryset = CostType.objects.all()
 
 
 class RegularCostViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a regular cost instance.
+
+    list:
+        Return all regular costs, ordered by most recently joined.
+
+    create:
+        Create a new regular cost.
+    delete:
+        Remove an existing regular cost.
+
+    partial_update:
+        Update one or more fields on an existing regular cost.
+
+    update:
+        Update a regular cost.
+    """
+
     serializer_class = RegularCostSerializer
     queryset = RegularCost.objects.all()
 
 
 class CostManagerViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a cost manager instance.
+
+    list:
+        Return all cost managers, ordered by most recently joined.
+
+    create:
+        Create a new cost manager.
+    delete:
+        Remove an existing cost manager.
+
+    partial_update:
+        Update one or more fields on an existing cost manager.
+
+    update:
+        Update a cost manager.
+    """
+
     serializer_class = CostManagerSerializer
     queryset = CostManager.objects.all()
 
 
 class FinancialPlanningViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a financial planning instance.
+
+    list:
+        Return all financial plannings, ordered by most recently joined.
+
+    create:
+        Create a new regular financial planning.
+    delete:
+        Remove an existing regular financial planning.
+
+    partial_update:
+        Update one or more fields on an existing financial planning.
+
+    update:
+        Update a financial planning.
+    """
+
     serializer_class = FinancialPlanningSerializer
     queryset = FinancialPlanning.objects.all()
 
     # pylint: disable=invalid-name, unused-argument, no-self-use
     @detail_route(methods=['get'])
     def total_resource_for_annual_goals(self, request, pk=None):
+        """
+        Return a total resource for annual goal.
+        """
         return Response(FinancialPlanning.objects.filter(pk=pk).get()
                         .total_resource_for_annual_goals)
 
