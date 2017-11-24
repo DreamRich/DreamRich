@@ -65,3 +65,6 @@ class GoalTest(TestCase):
         array = [0, 0, 0, 0, 100000, 0, 0, 100000, 0, 0, 100000, 0, 0, 100000,
                  0, 0, 50000, 0, 0, 50000]
         self.assertEqual(self.goal_manager.value_total_by_year(), array)
+
+    def test_total(self):
+        self.assertEqual(self.goal_has_end_date.total(), 300000)

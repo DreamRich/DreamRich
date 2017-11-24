@@ -101,6 +101,11 @@ class Goal(models.Model):
 
         return goal_array_flow
 
+    def total(self):
+        total = sum(self.flow)
+
+        return total
+
     def __str__(self):
         string_format = "Goal type = {} value = {}"
         return string_format.format(self.goal_type.name, self.value)
