@@ -74,7 +74,7 @@ class GoalTest(TestCase):
                            periodicity=2, value=50000,
                            goal_manager=self.goal_manager)
         array = [0, 0, 0, 0, 50000, 0, 50000, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0]
+                 0, 0, 0]
         self.assertEqual(goal.flow, array)
 
     def test_goal_flow_with_unique_period(self):
@@ -82,5 +82,5 @@ class GoalTest(TestCase):
                            periodicity=2, value=50000,
                            goal_manager=self.goal_manager)
         array = [0, 0, 0, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0]
+                 0, 0, 0]
         self.assertEqual(goal.flow, array)

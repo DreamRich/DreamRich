@@ -81,7 +81,7 @@ class Goal(models.Model):
             if index < index_goal_init:
                 goal_array_flow.append(0)
             elif mod_period % self.periodicity == 0 and index <=\
-                                                    index_goal_end:
+                    index_goal_end:
                 goal_array_flow.append(self.value)
             else:
                 goal_array_flow.append(0)

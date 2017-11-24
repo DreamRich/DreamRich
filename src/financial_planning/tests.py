@@ -54,10 +54,13 @@ class FinancialIndependencePlanningTest(TestCase):
 
 class FinancialIndependencePatrimonyTest(TestCase):
     def setUp(self):
-        financial_planning = FinancialPlanningFactory()
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        financial_planning = FinancialPlanningFactory(
+            active_client=active_client)
         goal_manager = financial_planning.goal_manager
         self.financial_independence = financial_planning.financial_independence
-#    self.financial_independence.rate = 0.2
+        self.financial_independence.rate = 0.02
 
         goals_type = [{'name': 'Casa Extra'},
                       {'name': 'Compra De Cotas Societárias'},
@@ -70,10 +73,10 @@ class FinancialIndependencePatrimonyTest(TestCase):
             data_goal_type.append(GoalTypeFactory(**goal_type))
 
         goals = [{'value': 200000, 'init_year': 2018, 'end_year': 2018},
-                 {'value': 500000, 'init_year': 2018, 'end_year': 2018},
-                 {'value': 1000000, 'init_year': 2018, 'end_year': 2018},
-                 {'value': 140000, 'init_year': 2018, 'end_year': 2018},
-                 {'value': 50000, 'init_year': 2018, 'end_year': 2018}]
+                 {'value': 500000, 'init_year': 2022, 'end_year': 2022},
+                 {'value': 1000000, 'init_year': 2021, 'end_year': 2021},
+                 {'value': 140000, 'init_year': 2025, 'end_year': 2025},
+                 {'value': 50000, 'init_year': 2023, 'end_year': 2023}]
 
         self.data_goals = []
         for goal_type, goal in zip(data_goal_type, goals):
@@ -87,6 +90,10 @@ class FinancialIndependencePatrimonyTest(TestCase):
         # Remove 'Viagens', because this goal won't be monetized
         del self.data_goals[-1]
         self.assertEqual(self.data_goals, data)
+
+    def test_goals_monetized(self):
+        self.assertAlmostEqual(self.financial_independence.goals_monetized(),
+                               2062877.3345884625)
 
 
 class RegularCostTest(TestCase):
