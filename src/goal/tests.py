@@ -68,3 +68,19 @@ class GoalTest(TestCase):
 
     def test_total(self):
         self.assertEqual(self.goal_has_end_date.total(), 300000)
+
+    def test_limit_goal_flow(self):
+        goal = GoalFactory(has_end_date=True, init_year=2021, end_year=2025,
+                           periodicity=2, value=50000,
+                           goal_manager=self.goal_manager)
+        array = [0, 0, 0, 0, 50000, 0, 50000, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0]
+        self.assertEqual(goal.flow, array)
+
+    def test_goal_flow_with_unique_period(self):
+        goal = GoalFactory(has_end_date=True, init_year=2021, end_year=2021,
+                           periodicity=2, value=50000,
+                           goal_manager=self.goal_manager)
+        array = [0, 0, 0, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0]
+        self.assertEqual(goal.flow, array)
