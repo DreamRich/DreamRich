@@ -26,10 +26,8 @@ class FinancialIndependence(models.Model):
 
     def remain_necessary_for_retirement(self):
         assets_required = -self.assets_required()
-        rate_dic = self.financial_planning.real_gain_related_cdi()
-        target_profitability = self.financial_planning.target_profitability
         rate_target_profitability = self.financial_planning. \
-                real_gain_related_cdi()
+            real_gain_related_cdi()
         years_for_retirement = self.financial_planning.duration()
         current_net_investment = self.financial_planning.patrimony.\
             current_net_investment()
@@ -251,13 +249,9 @@ class FinancialPlanning(models.Model):
 
         return data
 
-    '''def 
-        cdi_rate = actual_rate(rate / 100 * self.cdi, self.ipca)
-        return data'''
-
     def real_gain_related_cdi(self):
-        return actual_rate(self.target_profitability / 100 * self.cdi, 
-                self.ipca) 
+        return actual_rate(self.target_profitability / 100 * self.cdi,
+                           self.ipca)
 
     def resource_monetization(self, flow):
         total_goals = self.goal_manager.value_total_by_year()
@@ -265,7 +259,7 @@ class FinancialPlanning(models.Model):
 
         resource = [0] * (duration)
         resource[0] = flow[0]
-        real_gain = self.real_gain_related_cdi()  + 1
+        real_gain = self.real_gain_related_cdi() + 1
 
         for index in range(duration - 1):
             leftover_this_year = resource[index] - total_goals[index]
