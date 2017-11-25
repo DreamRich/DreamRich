@@ -61,7 +61,7 @@ class Patrimony(models.Model):
         return data
 
     def current_none_investment(self):
-        total_movable_property = self.movableproperty_set.all().aggregate(
+        total_movable_property = self.movable_property.all().aggregate(
             Sum('value'))
         total_movable_property = (total_movable_property['value__sum'] or 0)
         salable_total = self.realestates.filter(
@@ -69,6 +69,13 @@ class Patrimony(models.Model):
         salable_total = (salable_total['value__sum'] or 0)
 
         total = total_movable_property + salable_total
+        return total
+
+    def total(self):
+        total = (self.current_net_investment() + self.
+                 current_property_investment() + self.current_none_investment()
+                 + self.possible_income_generation())
+
         return total
 
 
@@ -315,6 +322,18 @@ class Equipment(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
+class MovableProperty(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.FloatField(default=0)
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='movable_property')
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
+
+
 class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
@@ -322,7 +341,7 @@ class LifeInsurance(models.Model):
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
-        related_name='lifeinsurances')
+        related_name='life_insurances')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)

@@ -22,7 +22,7 @@ from financial_planning.factories import (
 
 class FinancialIndependencePlanningTest(TestCase):
     def setUp(self):
-        self.financial_independece = FinancialIndependenceFactory(
+        self.financial_independence = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
@@ -30,34 +30,37 @@ class FinancialIndependencePlanningTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
-            financial_independence=self.financial_independece,
+            financial_independence=self.financial_independence,
         )
 
     def test_assets_required(self):
-        self.assertAlmostEqual(self.financial_independece.assets_required(),
+        self.assertAlmostEqual(self.financial_independence.assets_required(),
                                6447963.5463578859,
                                4)
 
     def test_remain_necessary_for_retirement_with_high_patrimony(self):
         active_manager = self.financial_planning.patrimony.activemanager
         active_manager.actives.update(value=30021200.00)
-        self.assertEqual(self.financial_independece.
+        self.assertEqual(self.financial_independence.
                          remain_necessary_for_retirement(), 0)
 
     def test_remain_necessary_for_retirement(self):
         self.financial_planning.active_client.\
             birthday = datetime.datetime(1978, 1, 1)
-        self.assertAlmostEqual(self.financial_independece.
+        self.assertAlmostEqual(self.financial_independence.
                                remain_necessary_for_retirement(),
                                12156.118288258309, 4)
 
 
 class FinancialIndependencePatrimonyTest(TestCase):
     def setUp(self):
-        financial_planning = FinancialPlanningFactory()
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        financial_planning = FinancialPlanningFactory(
+            active_client=active_client)
         goal_manager = financial_planning.goal_manager
         self.financial_independence = financial_planning.financial_independence
-#    self.financial_independence.rate = 0.2
+        self.financial_independence.rate = 0.02
 
         goals_type = [{'name': 'Casa Extra'},
                       {'name': 'Compra De Cotas Societárias'},
@@ -69,11 +72,11 @@ class FinancialIndependencePatrimonyTest(TestCase):
         for goal_type in goals_type:
             data_goal_type.append(GoalTypeFactory(**goal_type))
 
-        goals = [{'value': 200000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 500000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 1000000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 140000, 'year_init': 2018, 'year_end': 2018},
-                 {'value': 50000, 'year_init': 2018, 'year_end': 2018}]
+        goals = [{'value': 200000, 'init_year': 2018, 'end_year': 2018},
+                 {'value': 500000, 'init_year': 2022, 'end_year': 2022},
+                 {'value': 1000000, 'init_year': 2021, 'end_year': 2021},
+                 {'value': 140000, 'init_year': 2025, 'end_year': 2025},
+                 {'value': 50000, 'init_year': 2023, 'end_year': 2023}]
 
         self.data_goals = []
         for goal_type, goal in zip(data_goal_type, goals):
@@ -87,6 +90,14 @@ class FinancialIndependencePatrimonyTest(TestCase):
         # Remove 'Viagens', because this goal won't be monetized
         del self.data_goals[-1]
         self.assertEqual(self.data_goals, data)
+
+    def test_goals_monetized(self):
+        self.assertAlmostEqual(self.financial_independence.goals_monetized(),
+                               2062877.3345884625)
+
+    def test_patrimony_at_end(self):
+        self.assertAlmostEqual(self.financial_independence.patrimony_at_end(),
+                               6377329.7596444273)
 
 
 class RegularCostTest(TestCase):
@@ -174,11 +185,11 @@ class FinancialPlanningFlowTest(TestCase):
         self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
                                  goal_manager=self.goal_manager,
-                                 year_init=2017,
-                                 year_end=2027,
+                                 init_year=2017,
+                                 end_year=2027,
                                  value=2500,
                                  periodicity=1)
-        self.financial_independece = FinancialIndependenceFactory(
+        self.financial_independence = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
@@ -186,7 +197,7 @@ class FinancialPlanningFlowTest(TestCase):
             active_client=active_client,
             cost_manager=self.cost_manager,
             patrimony=self.patrimony,
-            financial_independence=self.financial_independece,
+            financial_independence=self.financial_independence,
             goal_manager=self.goal_manager,
         )
 
@@ -227,8 +238,8 @@ class FinancialPlanningFlowTest(TestCase):
                                       cost_manager=self.cost_manager)
         GoalFactory.create_batch(4,
                                  goal_manager=self.goal_manager,
-                                 year_init=2017,
-                                 year_end=2027,
+                                 init_year=2017,
+                                 end_year=2027,
                                  value=65865,
                                  periodicity=1)
         array = [341585.13144555251, 413413.10143097816, 491145.17214779771,

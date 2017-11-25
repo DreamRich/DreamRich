@@ -26,8 +26,8 @@ class GoalFactory(factory.DjangoModelFactory):
 
     has_end_date = True
     actual_year = datetime.datetime.now().year
-    year_init = FuzzyInteger(actual_year, actual_year + 10)
-    year_end = FuzzyInteger(actual_year + 11, actual_year + 30)
+    init_year = FuzzyInteger(actual_year, actual_year + 10)
+    end_year = FuzzyInteger(actual_year + 11, actual_year + 30)
     periodicity = FuzzyInteger(1, 5)
     value = FuzzyInteger(5000, 300000)
     goal_type = factory.SubFactory(GoalTypeFactory)

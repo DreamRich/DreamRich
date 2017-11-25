@@ -17,16 +17,16 @@ class GoalTest(TestCase):
         goal_type2 = GoalTypeFactory(name='Vestuário')
         self.goal_hasnt_end_date = GoalFactory(has_end_date=False,
                                                goal_type=goal_type1,
-                                               year_init=2021,
+                                               init_year=2021,
                                                periodicity=3,
                                                value=50000,
                                                goal_manager=self.goal_manager)
         self.goal_has_end_date = GoalFactory(has_end_date=True,
                                              goal_type=goal_type2,
-                                             year_init=2021,
+                                             init_year=2021,
                                              periodicity=3,
                                              value=50000,
-                                             year_end=2031,
+                                             end_year=2031,
                                              goal_manager=self.goal_manager)
         self.array_flow_without_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
                                         50000, 0, 0, 50000, 0, 0, 50000, 0, 0,
@@ -65,6 +65,22 @@ class GoalTest(TestCase):
         array = [0, 0, 0, 0, 100000, 0, 0, 100000, 0, 0, 100000, 0, 0, 100000,
                  0, 0, 50000, 0, 0, 50000]
         self.assertEqual(self.goal_manager.value_total_by_year(), array)
+
+    def test_limit_goal_flow(self):
+        goal = GoalFactory(has_end_date=True, init_year=2021, end_year=2025,
+                           periodicity=2, value=50000,
+                           goal_manager=self.goal_manager)
+        array = [0, 0, 0, 0, 50000, 0, 50000, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0,
+                 0, 0, 0]
+        self.assertEqual(goal.flow, array)
+
+    def test_goal_flow_with_unique_period(self):
+        goal = GoalFactory(has_end_date=True, init_year=2021, end_year=2021,
+                           periodicity=2, value=50000,
+                           goal_manager=self.goal_manager)
+        array = [0, 0, 0, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                 0, 0, 0]
+        self.assertEqual(goal.flow, array)
 
     def test_total_goal(self):
         self.assertEqual(self.goal_has_end_date.total(), 200000)

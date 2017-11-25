@@ -60,6 +60,15 @@ class RealEstateFactory(factory.DjangoModelFactory):
     salable = False
 
 
+class MovablePropertyFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.MovableProperty
+
+    name = factory.Faker('word')
+    value = round(121.21, 2)
+
+
 class CompanyParticipationFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -112,3 +121,5 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     equipment = factory.RelatedFactory(EquipmentFactory, 'patrimony')
     life_insurance = factory.RelatedFactory(LifeInsuranceFactory, 'patrimony')
     incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')
+    movable_property = factory.RelatedFactory(MovablePropertyFactory,
+                                              'patrimony')

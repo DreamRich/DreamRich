@@ -60,6 +60,26 @@ class FinancialIndependence(models.Model):
                     goal_type=type_house_reform))
         return list(goals)
 
+    def patrimony_at_end(self):
+        actual_patrimony = self.financial_planning.patrimony.total()
+        patrimony_in_independence = self.financial_planning.flow_patrimony[-1]
+        goals_monetized = self.goals_monetized()
+        total = actual_patrimony + patrimony_in_independence +\
+            goals_monetized
+
+        return total
+
+    def goals_monetized(self):
+        goals = self.filter_goals_that_will_be_monetized()
+        total = 0
+
+        for goal in goals:
+            year_monitized = self.financial_planning.end_year() - goal.end_year
+            final_rate = (1 + self.rate) ** year_monitized
+            total += goal.total() * final_rate
+
+        return total
+
 
 class CostType(models.Model):
     name = models.CharField(max_length=100)
