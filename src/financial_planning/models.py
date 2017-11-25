@@ -61,7 +61,7 @@ class FinancialIndependence(models.Model):
         return list(goals)
 
     def patrimony_at_end(self):
-        actual_patrimony = self.financial_planning.patrimony.toal()
+        actual_patrimony = self.financial_planning.patrimony.total()
         patrimony_in_independence = self.financial_planning.flow_patrimony[-1]
         goals_monetized = self.goals_monetized()
         total = actual_patrimony + patrimony_in_independence +\

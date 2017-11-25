@@ -22,7 +22,7 @@ from financial_planning.factories import (
 
 class FinancialIndependencePlanningTest(TestCase):
     def setUp(self):
-        self.financial_independece = FinancialIndependenceFactory(
+        self.financial_independence = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
@@ -30,24 +30,24 @@ class FinancialIndependencePlanningTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
-            financial_independence=self.financial_independece,
+            financial_independence=self.financial_independence,
         )
 
     def test_assets_required(self):
-        self.assertAlmostEqual(self.financial_independece.assets_required(),
+        self.assertAlmostEqual(self.financial_independence.assets_required(),
                                6447963.5463578859,
                                4)
 
     def test_remain_necessary_for_retirement_with_high_patrimony(self):
         active_manager = self.financial_planning.patrimony.activemanager
         active_manager.actives.update(value=30021200.00)
-        self.assertEqual(self.financial_independece.
+        self.assertEqual(self.financial_independence.
                          remain_necessary_for_retirement(), 0)
 
     def test_remain_necessary_for_retirement(self):
         self.financial_planning.active_client.\
             birthday = datetime.datetime(1978, 1, 1)
-        self.assertAlmostEqual(self.financial_independece.
+        self.assertAlmostEqual(self.financial_independence.
                                remain_necessary_for_retirement(),
                                12156.118288258309, 4)
 
@@ -94,6 +94,10 @@ class FinancialIndependencePatrimonyTest(TestCase):
     def test_goals_monetized(self):
         self.assertAlmostEqual(self.financial_independence.goals_monetized(),
                                2062877.3345884625)
+
+    def test_patrimony_at_end(self):
+        self.assertAlmostEqual(self.financial_independence.patrimony_at_end(),
+                               6377329.7596444273)
 
 
 class RegularCostTest(TestCase):
@@ -185,7 +189,7 @@ class FinancialPlanningFlowTest(TestCase):
                                  end_year=2027,
                                  value=2500,
                                  periodicity=1)
-        self.financial_independece = FinancialIndependenceFactory(
+        self.financial_independence = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
@@ -193,7 +197,7 @@ class FinancialPlanningFlowTest(TestCase):
             active_client=active_client,
             cost_manager=self.cost_manager,
             patrimony=self.patrimony,
-            financial_independence=self.financial_independece,
+            financial_independence=self.financial_independence,
             goal_manager=self.goal_manager,
         )
 

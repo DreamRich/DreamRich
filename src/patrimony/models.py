@@ -341,7 +341,7 @@ class LifeInsurance(models.Model):
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
-        related_name='lifeinsurances')
+        related_name='life_insurances')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
