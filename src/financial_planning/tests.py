@@ -18,7 +18,7 @@ from financial_planning.factories import (
     FinancialIndependenceFactory,
     FinancialPlanningFactory
 )
-
+from lib.profit.profit import actual_rate
 
 class FinancialIndependencePlanningTest(TestCase):
     def setUp(self):
@@ -136,6 +136,8 @@ class FinancialPlanningModelTest(TestCase):
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
             target_profitability=110,
+            cdi=0.1213,
+            ipca=0.075
         )
 
     def test_duration_financial_planning(self):
@@ -143,19 +145,8 @@ class FinancialPlanningModelTest(TestCase):
             self.financial_planning.duration(), 10)
 
     def test_real_gain_related_cdi(self):
-        data = {80: 0.02050232558139542, 85: 0.026144186046511697,
-                90: 0.031786046511627974, 95: 0.03742790697674425,
-                100: 0.04306976744186053, 105: 0.04871162790697681,
-                110: 0.054353488372093084, 115: 0.05999534883720936,
-                120: 0.06563720930232564, 125: 0.07127906976744192,
-                130: 0.0769209302325582, 135: 0.08256279069767447,
-                140: 0.08820465116279075, 145: 0.09384651162790703,
-                150: 0.0994883720930233, 155: 0.10513023255813958,
-                160: 0.11077209302325586, 165: 0.11641395348837213,
-                170: 0.12205581395348841, 175: 0.1276976744186047,
-                180: 0.13333953488372097, 185: 0.13898139534883724,
-                190: 0.14462325581395352, 195: 0.1502651162790698,
-                200: 0.15590697674418608}
+        data = actual_rate(self.financial_planning.target_profitability / 100 \
+                * self.financial_planning.cdi,self.financial_planning.ipca)
         self.assertAlmostEqual(self.financial_planning.
                                real_gain_related_cdi(), data)
 
