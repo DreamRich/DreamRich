@@ -15,39 +15,39 @@ class GoalTest(TestCase):
         self.goal_manager = financial_planning.goal_manager
         goal_type1 = GoalTypeFactory(name='Imóvel')
         goal_type2 = GoalTypeFactory(name='Vestuário')
-        self.goal_has_end_date = GoalFactory(has_end_date=False,
-                                             goal_type=goal_type1,
-                                             init_year=2021,
-                                             periodicity=3,
-                                             value=50000,
-                                             goal_manager=self.goal_manager)
-        self.goal_hasnt_end_date = GoalFactory(has_end_date=True,
-                                               goal_type=goal_type2,
+        self.goal_hasnt_end_date = GoalFactory(has_end_date=False,
+                                               goal_type=goal_type1,
                                                init_year=2021,
                                                periodicity=3,
                                                value=50000,
-                                               end_year=2031,
                                                goal_manager=self.goal_manager)
-        self.array_flow_withot_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
-                                       50000, 0, 0, 50000, 0, 0, 50000, 0, 0,
-                                       50000]
+        self.goal_has_end_date = GoalFactory(has_end_date=True,
+                                             goal_type=goal_type2,
+                                             init_year=2021,
+                                             periodicity=3,
+                                             value=50000,
+                                             end_year=2031,
+                                             goal_manager=self.goal_manager)
+        self.array_flow_without_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
+                                        50000, 0, 0, 50000, 0, 0, 50000, 0, 0,
+                                        50000]
         self.array_flow_with_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
                                      50000, 0, 0,
                                      50000, 0, 0, 0, 0, 0, 0]
 
     def test_flow_hasnt_end_date(self):
-        self.assertEqual(self.array_flow_withot_date,
-                         self.goal_has_end_date.flow)
+        self.assertEqual(self.array_flow_without_date,
+                         self.goal_hasnt_end_date.flow)
 
     def test_flow_has_end_date(self):
         self.assertEqual(self.array_flow_with_date,
-                         self.goal_hasnt_end_date.flow)
+                         self.goal_has_end_date.flow)
 
     def test_goals_flow_dic(self):
         goals_flow_dic = []
         goal_flow_dic1 = {}
         goal_flow_dic1['name'] = 'Imóvel'
-        goal_flow_dic1['data'] = self.array_flow_withot_date
+        goal_flow_dic1['data'] = self.array_flow_without_date
         goal_flow_dic2 = {}
         goal_flow_dic2['name'] = 'Vestuário'
         goal_flow_dic2['data'] = self.array_flow_with_date
@@ -66,9 +66,6 @@ class GoalTest(TestCase):
                  0, 0, 50000, 0, 0, 50000]
         self.assertEqual(self.goal_manager.value_total_by_year(), array)
 
-    def test_total(self):
-        self.assertEqual(self.goal_has_end_date.total(), 300000)
-
     def test_limit_goal_flow(self):
         goal = GoalFactory(has_end_date=True, init_year=2021, end_year=2025,
                            periodicity=2, value=50000,
@@ -84,3 +81,6 @@ class GoalTest(TestCase):
         array = [0, 0, 0, 0, 50000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                  0, 0, 0]
         self.assertEqual(goal.flow, array)
+
+    def test_total_goal(self):
+        self.assertEqual(self.goal_has_end_date.total(), 200000)
