@@ -355,7 +355,7 @@ class LifeInsurance(models.Model):
 
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
-    value = models.FloatField(default=0)
+    value_annual = models.FloatField(default=0)
     accumulated = models.FloatField(default=0)
     patrimony = models.ForeignKey(
         Patrimony,

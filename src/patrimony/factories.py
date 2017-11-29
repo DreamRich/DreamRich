@@ -103,7 +103,7 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
         model = models.PrivatePension
 
     name = factory.Faker('word')
-    value = factory.Faker('pyfloat')
+    value_annual = factory.Faker('pyfloat')
     accumulated = factory.Faker('pyfloat')
 
 
@@ -132,6 +132,6 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     life_insurance = factory.RelatedFactory(LifeInsuranceFactory, 'patrimony')
     incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')
     private_pension = factory.RelatedFactory(PrivatePensionFactory,
-                                              'patrimony')
+                                             'patrimony')
     movable_property = factory.RelatedFactory(MovablePropertyFactory,
                                               'patrimony')
