@@ -11,7 +11,6 @@ from patrimony.factories import (
     ActiveManagerFactory,
     ActiveFactory,
     ActiveTypeFactory,
-    PrivatePensionFactory,
     ArrearageFactory
 )
 
@@ -35,8 +34,6 @@ class PatrimonyTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
         self.patrimony.incomes.all().update(value_monthly=1212.2)
-        self.patrimony.private_pensions.all().update(accumulated=20000)
-        PrivatePensionFactory(patrimony=self.patrimony, accumulated=4000)
         FinancialPlanningFactory(
             active_client=active_client,
             patrimony=self.patrimony)
@@ -96,9 +93,6 @@ class PatrimonyTest(TestCase):
 
         self.assertEqual(flow_regular_cost_with_change,
                          self.patrimony.income_flow())
-
-    def test_private_pension_total(self):
-        self.assertEqual(self.patrimony.private_pension_total(), 24000)
 
 
 class ActiveManagerTest(TestCase):

@@ -71,12 +71,6 @@ class Patrimony(models.Model):
         total = total_movable_property + salable_total
         return total
 
-    def private_pension_total(self):
-        total = self.private_pensions.aggregate(Sum('accumulated'))
-        total = (total['accumulated__sum'] or 0)
-
-        return total
-
     def total(self):
         total = (self.current_net_investment() + self.
                  current_property_investment() + self.current_none_investment()
@@ -348,19 +342,6 @@ class LifeInsurance(models.Model):
         Patrimony,
         on_delete=models.CASCADE,
         related_name='life_insurances')
-
-    def __str__(self):
-        return "{name} {value}".format(**self.__dict__)
-
-
-class PrivatePension(models.Model):
-    name = models.CharField(max_length=100)
-    value_annual = models.FloatField(default=0)
-    accumulated = models.FloatField(default=0)
-    patrimony = models.ForeignKey(
-        Patrimony,
-        on_delete=models.CASCADE,
-        related_name='private_pensions')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)

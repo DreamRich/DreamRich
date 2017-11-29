@@ -2,6 +2,7 @@ from protection.models import (
     ReserveInLack,
     EmergencyReserve,
     ProtectionManager,
+    PrivatePension,
 )
 import factory
 
@@ -25,6 +26,16 @@ class EmergencyReserveFactory(factory.DjangoModelFactory):
     mounth_of_protection = factory.fuzzy.FuzzyInteger(0, 12)
 
 
+class PrivatePensionFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = PrivatePension
+
+    name = factory.Faker('word')
+    value_annual = factory.Faker('pyfloat')
+    accumulated = factory.Faker('pyfloat')
+
+
 class ProtectionManagerFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -33,3 +44,6 @@ class ProtectionManagerFactory(factory.DjangoModelFactory):
     reserve_in_lack = factory.SubFactory(ReserveInLackFactory)
 
     emergency_reserve = factory.SubFactory(EmergencyReserveFactory)
+
+    private_pension = factory.RelatedFactory(PrivatePensionFactory,
+                                             'protection_manager')

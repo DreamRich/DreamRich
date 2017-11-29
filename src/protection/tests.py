@@ -4,6 +4,10 @@ from financial_planning.factories import (
     RegularCostFactory
 )
 from patrimony.factories import ActiveFactory
+from protection.factories import (
+    PrivatePensionFactory,
+    ProtectionManagerFactory,
+)
 
 
 class EmergencyReserveTest(TestCase):
@@ -66,3 +70,17 @@ class ReserveInLackTest(TestCase):
     def test_patrimony_necessery_total(self):
         self.assertAlmostEqual(self.reserve_in_lack.
                                patrimony_necessery_total(), 595624.31498015427)
+
+
+class ProtectionManagerTest(TestCase):
+
+    def setUp(self):
+        self.protection_manager = ProtectionManagerFactory()
+        self.protection_manager.private_pensions.all().update(
+            accumulated=20000)
+        PrivatePensionFactory(protection_manager=self.protection_manager,
+                              accumulated=4000)
+
+    def test_private_pension_total(self):
+        self.assertEqual(self.protection_manager.private_pension_total(),
+                         24000)

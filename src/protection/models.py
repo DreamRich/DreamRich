@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 import numpy
 
 
@@ -68,3 +69,22 @@ class ProtectionManager(models.Model):
         on_delete=models.CASCADE,
         related_name='protection_manager',
     )
+
+    def private_pension_total(self):
+        total = self.private_pensions.aggregate(Sum('accumulated'))
+        total = (total['accumulated__sum'] or 0)
+
+        return total
+
+
+class PrivatePension(models.Model):
+    name = models.CharField(max_length=100)
+    value_annual = models.FloatField(default=0)
+    accumulated = models.FloatField(default=0)
+    protection_manager = models.ForeignKey(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='private_pensions')
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
