@@ -334,19 +334,6 @@ class MovableProperty(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
-class LifeInsurance(models.Model):
-    name = models.CharField(max_length=100)
-    value = models.FloatField(default=0)
-    redeemable = models.BooleanField()
-    patrimony = models.ForeignKey(
-        Patrimony,
-        on_delete=models.CASCADE,
-        related_name='life_insurances')
-
-    def __str__(self):
-        return "{name} {value}".format(**self.__dict__)
-
-
 class Income(models.Model):
     source = models.CharField(max_length=100)
     value_monthly = models.FloatField(default=0)

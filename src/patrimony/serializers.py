@@ -7,7 +7,6 @@ from patrimony.models import (
     RealEstate,
     CompanyParticipation,
     Equipment,
-    LifeInsurance,
     Income,
 )
 from rest_framework import serializers
@@ -124,16 +123,6 @@ class EquipmentSerializer(serializers.ModelSerializer):
         ]
 
 
-class LifeInsuranceSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = LifeInsurance
-        fields = [
-            'name',
-            'value',
-        ]
-
-
 class IncomeSerializer(serializers.ModelSerializer):
 
     patrimony_id = serializers.IntegerField(write_only=True)
@@ -159,7 +148,6 @@ class PatrimonySerializer(serializers.ModelSerializer):
     companyparticipations = CompanyParticipationSerializer(many=True,
                                                            read_only=True)
     equipments = EquipmentSerializer(many=True, read_only=True)
-    lifeinsurances = LifeInsuranceSerializer(many=True, read_only=True)
     incomes = IncomeSerializer(many=True, read_only=True)
 
     class Meta:
@@ -172,6 +160,5 @@ class PatrimonySerializer(serializers.ModelSerializer):
             'realestates',
             'companyparticipations',
             'equipments',
-            'lifeinsurances',
             'incomes',
         ]

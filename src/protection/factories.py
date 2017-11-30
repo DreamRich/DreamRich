@@ -3,6 +3,7 @@ from protection.models import (
     EmergencyReserve,
     ProtectionManager,
     PrivatePension,
+    LifeInsurance,
 )
 import factory
 
@@ -36,6 +37,17 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
     accumulated = factory.Faker('pyfloat')
 
 
+class LifeInsuranceFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = LifeInsurance
+
+    name = factory.Faker('word')
+    value_to_recive = round(121.21, 2)
+    value_to_pay_annual = round(121.21, 2)
+    redeemable = True
+
+
 class ProtectionManagerFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -47,3 +59,6 @@ class ProtectionManagerFactory(factory.DjangoModelFactory):
 
     private_pension = factory.RelatedFactory(PrivatePensionFactory,
                                              'protection_manager')
+
+    life_insurance = factory.RelatedFactory(LifeInsuranceFactory,
+                                            'protection_manager')

@@ -6,7 +6,6 @@ from patrimony.views import (
     RealEstateViewSet,
     CompanyParticipationViewSet,
     EquipmentViewSet,
-    LifeInsuranceViewSet,
     IncomeViewSet,
     ActiveTypeViewSet,
     ActiveManagerViewSet,
@@ -25,7 +24,6 @@ ROUTER.register(r'^arrearage', ArrearageViewSet)
 ROUTER.register(r'^realestate', RealEstateViewSet)
 ROUTER.register(r'^companyparticipation', CompanyParticipationViewSet)
 ROUTER.register(r'^equipment', EquipmentViewSet)
-ROUTER.register(r'^lifeinsurance', LifeInsuranceViewSet)
 ROUTER.register(r'^income', IncomeViewSet)
 ROUTER.register(r'', PatrimonyViewSet)
 

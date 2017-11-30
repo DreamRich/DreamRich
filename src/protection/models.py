@@ -88,3 +88,17 @@ class PrivatePension(models.Model):
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
+
+
+class LifeInsurance(models.Model):
+    name = models.CharField(max_length=100)
+    value_to_recive = models.FloatField(default=0)
+    value_to_pay_annual = models.FloatField(default=0)
+    redeemable = models.BooleanField()
+    protection_manager = models.ForeignKey(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='life_insurances')
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
