@@ -1,9 +1,15 @@
+import datetime
 from django.test import TestCase
 from financial_planning.factories import (
     FinancialPlanningFactory,
     RegularCostFactory
 )
 from patrimony.factories import ActiveFactory
+from protection.factories import (
+    PrivatePensionFactory,
+    LifeInsuranceFactory,
+)
+from client.factories import ActiveClientMainFactory
 
 
 class EmergencyReserveTest(TestCase):
@@ -66,3 +72,41 @@ class ReserveInLackTest(TestCase):
     def test_patrimony_necessery_total(self):
         self.assertAlmostEqual(self.reserve_in_lack.
                                patrimony_necessery_total(), 595624.31498015427)
+
+
+class ProtectionManagerTest(TestCase):
+
+    def setUp(self):
+        active_client = ActiveClientMainFactory(
+            birthday=datetime.datetime(1967, 1, 1))
+        financial_planning = FinancialPlanningFactory(
+            active_client=active_client)
+        self.protection_manager = financial_planning.protection_manager
+        self.protection_manager.financial_planning.active_client =\
+            active_client
+        self.protection_manager.private_pensions.all().update(
+            accumulated=20000)
+        PrivatePensionFactory(protection_manager=self.protection_manager,
+                              accumulated=4000)
+        for life_insurance in self.protection_manager.life_insurances.all():
+            life_insurance.delete()
+
+        life_insurances = [
+            {'value_to_pay_annual': 2000, 'has_year_end': False},
+            {'value_to_pay_annual': 2000, 'has_year_end': True,
+                'year_end': 2020},
+            {'value_to_pay_annual': 1000, 'has_year_end': True,
+                'year_end': 2023}]
+
+        for life_insurance in life_insurances:
+            LifeInsuranceFactory(**life_insurance,
+                                 protection_manager=self.protection_manager)
+
+    def test_private_pension_total(self):
+        self.assertEqual(self.protection_manager.private_pension_total(),
+                         24000)
+
+    def test_life_insurances_flow(self):
+        data = [5000.0, 5000.0, 5000.0, 5000.0, 3000.0, 3000.0, 3000.0, 2000.0,
+                2000.0, 2000.0]
+        self.assertEqual(self.protection_manager.life_insurances_flow(), data)

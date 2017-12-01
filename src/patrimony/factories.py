@@ -87,26 +87,6 @@ class EquipmentFactory(factory.DjangoModelFactory):
     value = round(122.2, 2)
 
 
-class LifeInsuranceFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.LifeInsurance
-
-    name = factory.Faker('word')
-    value = round(121.21, 2)
-    redeemable = True
-
-
-class PrivatePensionFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.PrivatePension
-
-    name = factory.Faker('word')
-    value_annual = factory.Faker('pyfloat')
-    accumulated = factory.Faker('pyfloat')
-
-
 class IncomeFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -129,9 +109,6 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     real_estate = factory.RelatedFactory(RealEstateFactory, 'patrimony')
     company = factory.RelatedFactory(CompanyParticipationFactory, 'patrimony')
     equipment = factory.RelatedFactory(EquipmentFactory, 'patrimony')
-    life_insurance = factory.RelatedFactory(LifeInsuranceFactory, 'patrimony')
     incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')
-    private_pension = factory.RelatedFactory(PrivatePensionFactory,
-                                             'patrimony')
     movable_property = factory.RelatedFactory(MovablePropertyFactory,
                                               'patrimony')
