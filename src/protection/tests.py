@@ -78,12 +78,12 @@ class ProtectionManagerTest(TestCase):
 
     def setUp(self):
         active_client = ActiveClientMainFactory(
-                            birthday=datetime.datetime(1967, 1, 1))
-        financial_planning = FinancialPlanningFactory(active_client=\
-                                                      active_client)
+            birthday=datetime.datetime(1967, 1, 1))
+        financial_planning = FinancialPlanningFactory(
+            active_client=active_client)
         self.protection_manager = financial_planning.protection_manager
         self.protection_manager.financial_planning.active_client =\
-                                active_client
+            active_client
         self.protection_manager.private_pensions.all().update(
             accumulated=20000)
         PrivatePensionFactory(protection_manager=self.protection_manager,
@@ -99,9 +99,8 @@ class ProtectionManagerTest(TestCase):
                 'year_end': 2023}]
 
         for life_insurance in life_insurances:
-            LifeInsuranceFactory(**life_insurance, protection_manager=
-                                 self.protection_manager)
-
+            LifeInsuranceFactory(**life_insurance,
+                                 protection_manager=self.protection_manager)
 
     def test_private_pension_total(self):
         self.assertEqual(self.protection_manager.private_pension_total(),
