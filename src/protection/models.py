@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.db.models import Sum
 import numpy
@@ -76,6 +77,18 @@ class ProtectionManager(models.Model):
 
         return total
 
+    def life_insurances_flow(self):
+        duration_flow = self.financial_planning.duration()
+        data = [0] * duration_flow
+        life_insurances = self.life_insurances.all()
+
+        for life_insurance in life_insurances:
+            for index in range(duration_flow):
+                if life_insurance.index_end() >= index:
+                    data[index] += life_insurance.value_to_pay_annual
+
+        return data
+
 
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
@@ -94,11 +107,22 @@ class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value_to_recive = models.FloatField(default=0)
     value_to_pay_annual = models.FloatField(default=0)
+    year_end = models.PositiveSmallIntegerField(null=True)
     redeemable = models.BooleanField()
+    has_year_end = models.BooleanField()
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
         related_name='life_insurances')
+
+    def index_end(self):
+        if self.has_year_end:
+            actual_year = datetime.datetime.now().year
+            index = self.year_end - actual_year
+        else:
+            index = self.protection_manager.financial_planning.duration()
+
+        return index
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)

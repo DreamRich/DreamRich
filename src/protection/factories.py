@@ -43,9 +43,10 @@ class LifeInsuranceFactory(factory.DjangoModelFactory):
         model = LifeInsurance
 
     name = factory.Faker('word')
-    value_to_recive = round(121.21, 2)
-    value_to_pay_annual = round(121.21, 2)
+    value_to_recive = factory.Faker('pyfloat')
+    value_to_pay_annual = factory.Faker('pyfloat')
     redeemable = True
+    has_year_end = True
 
 
 class ProtectionManagerFactory(factory.DjangoModelFactory):
