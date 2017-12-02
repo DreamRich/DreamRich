@@ -51,6 +51,7 @@ LOCAL_APPS = [
     'employee',
     'dr_auth',
     'goal',
+    'protection',
     'financial_planning'
 ]
 
@@ -171,6 +172,8 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("goal.serializers", ("*")),
     ("financial_planning.factories", ("*")),
     ("financial_planning.serializers", ("*")),
+    ("protection.factories", ("*")),
+    ("dr_auth.serializers", ("*")),
 ]
 
 # Internationalization

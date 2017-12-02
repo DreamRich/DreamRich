@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase, Client as DjangoClient
 from django.core.exceptions import ValidationError
 from dreamrich.utils import get_token
@@ -11,7 +12,6 @@ from client.factories import (
     ActiveClientMainFactory,
     ClientFactory,
 )
-import json
 
 
 class ClientModelTest(TestCase):
@@ -104,7 +104,9 @@ class ClientPermissionsTest(TestCase):
         self.active_client = ActiveClientMainFactory()
         self.other_active_client = ActiveClientMainFactory()
         self.token = 'JWT {}'.format(get_token(self.active_client))
-        self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
+        
+        # Authenticate user
+        self.django_client.credentials(HTTP_AUTHORIZATION=self.token) 
 
     def test_client_own_data_get(self):
         address_client_id = self.active_client.addresses.last().id

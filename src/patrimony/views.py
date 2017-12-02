@@ -3,12 +3,12 @@ from patrimony.serializers import (
     PatrimonySerializer,
     ActiveSerializer,
     ActiveManagerSerializer,
+    ActiveChartSerializer,
     ActiveTypeSerializer,
     ArrearageSerializer,
     RealEstateSerializer,
     CompanyParticipationSerializer,
     EquipmentSerializer,
-    LifeInsuranceSerializer,
     IncomeSerializer,
 )
 
@@ -20,7 +20,6 @@ from patrimony.models import (
     CompanyParticipation,
     Equipment,
     Income,
-    LifeInsurance,
     Patrimony,
     RealEstate,
 )
@@ -33,6 +32,11 @@ class PatrimonyViewSet(viewsets.ModelViewSet):
 
 class ActiveManagerViewSet(viewsets.ModelViewSet):
     serializer_class = ActiveManagerSerializer
+    queryset = ActiveManager.objects.all()
+
+
+class ActiveChartDetailView(viewsets.ModelViewSet):
+    serializer_class = ActiveChartSerializer
     queryset = ActiveManager.objects.all()
 
 
@@ -64,11 +68,6 @@ class CompanyParticipationViewSet(viewsets.ModelViewSet):
 class EquipmentViewSet(viewsets.ModelViewSet):
     serializer_class = EquipmentSerializer
     queryset = Equipment.objects.all()
-
-
-class LifeInsuranceViewSet(viewsets.ModelViewSet):
-    serializer_class = LifeInsuranceSerializer
-    queryset = LifeInsurance.objects.all()
 
 
 class IncomeViewSet(viewsets.ModelViewSet):

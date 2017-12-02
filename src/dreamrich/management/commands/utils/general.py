@@ -21,7 +21,7 @@ def get_modules():
     remove_trailing = subprocess.Popen(['cut', '-d', '/', '-f', '2'],
                                        stdin=remove_leading.stdout,
                                        stdout=subprocess.PIPE)
-    cut_return_code = remove_leading.wait()
+    cut_return_code = remove_trailing.wait()
 
     modules, _ = remove_trailing.communicate()
 

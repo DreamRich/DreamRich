@@ -7,6 +7,7 @@ from patrimony.models import Active
 from patrimony.factories import (
     PatrimonyMainFactory,
     IncomeFactory,
+    RealEstateFactory,
     ActiveManagerFactory,
     ActiveFactory,
     ActiveTypeFactory,
@@ -32,7 +33,7 @@ class PatrimonyTest(TestCase):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.patrimony = PatrimonyMainFactory()
-        self.patrimony.income_set.all().update(value_monthly=1212.2)
+        self.patrimony.incomes.all().update(value_monthly=1212.2)
         FinancialPlanningFactory(
             active_client=active_client,
             patrimony=self.patrimony)
@@ -48,9 +49,10 @@ class PatrimonyTest(TestCase):
                                                   thirteenth=False,
                                                   patrimony=self.patrimony,
                                                   vacation=True)
+        ArrearageFactory(patrimony=self.patrimony, value=351200.00, period=3)
+        RealEstateFactory(patrimony=self.patrimony, salable=True)
 
     def test_current_net_investment(self):
-        ArrearageFactory(patrimony=self.patrimony, value=351200.00, period=3)
         self.assertEqual(321200.00, self.patrimony.current_net_investment())
 
     def test_current_property_investment(self):
@@ -59,6 +61,12 @@ class PatrimonyTest(TestCase):
     def test_current_income_generation(self):
         self.assertEqual(1345.6100000000001,
                          self.patrimony.possible_income_generation())
+
+    def test_current_none_investment(self):
+        self.assertEqual(self.patrimony.current_none_investment(), 242.42)
+
+    def test_total(self):
+        self.assertAlmostEqual(self.patrimony.total(), 322909.24000000005)
 
     def test_annual_income(self):
         self.assertEqual(self.common_income.annual(), 14400.00)
@@ -149,30 +157,39 @@ class ActiveChartTest(TestCase):
         for active in self.active_manager.actives.all():
             active.delete()
 
-        data = [{'value': 27000.00, 'rate': 1.1879},
-                {'value': 125000.00, 'rate': 0.7500},
-                {'value': 95000.00, 'rate': 0.9000}]
+        data = [{'value': 27000.00, 'rate': 1.1879, 'name': 'ativo1'},
+                {'value': 125000.00, 'rate': 0.7500, 'name': 'ativo2'},
+                {'value': 95000.00, 'rate': 0.9000, 'name': 'ativo3'}]
 
         for active in data:
             ActiveFactory(**active, active_manager=self.active_manager,
                           active_type=fundos)
 
         active = ActiveFactory(active_manager=self.active_manager,
-                               active_type=previdencia,
-                               value=125000,
-                               rate=0.7500)
+                               active_type=previdencia, name='ativo4',
+                               value=125000, rate=0.7500)
 
-    def test_sum_active_same_type(self):
-        data = {'Fundo': 247000, 'Previdencia': 125000}
-        self.assertEqual(data, self.active_manager.sum_active_same_type())
+    def test_active_type_chart(self):
+        data = {'labels': ['Fundo', 'Previdencia'],
+                'data': [247000.0, 125000.0]}
+        data_compare = self.active_manager.active_type_chart
+        self.assertEqual(data, data_compare)
 
     def test_active_type_labels(self):
         data = ['Fundo', 'Previdencia']
-        self.assertEqual(data, self.active_manager.active_type_labels)
+        data_test = self.active_manager.active_type_chart['labels']
+        self.assertEqual(data, data_test)
 
     def test_active_type_data(self):
         data = [247000, 125000]
-        self.assertEqual(data, self.active_manager.active_type_data)
+        data_test = self.active_manager.active_type_chart['data']
+        self.assertEqual(data, data_test)
+
+    def test_active_chart_dataset(self):
+        data = {'labels': [27000.00, 125000.00, 95000.00, 125000],
+                'data': ['ativo1', 'ativo2', 'ativo3', 'ativo4']}
+        data_test = self.active_manager.active_chart_dataset
+        self.assertEqual(data, data_test)
 
 
 class ActiveTest(TestCase):

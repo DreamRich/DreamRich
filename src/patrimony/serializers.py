@@ -7,20 +7,9 @@ from patrimony.models import (
     RealEstate,
     CompanyParticipation,
     Equipment,
-    LifeInsurance,
     Income,
 )
 from rest_framework import serializers
-
-
-class PatrimonySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Patrimony
-        fields = [
-            'fgts',
-            'id',
-        ]
 
 
 class ActiveTypeSerializer(serializers.ModelSerializer):
@@ -33,7 +22,7 @@ class ActiveTypeSerializer(serializers.ModelSerializer):
 class ActiveSerializer(serializers.ModelSerializer):
 
     active_manager_id = serializers.IntegerField(write_only=True)
-    active_type_id = serializers.IntegerField(write_only=True)
+    active_type_id = serializers.IntegerField()
     active_type = ActiveTypeSerializer(read_only=True)
 
     class Meta:
@@ -61,21 +50,33 @@ class ActiveManagerSerializer(serializers.ModelSerializer):
             'id',
             'patrimony_id',
             'actives',
-            'active_type_labels',
-            'active_type_data',
+        ]
+
+
+class ActiveChartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ActiveManager
+        fields = [
+            'active_type_chart',
         ]
 
 
 class ArrearageSerializer(serializers.ModelSerializer):
 
+    patrimony_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Arrearage
         fields = [
+            'id',
             'name',
+            'patrimony_id',
             'value',
             'period',
             'rate',
             'amortization_system',
+            'actual_period',
         ]
 
 
@@ -122,16 +123,6 @@ class EquipmentSerializer(serializers.ModelSerializer):
         ]
 
 
-class LifeInsuranceSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = LifeInsurance
-        fields = [
-            'name',
-            'value',
-        ]
-
-
 class IncomeSerializer(serializers.ModelSerializer):
 
     patrimony_id = serializers.IntegerField(write_only=True)
@@ -143,6 +134,31 @@ class IncomeSerializer(serializers.ModelSerializer):
             'source',
             'value_monthly',
             'thirteenth',
+            'fourteenth',
             'vacation',
             'patrimony_id',
+        ]
+
+
+class PatrimonySerializer(serializers.ModelSerializer):
+
+    activemanager = ActiveManagerSerializer(read_only=True)
+    arrearanges = ArrearageSerializer(read_only=True, many=True)
+    realestates = RealEstateSerializer(read_only=True, many=True)
+    companyparticipations = CompanyParticipationSerializer(many=True,
+                                                           read_only=True)
+    equipments = EquipmentSerializer(many=True, read_only=True)
+    incomes = IncomeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Patrimony
+        fields = [
+            'fgts',
+            'id',
+            'activemanager',
+            'arrearanges',
+            'realestates',
+            'companyparticipations',
+            'equipments',
+            'incomes',
         ]

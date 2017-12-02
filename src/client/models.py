@@ -139,6 +139,8 @@ class BankAccount(base_models.BaseModel):
         validators=[validators.validate_agency]
     )  # BR pattern: '[4alg]-[1dig]'
 
+    joint_account = models.BooleanField(default=False)
+
     account = models.CharField(
         max_length=13,
         validators=[validators.validate_account]
