@@ -1,5 +1,5 @@
 import json
-from django.test import TestCase, Client as DjangoClient
+from django.test import TestCase
 from django.core.exceptions import ValidationError
 from dreamrich.utils import get_token
 from rest_framework.test import APIClient
@@ -104,9 +104,9 @@ class ClientPermissionsTest(TestCase):
         self.active_client = ActiveClientMainFactory()
         self.other_active_client = ActiveClientMainFactory()
         self.token = 'JWT {}'.format(get_token(self.active_client))
-        
+
         # Authenticate user
-        self.django_client.credentials(HTTP_AUTHORIZATION=self.token) 
+        self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     def test_client_own_data_get(self):
         address_client_id = self.active_client.addresses.last().id
@@ -165,7 +165,7 @@ class ClientPermissionsTest(TestCase):
 
         route = ('/api/client/address/' + str(address_client_id) + '/')
 
-        response = self.django_client.get(route)
+        response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
@@ -204,7 +204,35 @@ class ClientPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    def test_client_permissions_data_post(self):
+    def test_client_patch_other_client_data(self):
+        other_client_id = self.other_active_client.pk
+        other_state_id = self.other_active_client.addresses.last().state_id
+        other_address_client_id = self.other_active_client.addresses.last().id
+
+        route = ('/api/client/address/' + str(other_address_client_id) + '/')
+
+        response = self.django_client.patch(
+            route,
+            json.dumps({
+                'city': 'Gama',
+                'state_id': other_state_id,
+                'active_client_id': other_client_id,
+            }),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_client_delete_other_client_data(self):
+        address_client_id = self.active_client.addresses.last().id
+
+        route = ('/api/client/address/' + str(address_client_id) + '/')
+
+        response = self.django_client.delete(route)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_client_data_post(self):
         route = '/api/client/address/'
 
         response = self.django_client.post(
