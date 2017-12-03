@@ -7,6 +7,7 @@ from patrimony.models import Active
 from patrimony.factories import (
     PatrimonyMainFactory,
     IncomeFactory,
+    RealEstateFactory,
     ActiveManagerFactory,
     ActiveFactory,
     ActiveTypeFactory,
@@ -48,9 +49,10 @@ class PatrimonyTest(TestCase):
                                                   thirteenth=False,
                                                   patrimony=self.patrimony,
                                                   vacation=True)
+        ArrearageFactory(patrimony=self.patrimony, value=351200.00, period=3)
+        RealEstateFactory(patrimony=self.patrimony, salable=True)
 
     def test_current_net_investment(self):
-        ArrearageFactory(patrimony=self.patrimony, value=351200.00, period=3)
         self.assertEqual(321200.00, self.patrimony.current_net_investment())
 
     def test_current_property_investment(self):
@@ -59,6 +61,12 @@ class PatrimonyTest(TestCase):
     def test_current_income_generation(self):
         self.assertEqual(1345.6100000000001,
                          self.patrimony.possible_income_generation())
+
+    def test_current_none_investment(self):
+        self.assertEqual(self.patrimony.current_none_investment(), 242.42)
+
+    def test_total(self):
+        self.assertAlmostEqual(self.patrimony.total(), 322909.24000000005)
 
     def test_annual_income(self):
         self.assertEqual(self.common_income.annual(), 14400.00)

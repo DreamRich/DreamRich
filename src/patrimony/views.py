@@ -12,7 +12,6 @@ from patrimony.serializers import (
     RealEstateSerializer,
     CompanyParticipationSerializer,
     EquipmentSerializer,
-    LifeInsuranceSerializer,
     IncomeSerializer,
 )
 
@@ -24,7 +23,6 @@ from patrimony.models import (
     CompanyParticipation,
     Equipment,
     Income,
-    LifeInsurance,
     Patrimony,
     RealEstate,
 )
@@ -81,11 +79,6 @@ class CompanyParticipationViewSet(viewsets.ModelViewSet):
 class EquipmentViewSet(viewsets.ModelViewSet):
     serializer_class = EquipmentSerializer
     queryset = Equipment.objects.all()
-
-
-class LifeInsuranceViewSet(viewsets.ModelViewSet):
-    serializer_class = LifeInsuranceSerializer
-    queryset = LifeInsurance.objects.all()
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
