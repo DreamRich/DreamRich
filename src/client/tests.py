@@ -108,10 +108,23 @@ class ClientPermissionsTest(TestCase):
         self.token = 'JWT {}'.format(get_token(self.active_client))
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
+    @staticmethod
+    def _get_route(element=0, listing=False):
+        route = '/api/client/'
+
+        if listing:
+            route = route
+        elif element:
+            route += 'address/{}/'.format(element)
+        else:
+            route += 'address/'
+
+        return route
+
     def test_client_own_data_get(self):
         address_client_id = self.active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(address_client_id) + '/'
+        route = self._get_route(element=address_client_id)
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
@@ -121,7 +134,7 @@ class ClientPermissionsTest(TestCase):
         state_id = self.active_client.addresses.last().state_id
         address_client_id = self.active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(address_client_id) + '/'
+        route = self._get_route(element=address_client_id)
 
         response = self.django_client.put(
             route,
@@ -147,7 +160,7 @@ class ClientPermissionsTest(TestCase):
         address_client_id = self.active_client.addresses.last().id
         state_id = self.active_client.addresses.last().state_id
 
-        route = '/api/client/address/' + str(address_client_id) + '/'
+        route = self._get_route(element=address_client_id)
 
         response = self.django_client.patch(
             route,
@@ -164,16 +177,16 @@ class ClientPermissionsTest(TestCase):
     def test_client_own_data_delete(self):
         address_client_id = self.active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(address_client_id) + '/'
+        route = self._get_route(element=address_client_id)
 
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
     def test_get_other_client_data(self):
-        address_other_client_id = self.other_active_client.addresses.last().id
+        other_client_address_id = self.other_active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(address_other_client_id) + '/'
+        route = self._get_route(element=other_client_address_id)
 
         response = self.django_client.get(route)
 
@@ -182,14 +195,14 @@ class ClientPermissionsTest(TestCase):
     def test_put_other_client_data(self):
         other_client_id = self.other_active_client.pk
         other_state_id = self.other_active_client.addresses.last().state_id
-        other_address_client_id = self.other_active_client.addresses.last().id
+        other_client_address_id = self.other_active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(other_address_client_id) + '/'
+        route = '/api/client/address/' + str(other_client_address_id) + '/'
 
         response = self.django_client.put(
             route,
             json.dumps({
-                'id': other_address_client_id,
+                'id': other_client_address_id,
                 'city': 'Gama',
                 'type_of_address': 'type0',
                 'neighborhood': 'neighborhood0',
@@ -208,9 +221,9 @@ class ClientPermissionsTest(TestCase):
     def test_patch_other_client_data(self):
         other_client_id = self.other_active_client.pk
         other_state_id = self.other_active_client.addresses.last().state_id
-        other_address_client_id = self.other_active_client.addresses.last().id
+        other_client_address_id = self.other_active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(other_address_client_id) + '/'
+        route = '/api/client/address/' + str(other_client_address_id) + '/'
 
         response = self.django_client.patch(
             route,
@@ -227,14 +240,20 @@ class ClientPermissionsTest(TestCase):
     def test_delete_other_client_data(self):
         address_client_id = self.active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(address_client_id) + '/'
+        route = self._get_route(element=address_client_id)
 
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
+    def test_client_get_list(self):
+        route = self._get_route(listing=True)
+        response = self.django_client.get(route)
+
+        self.assertEqual(response.status_code, 403)
+
     def test_client_post(self):
-        route = '/api/client/address/'
+        route = self._get_route()
 
         response = self.django_client.post(
             route,
@@ -250,11 +269,5 @@ class ClientPermissionsTest(TestCase):
                 'active_client_id': str(self.active_client.pk)
             }),
             content_type='application/json')
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_client_get_list(self):
-        route = '/api/client/'
-        response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 403)
