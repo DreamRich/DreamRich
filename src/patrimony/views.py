@@ -70,10 +70,7 @@ class ArrearageViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['get'])
     def patrimony_arrearage(self, request, pk=None):
-        financial_planning = FinancialPlanning.objects.get(pk=pk)
-        patrimony_id = financial_planning.patrimony_id
-
-        arrearages = Arrearage.objects.filter(patrimony_id=patrimony_id)
+        arrearages = Arrearage.objects.filter(patrimony_id=pk)
 
         list_arrearage = []
         for arrearage in arrearages:
