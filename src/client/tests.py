@@ -103,9 +103,9 @@ class ClientPermissionsTest(TestCase):
         self.django_client = APIClient()
         self.active_client = ActiveClientMainFactory()
         self.other_active_client = ActiveClientMainFactory()
-        self.token = 'JWT {}'.format(get_token(self.active_client))
 
         # Authenticate user
+        self.token = 'JWT {}'.format(get_token(self.active_client))
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     def test_client_own_data_get(self):
@@ -169,7 +169,7 @@ class ClientPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    def test_client_get_other_client_data(self):
+    def test_get_other_client_data(self):
         address_other_client_id = self.other_active_client.addresses.last().id
 
         route = '/api/client/address/' + str(address_other_client_id) + '/'
@@ -178,7 +178,7 @@ class ClientPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    def test_client_put_other_client_data(self):
+    def test_put_other_client_data(self):
         other_client_id = self.other_active_client.pk
         other_state_id = self.other_active_client.addresses.last().state_id
         other_address_client_id = self.other_active_client.addresses.last().id
@@ -204,7 +204,7 @@ class ClientPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    def test_client_patch_other_client_data(self):
+    def test_patch_other_client_data(self):
         other_client_id = self.other_active_client.pk
         other_state_id = self.other_active_client.addresses.last().state_id
         other_address_client_id = self.other_active_client.addresses.last().id
@@ -223,7 +223,7 @@ class ClientPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    def test_client_delete_other_client_data(self):
+    def test_delete_other_client_data(self):
         address_client_id = self.active_client.addresses.last().id
 
         route = ('/api/client/address/' + str(address_client_id) + '/')
@@ -239,14 +239,14 @@ class ClientPermissionsTest(TestCase):
             route,
             json.dumps({
                 'city': 'asdf',
-                        'type_of_address': 'asdf',
-                        'neighborhood': 'This field is re',
-                        'detail': 'This field is required.',
-                        'cep': '71963000',
-                        'number': '8787',
-                        'complement': 'Ts required.',
-                        'state_id': '1',
-                        'active_client_id': str(self.active_client.pk)
+                'type_of_address': 'asdf',
+                'neighborhood': 'This field is re',
+                'detail': 'This field is required.',
+                'cep': '71963000',
+                'number': '8787',
+                'complement': 'Ts required.',
+                'state_id': '1',
+                'active_client_id': str(self.active_client.pk)
             }),
             content_type='application/json')
 
