@@ -1,7 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
-from django.views.generic.detail import DetailView
 from patrimony.serializers import (
     PatrimonySerializer,
     ActiveSerializer,
@@ -25,6 +24,10 @@ from patrimony.models import (
     Income,
     Patrimony,
     RealEstate,
+)
+
+from financial_planning.models import (
+    FinancialPlanning,
 )
 
 
@@ -64,6 +67,25 @@ class ArrearageViewSet(viewsets.ModelViewSet):
         return Response(
             arrearage.arrearage_calculator.calculate_arrearage
         )
+
+    @detail_route(methods=['get'])
+    def patrimony_arrearage(self, request, pk=None):
+        financial_planning = FinancialPlanning.objects.get(pk=pk)
+        patrimony_id = financial_planning.patrimony_id
+
+        arrearages = Arrearage.objects.filter(patrimony_id=patrimony_id)
+
+        list_arrearage = []
+        for arrearage in arrearages:
+            list_arrearage.append({
+                'id': arrearage.id,
+                'name': arrearage.name,
+                'value': arrearage.value,
+                'period': arrearage.period,
+                'rate': arrearage.rate,
+                'amortization_system': arrearage.amortization_system
+            })
+        return Response(list_arrearage)
 
 
 class RealEstateViewSet(viewsets.ModelViewSet):
