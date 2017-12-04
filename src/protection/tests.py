@@ -79,15 +79,15 @@ class ProtectionManagerTest(TestCase):
     def setUp(self):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        financial_planning = FinancialPlanningFactory(
+        financial_planning = FinancialPlanningFactory(cdi=0.1213, ipca=0.075,
             active_client=active_client)
         self.protection_manager = financial_planning.protection_manager
         self.protection_manager.financial_planning.active_client =\
             active_client
         self.protection_manager.private_pensions.all().update(
-            accumulated=20000)
+            accumulated=20000, value_annual=2000)
         PrivatePensionFactory(protection_manager=self.protection_manager,
-                              accumulated=4000)
+                              accumulated=4000, value_annual=200)
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
 
@@ -110,3 +110,8 @@ class ProtectionManagerTest(TestCase):
         data = [5000.0, 5000.0, 5000.0, 5000.0, 3000.0, 3000.0, 3000.0, 2000.0,
                 2000.0, 2000.0]
         self.assertEqual(self.protection_manager.life_insurances_flow(), data)
+
+    def test_private_pension_total_in_independece(self):
+        self.assertAlmostEqual(self.protection_manager.\
+                private_pension_total_in_independece(), 63381.03562604652)
+
