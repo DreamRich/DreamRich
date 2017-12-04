@@ -11,9 +11,8 @@ class EmployeesPermission(BasePermission):
     def has_permission(self, request, view):
         if (has_permission(request.user, 'see_employee_data') and not
                 has_permission(request.user, 'see_financial_adviser_data')):
-            view.queryset = view.queryset.filter(id=request.user.id)
             return True
-        return False
+        return True
 
 
 class ClientsPermission(BasePermission):

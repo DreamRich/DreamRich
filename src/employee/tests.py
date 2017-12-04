@@ -1,12 +1,9 @@
-impor json
+import json
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 from dreamrich.utils import get_token
 from rest_framework.test import APIClient
-from employee.models import Employee, FinancialAdviser
 from employee.factories import (
     EmployeeMainFactory,
-    FinancialAdviserMainFactory,
 )
 
 
@@ -24,7 +21,7 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_own_data_get(self):
         employee_id = self.employee.id
 
-        route = ('/api/employee/employee/' + str(employee_id) + '/')
+        route = '/api/employee/employee/' + str(employee_id) + '/'
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
@@ -32,7 +29,7 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_own_data_put(self):
         employee_id = self.employee.id
 
-        route = ('/api/employee/employee/' + str(employee_id) + '/')
+        route = '/api/employee/employee/' + str(employee_id) + '/'
 
         response = self.django_client.put(
             route,
@@ -50,7 +47,7 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_own_data_patch(self):
         employee_id = self.employee.id
 
-        route = ('/api/employee/employee/' + str(employee_id) + '/')
+        route = '/api/employee/employee/' + str(employee_id) + '/'
 
         response = self.django_client.patch(
             route,
@@ -65,7 +62,7 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_own_data_delete(self):
         employee_id = self.employee.id
 
-        route = ('/api/employee/employee/' + str(employee_id) + '/')
+        route = '/api/employee/employee/' + str(employee_id) + '/'
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
@@ -73,7 +70,7 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_get_other_employee_data(self):
         other_employee_id = self.other_employee.id
 
-        route = ('/api/employee/employee/' + str(other_employee_id) + '/')
+        route = '/api/employee/employee/' + str(other_employee_id) + '/'
 
         response = self.django_client.get(route)
 
@@ -82,12 +79,12 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_put_other_employee_data(self):
         other_employee_id = self.other_employee.id
 
-        route = ('/api/employee/employee/' + str(other_employee_id) + '/')
+        route = '/api/employee/employee/' + str(other_employee_id) + '/'
 
         response = self.django_client.put(
             route,
             json.dumps({
-                'id' : other_employee_id,
+                'id': other_employee_id,
                 'first_name': 'Maria',
                 'last_name': 'Old',
                 'cpf': '72986145094',
@@ -101,7 +98,7 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_patch_other_employee_data(self):
         other_employee_id = self.other_employee.id
 
-        route = ('/api/employee/employee/' + str(other_employee_id) + '/')
+        route = '/api/employee/employee/' + str(other_employee_id) + '/'
 
         response = self.django_client.patch(
             route,
@@ -116,15 +113,20 @@ class EmployeePermissionsTest(TestCase):
     def test_employee_delete_other_employee_data(self):
         other_employee_id = self.other_employee.id
 
-        route = ('/api/employee/employee/' + str(other_employee_id) + '/')
+        route = '/api/employee/employee/' + str(other_employee_id) + '/'
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
-    def test_employee_post(self):
-        employee_id = self.employee.id
+    def test_employee_get_list(self):
+        route = '/api/employee/employee/'
 
-        route = ('/api/employee/employee/')
+        response = self.django_client.get(route)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_employee_post(self):
+        route = '/api/employee/employee/'
 
         response = self.django_client.post(
             route,
