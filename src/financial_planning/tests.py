@@ -148,6 +148,10 @@ class FinancialPlanningModelTest(TestCase):
         self.assertAlmostEqual(self.financial_planning.
                                real_gain_related_cdi(), 0.054353488372093084)
 
+    def test_real_gain(self):
+        self.assertAlmostEqual(self.financial_planning.real_gain(),
+                                0.04306976744186053)
+
     def test_save_financial_planning(self):
         financial_planning = FinancialPlanningFactory(init_year=None)
         self.assertEqual(financial_planning.init_year,
