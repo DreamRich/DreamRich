@@ -12,7 +12,6 @@ from patrimony.factories import (
     ArrearageFactory,
 )
 from lib.financial_planning.flow import create_array_change_annual
-from lib.profit.profit import actual_rate
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
     CostManagerFactory,
@@ -146,13 +145,8 @@ class FinancialPlanningModelTest(TestCase):
             self.financial_planning.duration(), 10)
 
     def test_real_gain_related_cdi(self):
-        data = actual_rate(
-            self.financial_planning.target_profitability /
-            100 *
-            self.financial_planning.cdi,
-            self.financial_planning.ipca)
         self.assertAlmostEqual(self.financial_planning.
-                               real_gain_related_cdi(), data)
+                               real_gain_related_cdi(), 0.054353488372093084)
 
     def test_save_financial_planning(self):
         financial_planning = FinancialPlanningFactory(init_year=None)
