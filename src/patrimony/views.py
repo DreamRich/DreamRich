@@ -26,10 +26,6 @@ from patrimony.models import (
     RealEstate,
 )
 
-from financial_planning.models import (
-    FinancialPlanning,
-)
-
 
 class PatrimonyViewSet(viewsets.ModelViewSet):
     serializer_class = PatrimonySerializer
