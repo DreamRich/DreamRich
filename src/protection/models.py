@@ -107,6 +107,12 @@ class ProtectionManager(models.Model):
 
         return value
 
+    def life_insurance_to_recive_in_independence(self):
+        value = self.life_insurances.aggregate(Sum('value_to_recive'))
+        value = (value['value_to_recive__sum'] or 0)
+
+        return value
+
 
 
 class PrivatePension(models.Model):
