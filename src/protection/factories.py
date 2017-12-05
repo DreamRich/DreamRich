@@ -47,6 +47,7 @@ class LifeInsuranceFactory(factory.DjangoModelFactory):
     value_to_pay_annual = factory.Faker('pyfloat')
     redeemable = True
     has_year_end = True
+    actual = True
 
 
 class ProtectionManagerFactory(factory.DjangoModelFactory):

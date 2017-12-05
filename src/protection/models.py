@@ -89,6 +89,25 @@ class ProtectionManager(models.Model):
 
         return data
 
+    def private_pension_total_in_independece(self):
+        actual_accumulated = self.private_pension_total()
+        total_value = self.private_pensions.aggregate(Sum('value_annual'))
+        total_value = (total_value['value_annual__sum'] or 0)
+        rate = self.financial_planning.real_gain()
+        duration = self.financial_planning.duration()
+        total_value_moniterized = numpy.fv(rate, duration, -total_value,
+                                           -actual_accumulated)
+
+        return total_value_moniterized
+
+    def life_insurance_to_recive_total(self):
+        value = self.life_insurances.filter(actual=True).aggregate(Sum(
+                                     'value_to_recive'))
+        value = (value['value_to_recive__sum'] or 0)
+
+        return value
+
+
 
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
@@ -100,7 +119,7 @@ class PrivatePension(models.Model):
         related_name='private_pensions')
 
     def __str__(self):
-        return "{name} {value}".format(**self.__dict__)
+        return "{name} {value_annual} {accumulated}".format(**self.__dict__)
 
 
 class LifeInsurance(models.Model):
@@ -109,6 +128,7 @@ class LifeInsurance(models.Model):
     value_to_pay_annual = models.FloatField(default=0)
     year_end = models.PositiveSmallIntegerField(null=True)
     redeemable = models.BooleanField()
+    actual = models.BooleanField()
     has_year_end = models.BooleanField()
     protection_manager = models.ForeignKey(
         ProtectionManager,
@@ -125,4 +145,5 @@ class LifeInsurance(models.Model):
         return index
 
     def __str__(self):
-        return "{name} {value}".format(**self.__dict__)
+        string = "{name} {value_to_pay_annual} {value_to_recive}"
+        return string.format(**self.__dict__)

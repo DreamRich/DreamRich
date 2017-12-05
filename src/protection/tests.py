@@ -114,4 +114,3 @@ class ProtectionManagerTest(TestCase):
     def test_private_pension_total_in_independece(self):
         self.assertAlmostEqual(self.protection_manager.\
                 private_pension_total_in_independece(), 63381.03562604652)
-
