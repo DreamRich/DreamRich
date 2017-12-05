@@ -79,8 +79,8 @@ class ProtectionManagerTest(TestCase):
     def setUp(self):
         active_client = ActiveClientMainFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        financial_planning = FinancialPlanningFactory(cdi=0.1213, ipca=0.075,
-            active_client=active_client)
+        financial_planning = FinancialPlanningFactory(
+            cdi=0.1213, ipca=0.075, active_client=active_client)
         self.protection_manager = financial_planning.protection_manager
         self.protection_manager.financial_planning.active_client =\
             active_client
@@ -113,19 +113,20 @@ class ProtectionManagerTest(TestCase):
         self.assertEqual(self.protection_manager.life_insurances_flow(), data)
 
     def test_private_pension_total_in_independece(self):
-        self.assertAlmostEqual(self.protection_manager.\
-                private_pension_total_in_independece(), 63381.03562604652)
+        self.assertAlmostEqual(
+            self.protection_manager. private_pension_total_in_independece(),
+            63381.03562604652)
 
     def test_dont_have_life_insurance(self):
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
-        self.assertEqual(self.protection_manager.\
-                life_insurance_to_recive_total(), 0)
+        self.assertEqual(self.protection_manager.
+                         life_insurance_to_recive_total(), 0)
 
     def test_life_insurance_to_recive_total(self):
-        self.assertEqual(self.protection_manager.\
-                life_insurance_to_recive_total(), 800000)
+        self.assertEqual(self.protection_manager.
+                         life_insurance_to_recive_total(), 800000)
 
     def test_life_insurance_to_recive_in_independence(self):
-        self.assertEqual(self.protection_manager.\
-                life_insurance_to_recive_in_independence(), 1000000)
+        self.assertEqual(self.protection_manager.
+                         life_insurance_to_recive_in_independence(), 1000000)

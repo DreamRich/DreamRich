@@ -102,7 +102,7 @@ class ProtectionManager(models.Model):
 
     def life_insurance_to_recive_total(self):
         value = self.life_insurances.filter(actual=True).aggregate(Sum(
-                                     'value_to_recive'))
+            'value_to_recive'))
         value = (value['value_to_recive__sum'] or 0)
 
         return value
@@ -112,7 +112,6 @@ class ProtectionManager(models.Model):
         value = (value['value_to_recive__sum'] or 0)
 
         return value
-
 
 
 class PrivatePension(models.Model):
