@@ -140,13 +140,16 @@ class EmployeePermissionsTest(TestCase):
 
 class FinancialAdviserPermissionsTest(TestCase):
 
-    def setUp(self):
+    def setUp(self, user=None):  # pylint: disable=arguments-differ
         self.django_client = APIClient()
         self.financial_adviser = FinancialAdviserMainFactory()
         self.other_financial_adviser = FinancialAdviserMainFactory()
 
         # Authenticate user
-        self.token = 'JWT {}'.format(get_token(self.financial_adviser))
+        self.user = self.financial_adviser if not user else user
+
+        user_token = get_token(self.user)
+        self.token = 'JWT {}'.format(user_token)
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     @staticmethod
@@ -201,15 +204,15 @@ class FinancialAdviserPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 204)
 
-    def test_get_other_financial_adviser_data(self):
+    def test_user_get_financial_adviser(self, status_code=200):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
         route = self.get_route(other_financial_adviser_pk)
         response = self.django_client.get(route)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_put_other_financial_adviser_data(self):
+    def test_user_put_financial_adviser(self, status_code=200):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
         route = self.get_route(other_financial_adviser_pk)
@@ -226,9 +229,9 @@ class FinancialAdviserPermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_patch_other_financial_adviser_data(self):
+    def test_user_patch_financial_adviser(self, status_code=200):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
         route = self.get_route(other_financial_adviser_pk)
@@ -241,24 +244,24 @@ class FinancialAdviserPermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_delete_other_financial_adviser_data(self):
+    def test_user_delete_financial_adviser(self, status_code=200):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
         route = self.get_route(other_financial_adviser_pk)
         response = self.django_client.delete(route)
 
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_get_list_financial_advisers(self):
+    def test_get_list_financial_advisers(self, status_code=200):
         route = self.get_route()
 
         response = self.django_client.get(route)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_post_financial_adviser(self):
+    def test_post_financial_adviser(self, status_code=200):
         route = self.get_route()
 
         response = self.django_client.post(
@@ -272,4 +275,4 @@ class FinancialAdviserPermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status_code)

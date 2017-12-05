@@ -3,7 +3,10 @@ from django.test import TestCase
 from dreamrich.utils import get_token
 from rest_framework.test import APIClient
 from client.factories import ActiveClientMainFactory
-from employee.tests_permissions import EmployeePermissionsTest
+from employee.tests_permissions import(
+    EmployeePermissionsTest,
+    FinancialAdviserPermissionsTest,
+)
 
 
 class ClientToClientPermissionsTest(TestCase):
@@ -206,3 +209,41 @@ class ClientToEmployeePermissionsTest(TestCase):
 
     def test_client_post(self):
         self.employee_test.test_employee_post(status_code=403)
+
+
+class ClientToFinancialAdviserPermissionsTest(TestCase):
+    def setUp(self):
+        self.active_client = ActiveClientMainFactory()
+
+        self.financial_adviser_test = FinancialAdviserPermissionsTest()
+        self.financial_adviser_test.setUp(self.active_client)
+
+    def test_client_get_financial_adviser(self):
+        self.financial_adviser_test.test_user_get_financial_adviser(
+            status_code=403
+        )
+
+    def test_client_put_financial_adviser(self):
+        self.financial_adviser_test.test_user_put_financial_adviser(
+            status_code=403
+        )
+
+    def test_client_patch_financial_adviser(self):
+        self.financial_adviser_test.test_user_patch_financial_adviser(
+            status_code=403
+        )
+
+    def test_client_delete_financial_adviser(self):
+        self.financial_adviser_test.test_user_delete_financial_adviser(
+            status_code=403
+        )
+
+    def test_client_get_list(self):
+        self.financial_adviser_test.test_get_list_financial_advisers(
+            status_code=403
+        )
+
+    def test_client_post(self):
+        self.financial_adviser_test.test_post_financial_adviser(
+            status_code=403
+        )
