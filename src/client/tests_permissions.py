@@ -3,9 +3,10 @@ from django.test import TestCase
 from dreamrich.utils import get_token
 from rest_framework.test import APIClient
 from client.factories import ActiveClientMainFactory
+from employee.tests_permissions import EmployeePermissionsTest
 
 
-class ClientPermissionsTest(TestCase):
+class ClientToClientPermissionsTest(TestCase):
     # Not special reasons on choices for routes, just ordinarys
 
     def setUp(self):
@@ -18,7 +19,7 @@ class ClientPermissionsTest(TestCase):
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     @staticmethod
-    def _get_route(element=0, listing=False):
+    def get_route(element=0, listing=False):
         route = '/api/client/'
 
         if listing:
@@ -33,7 +34,7 @@ class ClientPermissionsTest(TestCase):
     def test_client_get_own_data(self):
         address_client_id = self.active_client.addresses.last().id
 
-        route = self._get_route(element=address_client_id)
+        route = self.get_route(address_client_id)
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
@@ -43,7 +44,7 @@ class ClientPermissionsTest(TestCase):
         state_id = self.active_client.addresses.last().state_id
         address_client_id = self.active_client.addresses.last().id
 
-        route = self._get_route(element=address_client_id)
+        route = self.get_route(address_client_id)
 
         response = self.django_client.put(
             route,
@@ -69,7 +70,7 @@ class ClientPermissionsTest(TestCase):
         address_client_id = self.active_client.addresses.last().id
         state_id = self.active_client.addresses.last().state_id
 
-        route = self._get_route(element=address_client_id)
+        route = self.get_route(address_client_id)
 
         response = self.django_client.patch(
             route,
@@ -86,7 +87,7 @@ class ClientPermissionsTest(TestCase):
     def test_client_delete_own_data(self):
         address_client_id = self.active_client.addresses.last().id
 
-        route = self._get_route(element=address_client_id)
+        route = self.get_route(address_client_id)
 
         response = self.django_client.delete(route)
 
@@ -95,7 +96,7 @@ class ClientPermissionsTest(TestCase):
     def test_get_other_client_data(self):
         other_client_address_id = self.other_active_client.addresses.last().id
 
-        route = self._get_route(element=other_client_address_id)
+        route = self.get_route(other_client_address_id)
 
         response = self.django_client.get(route)
 
@@ -106,7 +107,7 @@ class ClientPermissionsTest(TestCase):
         other_state_id = self.other_active_client.addresses.last().state_id
         other_client_address_id = self.other_active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(other_client_address_id) + '/'
+        route = self.get_route(other_client_address_id)
 
         response = self.django_client.put(
             route,
@@ -132,7 +133,7 @@ class ClientPermissionsTest(TestCase):
         other_state_id = self.other_active_client.addresses.last().state_id
         other_client_address_id = self.other_active_client.addresses.last().id
 
-        route = '/api/client/address/' + str(other_client_address_id) + '/'
+        route = self.get_route(other_client_address_id)
 
         response = self.django_client.patch(
             route,
@@ -149,20 +150,19 @@ class ClientPermissionsTest(TestCase):
     def test_delete_other_client_data(self):
         address_client_id = self.active_client.addresses.last().id
 
-        route = self._get_route(element=address_client_id)
-
+        route = self.get_route(address_client_id)
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
     def test_get_list_clients(self):
-        route = self._get_route(listing=True)
+        route = self.get_route(listing=True)
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 403)
 
     def test_post_client(self):
-        route = self._get_route()
+        route = self.get_route()
 
         response = self.django_client.post(
             route,
@@ -180,3 +180,29 @@ class ClientPermissionsTest(TestCase):
             content_type='application/json')
 
         self.assertEqual(response.status_code, 403)
+
+
+class ClientToEmployeePermissionsTest(TestCase):
+    def setUp(self):
+        self.active_client = ActiveClientMainFactory()
+
+        self.employee_test = EmployeePermissionsTest()
+        self.employee_test.setUp(self.active_client)
+
+    def test_client_get_employee(self):
+        self.employee_test.test_user_get_employee(status_code=403)
+
+    def test_client_put_employee(self):
+        self.employee_test.test_user_put_employee(status_code=403)
+
+    def test_client_patch_employee(self):
+        self.employee_test.test_user_patch_employee(status_code=403)
+
+    def test_client_delete_employee(self):
+        self.employee_test.test_user_delete_employee(status_code=403)
+
+    def test_client_get_list(self):
+        self.employee_test.test_employee_get_list(status_code=403)
+
+    def test_client_post(self):
+        self.employee_test.test_employee_post(status_code=403)

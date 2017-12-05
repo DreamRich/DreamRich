@@ -8,36 +8,37 @@ from employee.factories import (
 )
 
 
+# Default user is employee, but the class can be imported and other user used
+# User is the one who will make the requests
 class EmployeePermissionsTest(TestCase):
 
-    def setUp(self):
+    def setUp(self, user=None):  # pylint: disable=arguments-differ
         self.django_client = APIClient()
         self.employee = EmployeeMainFactory()
         self.other_employee = EmployeeMainFactory()
 
         # Authenticate user
-        self.token = 'JWT {}'.format(get_token(self.employee))
+        self.user = self.employee if not user else user
+
+        user_token = get_token(self.user)
+        self.token = 'JWT {}'.format(user_token)
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     @staticmethod
-    def _get_route(element=0):
+    def get_route(element=0):
         route = '/api/employee/employee/'
-
-        if element:
-            route += '{}/'.format(element)
-        else:
-            route = route
+        route += '{}/'.format(element) if element else ''
 
         return route
 
-    def test_employee_get_own_data(self):
-        route = self._get_route(element=self.employee.id)
+    def test_employee_get_itself(self):
+        route = self.get_route(element=self.user.id)
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
 
-    def test_employee_put_own_data(self):
-        route = self._get_route(element=self.employee.id)
+    def test_employee_put_itself(self):
+        route = self.get_route(element=self.user.id)
 
         response = self.django_client.put(
             route,
@@ -52,8 +53,8 @@ class EmployeePermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_employee_patch_own_data(self):
-        route = self._get_route(element=self.employee.id)
+    def test_employee_patch_itself(self):
+        route = self.get_route(element=self.user.id)
 
         response = self.django_client.patch(
             route,
@@ -65,22 +66,21 @@ class EmployeePermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_employee_delete_own_data(self):
-        route = self._get_route(element=self.employee.id)
+    def test_employee_delete_itself(self):
+        route = self.get_route(element=self.user.id)
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
-    def test_employee_get_other_employee_data(self):
-        route = self._get_route(element=self.other_employee.id)
-
+    def test_user_get_employee(self, status_code=403):
+        route = self.get_route(element=self.other_employee.id)
         response = self.django_client.get(route)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_employee_put_other_employee_data(self):
+    def test_user_put_employee(self, status_code=403):
         other_employee_id = self.other_employee.id
-        route = self._get_route(other_employee_id)
+        route = self.get_route(other_employee_id)
 
         response = self.django_client.put(
             route,
@@ -94,10 +94,10 @@ class EmployeePermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_employee_patch_other_employee_data(self):
-        route = self._get_route(element=self.other_employee.id)
+    def test_user_patch_employee(self, status_code=403):
+        route = self.get_route(element=self.other_employee.id)
 
         response = self.django_client.patch(
             route,
@@ -107,23 +107,22 @@ class EmployeePermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_employee_delete_other_employee_data(self):
-        route = self._get_route(element=self.other_employee.id)
+    def test_user_delete_employee(self, status_code=403):
+        route = self.get_route(element=self.other_employee.id)
         response = self.django_client.delete(route)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_employee_get_list(self):
-        route = self._get_route()
-
+    def test_employee_get_list(self, status_code=403):
+        route = self.get_route()
         response = self.django_client.get(route)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_employee_post(self):
-        route = self._get_route()
+    def test_employee_post(self, status_code=403):
+        route = self.get_route()
 
         response = self.django_client.post(
             route,
@@ -136,7 +135,7 @@ class EmployeePermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
 
 class FinancialAdviserPermissionsTest(TestCase):
@@ -151,7 +150,7 @@ class FinancialAdviserPermissionsTest(TestCase):
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
     @staticmethod
-    def _get_route(element=0):
+    def get_route(element=0):
         route = '/api/employee/financial/'
 
         if element:
@@ -162,13 +161,13 @@ class FinancialAdviserPermissionsTest(TestCase):
         return route
 
     def test_financial_adviser_get_own_data(self):
-        route = self._get_route(self.financial_adviser.pk)
+        route = self.get_route(self.financial_adviser.pk)
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
 
     def test_financial_adviser_put_own_data(self):
-        route = self._get_route(self.financial_adviser.pk)
+        route = self.get_route(self.financial_adviser.pk)
 
         response = self.django_client.put(
             route,
@@ -184,7 +183,7 @@ class FinancialAdviserPermissionsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_financial_adviser_patch_own_data(self):
-        route = self._get_route(self.financial_adviser.pk)
+        route = self.get_route(self.financial_adviser.pk)
 
         response = self.django_client.patch(
             route,
@@ -197,7 +196,7 @@ class FinancialAdviserPermissionsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_financial_adviser_delete_own_data(self):
-        route = self._get_route(self.financial_adviser.pk)
+        route = self.get_route(self.financial_adviser.pk)
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 204)
@@ -205,7 +204,7 @@ class FinancialAdviserPermissionsTest(TestCase):
     def test_get_other_financial_adviser_data(self):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
-        route = self._get_route(other_financial_adviser_pk)
+        route = self.get_route(other_financial_adviser_pk)
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
@@ -213,7 +212,7 @@ class FinancialAdviserPermissionsTest(TestCase):
     def test_put_other_financial_adviser_data(self):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
-        route = self._get_route(other_financial_adviser_pk)
+        route = self.get_route(other_financial_adviser_pk)
 
         response = self.django_client.put(
             route,
@@ -232,7 +231,7 @@ class FinancialAdviserPermissionsTest(TestCase):
     def test_patch_other_financial_adviser_data(self):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
-        route = self._get_route(other_financial_adviser_pk)
+        route = self.get_route(other_financial_adviser_pk)
 
         response = self.django_client.patch(
             route,
@@ -247,20 +246,20 @@ class FinancialAdviserPermissionsTest(TestCase):
     def test_delete_other_financial_adviser_data(self):
         other_financial_adviser_pk = self.other_financial_adviser.pk
 
-        route = self._get_route(other_financial_adviser_pk)
+        route = self.get_route(other_financial_adviser_pk)
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 204)
 
     def test_get_list_financial_advisers(self):
-        route = self._get_route()
+        route = self.get_route()
 
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, 200)
 
     def test_post_financial_adviser(self):
-        route = self._get_route()
+        route = self.get_route()
 
         response = self.django_client.post(
             route,
