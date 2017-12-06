@@ -1,9 +1,11 @@
+from patrimony.factories import PatrimonyMainFactory
 from protection.models import (
     ReserveInLack,
     EmergencyReserve,
     ProtectionManager,
     PrivatePension,
     LifeInsurance,
+    ActualPatrimonyProtection,
 )
 import factory
 
@@ -64,3 +66,17 @@ class ProtectionManagerFactory(factory.DjangoModelFactory):
 
     life_insurance = factory.RelatedFactory(LifeInsuranceFactory,
                                             'protection_manager')
+
+
+class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = ActualPatrimonyProtection
+
+    itcmd_tax = factory.Faker('pyfloat')
+
+    oab_tax = factory.Faker('pyfloat')
+
+    other_taxes = factory.Faker('pyfloat')
+
+    patrimony = factory.SubFactory(PatrimonyMainFactory)

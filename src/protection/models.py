@@ -1,7 +1,9 @@
 import datetime
 from django.db import models
+from patrimony.models import Patrimony
 from django.db.models import Sum
 import numpy
+import abc
 
 
 class ReserveInLack(models.Model):
@@ -102,7 +104,7 @@ class ProtectionManager(models.Model):
 
     def life_insurance_to_recive_total(self):
         value = self.life_insurances.filter(actual=True).aggregate(Sum(
-            'value_to_recive'))
+                                     'value_to_recive'))
         value = (value['value_to_recive__sum'] or 0)
 
         return value
@@ -114,12 +116,85 @@ class ProtectionManager(models.Model):
         return value
 
 
+class SuccessionTemplate(models.Model):
+
+    class Meta:
+        abstract = True
+
+    __metaclass__ = abc.ABCMeta
+    itcmd_tax = models.FloatField(default=0)
+    oab_tax = models.FloatField(default=0)
+    other_taxes = models.FloatField(default=0)
+
+    @abc.abstractmethod
+    def private_pension_total(self):
+        """Calculate total private pension"""
+        pass
+
+    @abc.abstractmethod
+    def life_insurance_to_recive_total(self):
+        """Calculate total life_insurance to recive"""
+        pass
+
+    @abc.abstractmethod
+    def patrimony_total(self):
+        """Recover the total patrimony in respective period"""
+        pass
+
+    def patrimony_necessery_to_itcmd(self):
+        total = self.patrimony_total() * self.itcmd_tax
+
+        return total
+
+    def patrimony_necessery_to_oab(self):
+        total = self.patrimony_total() * self.oab_tax
+
+        return total
+
+    def patrimony_necessery_to_other_taxes(self):
+        total = self.patrimony_total() * self.other_taxes
+
+        return total
+
+    def patrimony_necessery_total(self):
+        total = self.patrimony_necessery_to_itcmd() +\
+                self.patrimony_necessery_to_oab() +\
+                self.patrimony_necessery_to_other_taxes()
+
+        return total
+
+
+class ActualPatrimonyProtection(SuccessionTemplate):
+
+    patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
+
+    def private_pension_total(self):
+        total = self.private_pensions.aggregate(Sum('accumulated'))
+        total = (total['accumulated__sum'] or 0)
+
+        return total
+
+    def life_insurance_to_recive_total(self):
+        value = self.life_insurances.filter(actual=True).aggregate(Sum(
+                                     'value_to_recive'))
+        value = (value['value_to_recive__sum'] or 0)
+
+        return value
+
+    def patrimony_total(self):
+        return self.patrimony.total()
+
+
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
     value_annual = models.FloatField(default=0)
     accumulated = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
         ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='private_pensions')
+    actual_patrimony_protection = models.ForeignKey(
+        ActualPatrimonyProtection,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 
@@ -137,6 +212,10 @@ class LifeInsurance(models.Model):
     has_year_end = models.BooleanField()
     protection_manager = models.ForeignKey(
         ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='life_insurances')
+    actual_patrimony_protection = models.ForeignKey(
+        ActualPatrimonyProtection,
         on_delete=models.CASCADE,
         related_name='life_insurances')
 
