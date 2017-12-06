@@ -125,6 +125,10 @@ class SuccessionTemplate(models.Model):
     itcmd_tax = models.FloatField(default=0)
     oab_tax = models.FloatField(default=0)
     other_taxes = models.FloatField(default=0)
+    reserve_in_lack = models.OneToOneField(
+        ReserveInLack,
+        on_delete=models.CASCADE,
+    )
 
     @abc.abstractmethod
     def private_pension_total(self):
@@ -156,12 +160,29 @@ class SuccessionTemplate(models.Model):
 
         return total
 
-    def patrimony_necessery_total(self):
+    def patrimony_necessery_total_to_sucession(self):
         total = self.patrimony_necessery_to_itcmd() +\
                 self.patrimony_necessery_to_oab() +\
                 self.patrimony_necessery_to_other_taxes()
 
         return total
+
+    def total_to_recive_after_death_without_taxes(self):
+        total = self.private_pension_total() +\
+                self.life_insurance_to_recive_total()
+
+        return total
+
+    def leftover_after_sucession(self):
+        total = self.total_to_recive_after_death_without_taxes() -\
+                self.patrimony_necessery_total_to_sucession()
+
+        return total
+
+    def need_for_vialicia(self):
+        total = self.leftover_after_sucession() +\
+                self.patrimony_total() -\
+                self.reserve_in_lack.patrimony_necessery_total()
 
 
 class ActualPatrimonyProtection(SuccessionTemplate):
