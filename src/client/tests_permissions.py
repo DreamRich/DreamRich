@@ -1,18 +1,17 @@
 import json
+import employee.tests_permissions  # Can't do "from ..." because cyclic import
 from django.test import TestCase
 from dreamrich.utils import get_token
 from rest_framework.test import APIClient
 from client.factories import ActiveClientMainFactory
-from employee.tests_permissions import(
-    EmployeePermissionsTest,
-    FinancialAdviserPermissionsTest,
-)
 
 
-class ClientToClientPermissionsTest(TestCase):
+# Default user is client, but the class can be imported and other user used
+# User is the one who will make the requests
+class ToClientPermissionsTests(TestCase):
     # Not special reasons on choices for routes, just ordinarys
 
-    def setUp(self):
+    def setUp(self, user=None):
         self.django_client = APIClient()
         self.active_client = ActiveClientMainFactory()
         self.other_active_client = ActiveClientMainFactory()
@@ -91,21 +90,19 @@ class ClientToClientPermissionsTest(TestCase):
         address_client_id = self.active_client.addresses.last().id
 
         route = self.get_route(address_client_id)
-
         response = self.django_client.delete(route)
 
         self.assertEqual(response.status_code, 403)
 
-    def test_get_other_client_data(self):
+    def test_user_get_client(self, status_code=403):
         other_client_address_id = self.other_active_client.addresses.last().id
 
         route = self.get_route(other_client_address_id)
-
         response = self.django_client.get(route)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_put_other_client_data(self):
+    def test_user_put_client(self, status_code=403):
         other_client_id = self.other_active_client.pk
         other_state_id = self.other_active_client.addresses.last().state_id
         other_client_address_id = self.other_active_client.addresses.last().id
@@ -129,9 +126,9 @@ class ClientToClientPermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_patch_other_client_data(self):
+    def test_user_patch_client(self, status_code=403):
         other_client_id = self.other_active_client.pk
         other_state_id = self.other_active_client.addresses.last().state_id
         other_client_address_id = self.other_active_client.addresses.last().id
@@ -148,23 +145,23 @@ class ClientToClientPermissionsTest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_delete_other_client_data(self):
+    def test_user_delete_client(self, status_code=403):
         address_client_id = self.active_client.addresses.last().id
 
         route = self.get_route(address_client_id)
         response = self.django_client.delete(route)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_get_list_clients(self):
+    def test_clients_get_list(self, status_code=403):
         route = self.get_route(listing=True)
         response = self.django_client.get(route)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
-    def test_post_client(self):
+    def test_client_post(self, status_code=403):
         route = self.get_route()
 
         response = self.django_client.post(
@@ -182,14 +179,15 @@ class ClientToClientPermissionsTest(TestCase):
             }),
             content_type='application/json')
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status_code)
 
 
-class ClientToEmployeePermissionsTest(TestCase):
+class ClientToEmployeePermissionsTests(TestCase):
     def setUp(self):
         self.active_client = ActiveClientMainFactory()
 
-        self.employee_test = EmployeePermissionsTest()
+        self.employee_test = employee.tests_permissions \
+                             .ToEmployeePermissionsTests()
         self.employee_test.setUp(self.active_client)
 
     def test_client_get_employee(self):
@@ -211,7 +209,7 @@ class ClientToEmployeePermissionsTest(TestCase):
         self.employee_test.test_employee_post(status_code=403)
 
 
-class ClientToFinancialAdviserPermissionsTest(TestCase):
+class ClientToFinancialAdviserPermissionsTests(TestCase):
     def setUp(self):
         self.active_client = ActiveClientMainFactory()
 

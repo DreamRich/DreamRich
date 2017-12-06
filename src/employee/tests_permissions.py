@@ -1,4 +1,5 @@
 import json
+import client.tests_permissions  # Can't do "from ..." because cyclic import
 from django.test import TestCase
 from dreamrich.utils import get_token
 from rest_framework.test import APIClient
@@ -10,8 +11,7 @@ from employee.factories import (
 
 # Default user is employee, but the class can be imported and other user used
 # User is the one who will make the requests
-class EmployeePermissionsTest(TestCase):
-
+class ToEmployeePermissionsTests(TestCase):
     def setUp(self, user=None):  # pylint: disable=arguments-differ
         self.django_client = APIClient()
         self.employee = EmployeeMainFactory()
@@ -137,9 +137,32 @@ class EmployeePermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, status_code)
 
+class EmployeeToClientPermissionsTests(TestCase):
+    def setUp(self):
+        self.employee = EmployeeMainFactory()
+
+        self.client_test = client.tests_permissions.ToClientPermissionsTests()
+        self.client_test.setUp(self.employee)
+
+    def test_employee_get_client(self):
+        self.client_test.test_user_get_client(status_code=403)
+
+    def test_employee_put_client(self):
+        self.client_test.test_user_put_client(status_code=403)
+
+    def test_employee_patch_client(self):
+        self.client_test.test_user_patch_client(status_code=403)
+
+    def test_employee_delete_client(self):
+        self.client_test.test_user_delete_client(status_code=403)
+
+    def test_employee_get_list(self):
+        self.client_test.test_clients_get_list(status_code=403)
+
+    def test_employee_post(self):
+        self.client_test.test_client_post(status_code=403)
 
 class FinancialAdviserPermissionsTest(TestCase):
-
     def setUp(self, user=None):  # pylint: disable=arguments-differ
         self.django_client = APIClient()
         self.financial_adviser = FinancialAdviserMainFactory()
