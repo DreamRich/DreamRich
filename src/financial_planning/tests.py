@@ -194,6 +194,7 @@ class FinancialPlanningFlowTest(TestCase):
             patrimony=self.patrimony,
             financial_independence=self.financial_independence,
             goal_manager=self.goal_manager,
+            cdi=0.1213,
         )
 
     def test_annual_leftovers_for_goal_without_change(self):
@@ -245,13 +246,14 @@ class FinancialPlanningFlowTest(TestCase):
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
 
-    def test_flow_patrimony(self):
+    def test_suggested_flow_patrimony(self):
         array = [647364.8, 1319372.6002455815, 2027906.368647767,
                  2774951.418992036, 3562600.973793622, 4393062.0295134,
                  5268661.54056872, 6191852.939466794, 7165223.011330091,
                  8191499.142076154]
 
-        self.assertEqual(self.financial_planning.suggested_flow_patrimony, array)
+        self.assertEqual(self.financial_planning.suggested_flow_patrimony,
+                         array)
 
 
 class RegularCostViewTest(TestCase):

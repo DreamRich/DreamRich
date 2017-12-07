@@ -2,10 +2,7 @@ import datetime
 import numpy
 from django.db import models
 from client.models import ActiveClient
-from patrimony.models import (
-    Patrimony,
-    ActiveManager,
-)
+from patrimony.models import Patrimony
 from goal.models import GoalManager, GoalType
 from lib.financial_planning.flow import (
     generic_flow,
@@ -65,7 +62,7 @@ class FinancialIndependence(models.Model):
     def patrimony_at_end(self):
         actual_patrimony = self.financial_planning.patrimony.total()
         patrimony_in_independence = self.financial_planning.\
-                suggested_flow_patrimony[-1]
+            suggested_flow_patrimony[-1]
         goals_monetized = self.goals_monetized()
         total = actual_patrimony + patrimony_in_independence +\
             goals_monetized
@@ -275,7 +272,7 @@ class FinancialPlanning(models.Model):
     def total_resource_for_annual_goals(self):
         annual_leftovers_for_goal = self.annual_leftovers_for_goal()
         rate = self.real_gain_related_cdi() + 1
-        resource_for_goal = self.resource_monetization( 
+        resource_for_goal = self.resource_monetization(
             annual_leftovers_for_goal, rate)
 
         return resource_for_goal
@@ -283,7 +280,6 @@ class FinancialPlanning(models.Model):
     @property
     def suggested_flow_patrimony(self):
         annual_leftovers = self.annual_leftovers()
-        suggested_gain = self.real_gain_related_cdi()
         rate = self.real_gain_related_cdi() + 1
         flow = self.resource_monetization(annual_leftovers, rate)
 
@@ -294,4 +290,5 @@ class FinancialPlanning(models.Model):
         annual_leftovers = self.annual_leftovers()
         real_gain = self.patrimony.activemanager.real_profit_cdi()
         flow = self.resource_monetization(annual_leftovers, real_gain)
-    
+
+        return flow
