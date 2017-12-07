@@ -355,3 +355,29 @@ class FinancialAdviserToClientPermissionsTests(TestCase):
 
     def test_financial_adviser_post(self):
         self.client_test.test_client_post(status_code=201)
+
+class FinancialAdviserToEmployeePermissionsTests(TestCase):
+    def setUp(self):
+        self.financial_adviser = FinancialAdviserMainFactory()
+
+        self.employee_test = ToEmployeePermissionsTests()
+
+        self.employee_test.setUp(self.financial_adviser)
+
+    def test_financial_adviser_get_employee(self):
+        self.employee_test.test_user_get_employee(status_code=200)
+
+    def test_financial_adviser_put_employee(self):
+        self.employee_test.test_user_put_employee(status_code=200)
+
+    def test_financial_adviser_patch_employee(self):
+        self.employee_test.test_user_patch_employee(status_code=200)
+
+    def test_financial_adviser_delete_employee(self):
+        self.employee_test.test_user_delete_employee(status_code=204)
+
+    def test_financial_adviser_get_list(self):
+        self.employee_test.test_employee_get_list(status_code=200)
+
+    def test_financial_adviser_post(self):
+        self.employee_test.test_employee_post(status_code=201)
