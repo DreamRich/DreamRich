@@ -330,3 +330,28 @@ class ToFinancialAdviserPermissionsTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status_code)
+
+class FinancialAdviserToClientPermissionsTests(TestCase):
+    def setUp(self):
+        self.financial_adviser = FinancialAdviserMainFactory()
+
+        self.client_test = client.tests_permissions.ToClientPermissionsTests()
+        self.client_test.setUp(self.financial_adviser)
+
+    def test_financial_adviser_get_client(self):
+        self.client_test.test_user_get_client(status_code=200)
+
+    def test_financial_adviser_put_client(self):
+        self.client_test.test_user_put_client(status_code=200)
+
+    def test_financial_adviser_patch_client(self):
+        self.client_test.test_user_patch_client(status_code=200)
+
+    def test_financial_adviser_delete_client(self):
+        self.client_test.test_user_delete_client(status_code=204)
+
+    def test_financial_adviser_get_list(self):
+        self.client_test.test_clients_get_list(status_code=200)
+
+    def test_financial_adviser_post(self):
+        self.client_test.test_client_post(status_code=201)
