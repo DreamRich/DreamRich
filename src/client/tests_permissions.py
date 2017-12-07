@@ -213,7 +213,9 @@ class ClientToFinancialAdviserPermissionsTests(TestCase):
     def setUp(self):
         self.active_client = ActiveClientMainFactory()
 
-        self.financial_adviser_test = FinancialAdviserPermissionsTest()
+        self.financial_adviser_test = employee.tests_permissions \
+                                      .ToFinancialAdviserPermissionsTests()
+
         self.financial_adviser_test.setUp(self.active_client)
 
     def test_client_get_financial_adviser(self):

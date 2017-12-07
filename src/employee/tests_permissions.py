@@ -162,7 +162,38 @@ class EmployeeToClientPermissionsTests(TestCase):
     def test_employee_post(self):
         self.client_test.test_client_post(status_code=403)
 
-class FinancialAdviserPermissionsTest(TestCase):
+class EmployeeToFinancialAdviserPermissionsTests(TestCase):
+    def setUp(self):
+        self.employee = EmployeeMainFactory()
+
+        self.financial_adviser_test = ToFinancialAdviserPermissionsTests()
+        self.financial_adviser_test.setUp(self.employee)
+
+    def test_employee_get_client(self):
+        self.financial_adviser_test \
+        .test_user_get_financial_adviser(status_code=403)
+
+    def test_employee_put_client(self):
+        self.financial_adviser_test \
+        .test_user_put_financial_adviser(status_code=403)
+
+    def test_employee_patch_client(self):
+        self.financial_adviser_test \
+        .test_user_patch_financial_adviser(status_code=403)
+
+    def test_employee_delete_client(self):
+        self.financial_adviser_test \
+        .test_user_delete_financial_adviser(status_code=403)
+
+    def test_employee_get_list(self):
+        self.financial_adviser_test \
+        .test_financial_advisers_get_list(status_code=403)
+
+    def test_employee_post(self):
+        self.financial_adviser_test \
+        .test_financial_adviser_post(status_code=403)
+
+class ToFinancialAdviserPermissionsTests(TestCase):
     def setUp(self, user=None):  # pylint: disable=arguments-differ
         self.django_client = APIClient()
         self.financial_adviser = FinancialAdviserMainFactory()
@@ -277,14 +308,14 @@ class FinancialAdviserPermissionsTest(TestCase):
 
         self.assertEqual(response.status_code, status_code)
 
-    def test_get_list_financial_advisers(self, status_code=200):
+    def test_financial_advisers_get_list(self, status_code=200):
         route = self.get_route()
 
         response = self.django_client.get(route)
 
         self.assertEqual(response.status_code, status_code)
 
-    def test_post_financial_adviser(self, status_code=200):
+    def test_financial_adviser_post(self, status_code=200):
         route = self.get_route()
 
         response = self.django_client.post(
