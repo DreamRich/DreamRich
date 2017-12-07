@@ -187,7 +187,7 @@ class ClientToEmployeePermissionsTests(TestCase):
         self.active_client = ActiveClientMainFactory()
 
         self.employee_test = employee.tests_permissions \
-                             .ToEmployeePermissionsTests()
+                             .UserToEmployeePermissionsTests()
         self.employee_test.setUp(self.active_client)
 
     def test_client_get_employee(self):
@@ -203,10 +203,10 @@ class ClientToEmployeePermissionsTests(TestCase):
         self.employee_test.test_user_delete_employee(status_code=403)
 
     def test_client_get_list(self):
-        self.employee_test.test_employee_get_list(status_code=403)
+        self.employee_test.test_get_employees_list(status_code=403)
 
     def test_client_post(self):
-        self.employee_test.test_employee_post(status_code=403)
+        self.employee_test.test_post_employee(status_code=403)
 
 
 class ClientToFinancialAdviserPermissionsTests(TestCase):
