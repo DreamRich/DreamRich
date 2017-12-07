@@ -1,142 +1,56 @@
-import json
-import client.tests_permissions  # Can't do "from ..." because cyclic import
-from django.test import TestCase
-from rest_framework.test import APIClient
-from dreamrich.utils import authenticate_user
+from dreamrich.tests_permissions import PermissionsTests
+from employee.serializers import EmployeeSerializer
 from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
 )
 
-class UserToEmployeePermissionsTests(TestCase):
 
-    django_client = APIClient()
+class UserToEmployeePermissionsTests(PermissionsTests):
 
-    @staticmethod
-    def get_route(consulted_instance=None):
-        route = '/api/employee/employee/'
-        route += '{}/'.format(consulted_instance) if consulted_instance else ''
-
-        return route
-
-    def user_get_employee(self, status_code):
-        route = self.get_route(self.consulted_instance)
-        response = self.django_client.get(route)
-
-        self.assertEqual(response.status_code, status_code)
-
-    def user_put_employee(self, status_code):
-        route = self.get_route(self.consulted_instance)
-
-        response = self.django_client.put(
-            route,
-            json.dumps({
-                'id': self.consulted_instance,
-                'first_name': 'Maria',
-                'last_name': 'Old',
-                'cpf': '72986145094',
-                'email': ''
-            }),
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, status_code)
-
-    def user_patch_employee(self, status_code):
-        route = self.get_route(self.consulted_instance)
-
-        response = self.django_client.patch(
-            route,
-            json.dumps({
-                'last_name': 'Old',
-            }),
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, status_code)
-
-    def user_delete_employee(self, status_code):
-        route = self.get_route(self.consulted_instance)
-        response = self.django_client.delete(route)
-
-        self.assertEqual(response.status_code, status_code)
-
-    def get_employees_list(self, status_code):
-        route = self.get_route()
-        response = self.django_client.get(route)
-
-        self.assertEqual(response.status_code, status_code)
-
-    def post_employee(self, status_code):
-        route = self.get_route()
-
-        response = self.django_client.post(
-            route,
-            json.dumps({
-                'first_name': 'Maria',
-                'last_name': 'Old',
-                'cpf': '72986145094',
-                'email': ''
-            }),
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, status_code)
+    factory = EmployeeMainFactory
+    serializer = EmployeeSerializer
+    base_route = '/api/employee/employee/'
 
 
 class EmployeeToItselfPermissionsTests(UserToEmployeePermissionsTests):
 
-    def setUp(self):
-        employee = EmployeeMainFactory()
-        authenticate_user(employee)
-
-        self.consulted_instance = employee.id
-
     def test_employee_get_itself(self):
-        self.user_get_employee(200)
-
-    def test_employee_put_itself(self):
-        self.user_put_employee(403)
-
-    def test_employee_patch_itself(self):
-        self.user_patch_employee(403)
+        self.user_get_request(200)
 
     def test_employee_delete_itself(self):
-        self.user_delete_employee(403)
+        self.user_delete_request(403)
 
-    def test_get_employees_list(self):
-        self.get_employees_list(403)
+    def test_employee_put_itself(self):
+        self.user_put_request(403)
 
-    def test_post_employee(self):
-        self.post_employee(403)
+    def test_employee_patch_itself(self):
+        self.user_patch_request(403)
 
 
 class EmployeeToEmployeePermissionsTests(UserToEmployeePermissionsTests):
 
     def setUp(self):
-        employee = EmployeeMainFactory()
-        authenticate_user(employee)
-
-        other_employee = EmployeeMainFactory()
-        self.consulted_instance = other_employee.id
+        self._initialize()
+        self.consulted_instance = EmployeeMainFactory()
 
     def test_employee_get_employee(self):
-        self.user_get_employee(403)
+        self.user_get_request(403)
 
     def test_employee_put_employee(self):
-        self.user_put_employee(403)
+        self.user_put_request(403)
 
     def test_employee_patch_employee(self):
-        self.user_patch_employee(403)
+        self.user_patch_request(403)
 
     def test_employee_delete_employee(self):
-        self.user_delete_employee(403)
+        self.user_delete_request(403)
 
     def test_get_employees_list(self):
-        self.get_employees_list(403)
+        self.user_get_list_request(403)
 
-    def test_post_employee(self):
-        self.post_employee(403)
+    def test_employee_post(self):
+        self.user_post_request(403)
 
 
 class EmployeeToClientPermissionsTests(TestCase):
@@ -161,7 +75,7 @@ class EmployeeToClientPermissionsTests(TestCase):
     def test_get_employees_list(self):
         self.client_test.test_clients_get_list(status_code=403)
 
-    def test_post_employee(self):
+    def test_employee_post(self):
         self.client_test.test_client_post(status_code=403)
 
 
@@ -192,7 +106,7 @@ class EmployeeToFinancialAdviserPermissionsTests(TestCase):
         self.financial_adviser_test \
         .test_financial_advisers_get_list(status_code=403)
 
-    def test_post_employee(self):
+    def test_employee_post(self):
         self.financial_adviser_test \
         .test_financial_adviser_post(status_code=403)
 
@@ -386,4 +300,4 @@ class FinancialAdviserToEmployeePermissionsTests(
         self.get_employees_list(200)
 
     def test_financial_adviser_post(self):
-        self.post_employee(201)
+        self.employee_post(201)

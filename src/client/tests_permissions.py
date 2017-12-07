@@ -8,7 +8,7 @@ from client.factories import ActiveClientMainFactory
 
 # Default user is client, but the class can be imported and other user used
 # User is the one who will make the requests
-class ToClientPermissionsTests(TestCase):
+class ToClient(TestCase):
     # Not special reasons on choices for routes, just ordinarys
 
     def setUp(self, user=None):
@@ -182,12 +182,12 @@ class ToClientPermissionsTests(TestCase):
         self.assertEqual(response.status_code, status_code)
 
 
-class ClientToEmployeePermissionsTests(TestCase):
+class ClientToEmployee(TestCase):
     def setUp(self):
         self.active_client = ActiveClientMainFactory()
 
         self.employee_test = employee.tests_permissions \
-                             .UserToEmployeePermissionsTests()
+                             .UserToEmployee()
         self.employee_test.setUp(self.active_client)
 
     def test_client_get_employee(self):
@@ -209,12 +209,12 @@ class ClientToEmployeePermissionsTests(TestCase):
         self.employee_test.test_post_employee(status_code=403)
 
 
-class ClientToFinancialAdviserPermissionsTests(TestCase):
+class ClientToFinancialAdviser(TestCase):
     def setUp(self):
         self.active_client = ActiveClientMainFactory()
 
         self.financial_adviser_test = employee.tests_permissions \
-                                      .ToFinancialAdviserPermissionsTests()
+                                      .ToFinancialAdviser()
 
         self.financial_adviser_test.setUp(self.active_client)
 
