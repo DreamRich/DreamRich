@@ -16,7 +16,7 @@ from .utils import authenticate_user
 
 class PermissionsTests(TestCase):
 
-    # Childs will fill these variables
+    # Children will fill these variables
     factory = None
     serializer = None
     base_route = None
