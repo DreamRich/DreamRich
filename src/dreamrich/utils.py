@@ -1,7 +1,5 @@
-import json
 from rest_framework_jwt.settings import api_settings
 from rest_framework.test import APIClient
-from sys import stderr
 
 
 def get_token(user):
@@ -14,7 +12,8 @@ def authenticate_user(user):
     django_client = APIClient()
 
     user_token = get_token(user)
-    token = 'jwt {}'.format(user_token)
-    django_client.credentials(http_authorization=token)
+    token = 'JWT {}'.format(user_token)
+
+    django_client.credentials(HTTP_AUTHORIZATION=token)
 
     return token

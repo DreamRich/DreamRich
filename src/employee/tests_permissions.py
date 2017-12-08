@@ -11,6 +11,8 @@ from employee.factories import (
 
 class EmployeeToItself(UserToEmployee):
 
+    factory_user = EmployeeMainFactory
+
     def test_employee_get_itself(self):
         self.user_get_request(200)
 
@@ -26,9 +28,11 @@ class EmployeeToItself(UserToEmployee):
 
 class EmployeeToEmployee(UserToEmployee):
 
+    factory_user = EmployeeMainFactory
+
     def setUp(self):
         self._initialize()
-        self.consulted_instance = EmployeeMainFactory().id
+        self.consulted_instance = EmployeeMainFactory()
 
     def test_employee_get_employees_list(self):
         self.user_get_list_request(403)
@@ -36,7 +40,7 @@ class EmployeeToEmployee(UserToEmployee):
     def test_employee_get_employee(self):
         self.user_get_request(403)
 
-    def test_employee_post(self):
+    def test_employee_post_employee(self):
         self.user_post_request(403)
 
     def test_employee_delete_employee(self):
@@ -51,13 +55,15 @@ class EmployeeToEmployee(UserToEmployee):
 
 class EmployeeToClient(UserToClient):
 
+    factory_user = EmployeeMainFactory
+
     def test_employee_get_clients_list(self):
         self.user_get_list_request(200)
 
     def test_employee_get_client(self):
         self.user_get_request(200)
 
-    def test_employee_post(self):
+    def test_employee_post_client(self):
         self.user_post_request(201)
 
     def test_employee_delete_client(self):
@@ -72,13 +78,15 @@ class EmployeeToClient(UserToClient):
 
 class EmployeeToFinancialAdviser(UserToFinancialAdviser):
 
+    factory_user = EmployeeMainFactory
+
     def test_employee_get_financial_advisers_list(self):
         self.user_get_list_request(200)
 
     def test_employee_get_financial_adviser(self):
         self.user_get_request(200)
 
-    def test_employee_post(self):
+    def test_employee_post_financial_adviser(self):
         self.user_post_request(201)
 
     def test_employee_delete_financial_adviser(self):
@@ -92,6 +100,8 @@ class EmployeeToFinancialAdviser(UserToFinancialAdviser):
 
 
 class FinanicalAdviserToItself(UserToFinancialAdviser):
+
+    factory_user = FinancialAdviserMainFactory
 
     def test_financial_adviser_get_itself(self):
         self.user_get_request(200)
@@ -108,9 +118,11 @@ class FinanicalAdviserToItself(UserToFinancialAdviser):
 
 class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser):
 
+    factory_user = FinancialAdviserMainFactory
+
     def setUp(self):
         self._initialize()
-        self.consulted_instance = FinancialAdviserMainFactory().id
+        self.consulted_instance = FinancialAdviserMainFactory()
 
     def test_get_financial_advisers_list(self):
         self.user_get_list_request(200)
@@ -118,7 +130,7 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser):
     def test_financial_adviser_get_financial_adviser(self):
         self.user_get_request(200)
 
-    def test_financial_adviser_post(self):
+    def test_financial_adviser_post_financial_adviser(self):
         self.user_post_request(201)
 
     def test_financial_adviser_delete_financial_adviser(self):
@@ -133,13 +145,15 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser):
 
 class FinancialAdviserToClient(UserToClient):
 
+    factory_user = FinancialAdviserMainFactory
+
     def test_financial_adviser_get_clients_list(self):
         self.user_get_list_request(200)
 
     def test_financial_adviser_get_client(self):
         self.user_get_request(200)
 
-    def test_financial_adviser_post(self):
+    def test_financial_adviser_post_client(self):
         self.user_post_request(201)
 
     def test_financial_adviser_delete_client(self):
@@ -154,13 +168,15 @@ class FinancialAdviserToClient(UserToClient):
 
 class FinancialAdviserToEmployee(UserToEmployee):
 
+    factory_user = FinancialAdviserMainFactory
+
     def test_financial_adviser_get_employees_list(self):
         self.user_get_list_request(200)
 
     def test_financial_adviser_get_employee(self):
         self.user_get_request(200)
 
-    def test_financial_adviser_post(self):
+    def test_financial_adviser_post_employee(self):
         self.user_post_request(201)
 
     def test_financial_adviser_delete_employee(self):

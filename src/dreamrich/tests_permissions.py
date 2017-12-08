@@ -17,8 +17,10 @@ from .utils import authenticate_user
 class PermissionsTests(TestCase):
 
     # Children will fill these variables
-    factory = None
-    serializer = None
+    factory_consulted = None
+    factory_user = None
+    serializer_consulted = None
+    consulted_instance = None
     base_route = None
 
     def setUp(self):
@@ -27,8 +29,8 @@ class PermissionsTests(TestCase):
     def _initialize(self):
         self.django_client = APIClient()
 
-        self.user = self.factory()  # pylint: disable=not-callable
-        self.consulted_instance = self.user.id
+        self.user = self.factory_user()  # pylint: disable=not-callable
+        self.consulted_instance = self.factory_consulted()
 
         authenticate_user(self.user)
 
@@ -75,7 +77,9 @@ class PermissionsTests(TestCase):
 
         # Prepare data and make request
         if test_type in require_data_methods:
-            data = self.serializer(self.user)  # pylint: disable=not-callable
+            data = self.serializer_consulted(
+                self.consulted_instance  # pylint: disable=not-callable
+            )
             data = data.data
 
             if http_method == 'patch':  # Send data just to one field
@@ -97,7 +101,7 @@ class PermissionsTests(TestCase):
         general_routes_tests = ["post", "get_list"]
 
         if test_type not in general_routes_tests:
-            route = '{}{}/'.format(self.base_route, self.consulted_instance)
+            route = '{}{}/'.format(self.base_route, self.consulted_instance.id)
         else:
             route = self.base_route
 
@@ -106,20 +110,20 @@ class PermissionsTests(TestCase):
 
 class UserToClient(PermissionsTests):
 
-    factory = ActiveClientMainFactory
-    serializer = ActiveClientSerializer
+    factory_consulted = ActiveClientMainFactory
+    serializer_consulted = ActiveClientSerializer
     base_route = '/api/client/address/'
 
 
 class UserToEmployee(PermissionsTests):
 
-    factory = EmployeeMainFactory
-    serializer = EmployeeSerializer
+    factory_consulted = EmployeeMainFactory
+    serializer_consulted = EmployeeSerializer
     base_route = '/api/employee/employee/'
 
 
 class UserToFinancialAdviser(PermissionsTests):
 
-    factory = FinancialAdviserMainFactory
-    serializer = FinancialAdviserSerializer
+    factory_consulted = FinancialAdviserMainFactory
+    serializer_consulted = FinancialAdviserSerializer
     base_route = '/api/employee/financial/'

@@ -8,6 +8,8 @@ from client.factories import ActiveClientMainFactory
 
 class ClientToItself(UserToClient):
 
+    factory_user = ActiveClientMainFactory
+
     def test_client_get_itself(self):
         self.user_get_request(200)
 
@@ -23,9 +25,11 @@ class ClientToItself(UserToClient):
 
 class ClientToClient(UserToClient):
 
+    factory_user = ActiveClientMainFactory
+
     def setUp(self):
         self._initialize()
-        self.consulted_instance = ActiveClientMainFactory().id
+        self.consulted_instance = ActiveClientMainFactory()
 
     def test_client_get_clients_list(self):
         self.user_get_list_request(403)
@@ -33,7 +37,7 @@ class ClientToClient(UserToClient):
     def test_client_get_client(self):
         self.user_get_request(403)
 
-    def test_client_post(self):
+    def test_client_post_client(self):
         self.user_post_request(403)
 
     def test_client_delete_client(self):
@@ -48,26 +52,30 @@ class ClientToClient(UserToClient):
 
 class ClientToEmployee(UserToEmployee):
 
+    factory_user = ActiveClientMainFactory
+
     def test_clients_get_employees_list(self):
-        self.user_get_list_request(200)
+        self.user_get_list_request(403)
 
     def test_client_get_employee(self):
-        self.user_get_request(200)
+        self.user_get_request(403)
 
-    def test_client_post(self):
-        self.user_post_request(201)
+    def test_client_post_employee(self):
+        self.user_post_request(403)
 
     def test_client_delete_employee(self):
-        self.user_delete_request(204)
+        self.user_delete_request(403)
 
     def test_client_put_employee(self):
-        self.user_put_request(200)
+        self.user_put_request(403)
 
     def test_client_patch_employee(self):
-        self.user_patch_request(200)
+        self.user_patch_request(403)
 
 
 class ClientToFinancialAdviser(UserToFinancialAdviser):
+
+    factory_user = ActiveClientMainFactory
 
     def test_clients_get_financial_advisers_list(self):
         self.user_get_list_request(200)
@@ -75,7 +83,7 @@ class ClientToFinancialAdviser(UserToFinancialAdviser):
     def test_client_get_financial_adviser(self):
         self.user_get_request(200)
 
-    def test_client_post(self):
+    def test_client_post_financial_adviser(self):
         self.user_post_request(201)
 
     def test_client_delete_financial_adviser(self):
