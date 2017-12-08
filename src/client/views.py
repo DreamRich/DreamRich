@@ -127,8 +127,7 @@ class AddressViewSet(viewsets.ModelViewSet):
         """
             Return a type of address instance.\
             Permissions: see_own_client_data
-        """ 
-
+        """
         addresses = self.queryset.values('type_of_address').distinct()
         mapped = map(lambda x: x['type_of_address'], addresses)
         return Response(list(mapped), 200)

@@ -250,31 +250,6 @@ class EquipmentViewSet(viewsets.ModelViewSet):
     queryset = Equipment.objects.all()
 
 
-class LifeInsuranceViewSet(viewsets.ModelViewSet):
-    """
-    retrieve:
-        Return a life insurance instance.
-
-    list:
-        Return all life insurances, ordered by most recently joined.
-
-    create:
-        Create a new regular life insurance.
-
-    delete:
-        Remove an existing regular life insurance.
-
-    partial_update:
-        Update one or more fields on an existing life insurance.
-
-    update:
-        Update a life insurance.
-    """
-
-    serializer_class = LifeInsuranceSerializer
-    queryset = LifeInsurance.objects.all()
-
-
 class IncomeViewSet(viewsets.ModelViewSet):
     """
     retrieve:

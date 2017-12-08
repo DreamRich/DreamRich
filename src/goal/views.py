@@ -35,7 +35,7 @@ class GoalViewSet(viewsets.ModelViewSet):
 
     serializer_class = GoalSerializer
     queryset = Goal.objects.all()
-   
+
 
 class GoalTypeViewSet(viewsets.ModelViewSet):
     """
