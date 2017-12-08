@@ -53,7 +53,7 @@ class RegularCostViewSet(viewsets.ModelViewSet):
 
     create:
         Create a new regular cost.
-        
+
     delete:
         Remove an existing regular cost.
 
@@ -129,7 +129,8 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'])
     def respective_clients(self, request, pk=None):
         """
-        Return the pk from financial planning and pk goal manager.
+        Return the pk from financial planning and pk goal manager.\
+        Permissions: see_own_client_data and see_financial_adviser_data
         """
         if FinancialPlanningPermission.has_permission_to_see_chart(
                 request.user):
