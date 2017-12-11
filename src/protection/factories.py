@@ -1,4 +1,5 @@
 from patrimony.factories import PatrimonyMainFactory
+from financial_planning.factories import FinancialPlanningFactory
 from protection.models import (
     ReserveInLack,
     EmergencyReserve,
@@ -39,23 +40,12 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
     accumulated = factory.Faker('pyfloat')
 
 
-class LifeInsuranceFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = LifeInsurance
-
-    name = factory.Faker('word')
-    value_to_recive = factory.Faker('pyfloat')
-    value_to_pay_annual = factory.Faker('pyfloat')
-    redeemable = True
-    has_year_end = True
-    actual = True
-
-
 class ProtectionManagerFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = ProtectionManager
+
+    financial_planning = factory.SubFactory(FinancialPlanningFactory)
 
 
 class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
@@ -75,3 +65,19 @@ class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
 
     private_pension = factory.RelatedFactory(PrivatePensionFactory,
                                              'actual_patrimony_protection')
+
+
+class LifeInsuranceFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = LifeInsurance
+
+    name = factory.Faker('word')
+    value_to_recive = factory.Faker('pyfloat')
+    value_to_pay_annual = factory.Faker('pyfloat')
+    redeemable = True
+    has_year_end = True
+    actual = True
+    protection_manager = factory.SubFactory(ProtectionManagerFactory)
+    actual_patrimony_protection = factory.SubFactory(
+                                    ActualPatrimonyProtectionFactory)

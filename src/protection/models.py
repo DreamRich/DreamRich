@@ -79,16 +79,10 @@ class EmergencyReserve(models.Model):
 class ProtectionManager(models.Model):
 
     financial_planning = models.OneToOneField(
-        Patrimony,
+        FinancialPlanning,
         on_delete=models.CASCADE,
         related_name='protection_manager',
     )
-
-    def private_pension_total(self):
-        total = self.private_pensions.aggregate(Sum('accumulated'))
-        total = (total['accumulated__sum'] or 0)
-
-        return total
 
     def life_insurances_flow(self):
         duration_flow = self.financial_planning.duration()

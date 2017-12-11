@@ -118,15 +118,6 @@ class ProtectionManagerTest(TestCase):
             self.protection_manager. private_pension_total_in_independece(),
             63381.03562604652)
 
-    def test_dont_have_life_insurance(self):
-        for life_insurance in self.protection_manager.life_insurances.all():
-            life_insurance.delete()
-        self.assertEqual(self.protection_manager.
-                         life_insurance_to_recive_total(), 0)
-
-    def test_life_insurance_to_recive_total(self):
-        self.assertEqual(self.protection_manager.
-                         life_insurance_to_recive_total(), 800000)
 
     def test_life_insurance_to_recive_in_independence(self):
         self.assertEqual(self.protection_manager.
@@ -147,15 +138,44 @@ class ActualPatrimonyProtectionTest(TestCase):
             private_pension.delete()
 
         private_pensions = [
-                {'accumulated': 20000, 'value_annual': 2000},
-                {'accumulated': 4000, 'value_annual': 200},
-                ]
+            {'accumulated': 20000, 'value_annual': 2000},
+            {'accumulated': 4000, 'value_annual': 200},
+        ]
 
         for private_pension in private_pensions:
             PrivatePensionFactory(**private_pension,
                                   actual_patrimony_protection=\
                                           self.actual_patrimony_protection)
 
+        for life_insurance in self.actual_patrimony_protection.\
+                              life_insurances.all():
+            life_insurance.delete()
+
+        life_insurances = [
+            {'value_to_pay_annual': 2000, 'has_year_end': False,
+                'value_to_recive': 500000, 'actual': True},
+            {'value_to_pay_annual': 2000, 'has_year_end': True,
+                'year_end': 2020, 'value_to_recive': 200000, 'actual': False},
+            {'value_to_pay_annual': 1000, 'has_year_end': True,
+                'year_end': 2023, 'value_to_recive': 300000, 'actual': True}
+        ]
+
+        for life_insurance in life_insurances:
+            LifeInsuranceFactory(**life_insurance,
+                                         actual_patrimony_protection=self.\
+                                         actual_patrimony_protection,)
+
     def test_private_pension_total(self):
         self.assertEqual(self.actual_patrimony_protection.\
                            private_pension_total(), 24000)
+
+    def test_dont_have_life_insurance(self):
+        for life_insurance in self.actual_patrimony_protection.\
+                              life_insurances.all():
+            life_insurance.delete()
+        self.assertEqual(self.actual_patrimony_protection.
+                         life_insurance_to_recive_total(), 0)
+
+    def test_life_insurance_to_recive_total(self):
+        self.assertEqual(self.actual_patrimony_protection.\
+                         life_insurance_to_recive_total(), 800000)
