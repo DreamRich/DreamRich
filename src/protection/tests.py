@@ -8,6 +8,7 @@ from patrimony.factories import ActiveFactory
 from protection.factories import (
     PrivatePensionFactory,
     LifeInsuranceFactory,
+    EmergencyReserveFactory,
 )
 from client.factories import ActiveClientMainFactory
 
@@ -18,9 +19,10 @@ class EmergencyReserveTest(TestCase):
         financial_planning = FinancialPlanningFactory()
         self.active_manager = financial_planning.patrimony.activemanager
         patrimony = financial_planning.patrimony
-        self.emergency_reserve = financial_planning.protection_manager.\
-            emergency_reserve
-        self.emergency_reserve.mounth_of_protection = 12
+        self.emergency_reserve = EmergencyReserveFactory(
+                                 mounth_of_protection=12,
+                                 patrimony=patrimony,
+                                 cost_manager=financial_planning.cost_manager)
 
         for active in self.active_manager.actives.all():
             active.delete()

@@ -37,6 +37,7 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
     name = factory.Faker('word')
     value_annual = factory.Faker('pyfloat')
     accumulated = factory.Faker('pyfloat')
+    emergency_reserve = factory.SubFactory(EmergencyReserveFactory)
 
 
 class LifeInsuranceFactory(factory.DjangoModelFactory):

@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from patrimony.models import Patrimony
+from financial_planning.models import CostManager
 from django.db.models import Sum
 import numpy
 import abc
@@ -38,18 +39,28 @@ class ReserveInLack(models.Model):
 
 class EmergencyReserve(models.Model):
 
+    cost_manager = models.OneToOneField(
+        CostManager,
+        on_delete=models.CASCADE,
+        related_name='emergency_reserve',
+    )
+
+    patrimony = models.OneToOneField(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='emergency_reserve',
+    )
+
     mounth_of_protection = models.PositiveSmallIntegerField()
 
     def necessery_value(self):
-        regular_cost_mounthly = self.protection_manager.financial_planning.\
-            cost_manager.total()
+        regular_cost_mounthly = self.cost_manager.total()
         total = self.mounth_of_protection * regular_cost_mounthly
 
         return total
 
     def risk_gap(self):
-        current_patrimony = self.protection_manager.financial_planning.\
-            patrimony.current_net_investment()
+        current_patrimony = self.patrimony.current_net_investment()
         necessery_value = self.necessery_value()
         if current_patrimony < necessery_value:
             total = necessery_value - current_patrimony
@@ -67,8 +78,8 @@ class ProtectionManager(models.Model):
         related_name='protection_manager',
     )
 
-    emergency_reserve = models.OneToOneField(
-        EmergencyReserve,
+    financial_planning = models.OneToOneField(
+        Patrimony,
         on_delete=models.CASCADE,
         related_name='protection_manager',
     )
@@ -212,10 +223,6 @@ class PrivatePension(models.Model):
     accumulated = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
         ProtectionManager,
-        on_delete=models.CASCADE,
-        related_name='private_pensions')
-    actual_patrimony_protection = models.ForeignKey(
-        ActualPatrimonyProtection,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 
