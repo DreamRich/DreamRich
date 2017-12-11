@@ -12,9 +12,11 @@ from employee.factories import (
     FinancialAdviserMainFactory
 )
 from .utils import authenticate_user
+from dreamrich.requests import RequestTypes
 
 
 class PermissionsTests(TestCase):
+
 
     # Children will fill these variables
     factory_consulted = None
@@ -33,43 +35,25 @@ class PermissionsTests(TestCase):
 
         self.django_client = authenticate_user(self.user)
 
-    def user_get_list_request(self, status_code):
-        response_status_code = self.make_request("get_list")
-        self.assertEqual(response_status_code, status_code)
+    def user_is_authenticated():
+        pass
 
-    def user_get_request(self, status_code):
-        response_status_code = self.make_request("get")
-        self.assertEqual(response_status_code, status_code)
-
-    def user_post_request(self, status_code):
-        response_status_code = self.make_request("post")
-        self.assertEqual(response_status_code, status_code)
-
-    def user_delete_request(self, status_code):
-        response_status_code = self.make_request("delete")
-        self.assertEqual(response_status_code, status_code)
-
-    def user_put_request(self, status_code):
-        response_status_code = self.make_request("put")
-        self.assertEqual(response_status_code, status_code)
-
-    def user_patch_request(self, status_code):
-        response_status_code = self.make_request("patch")
+    def user_test_request(self, method, status_code):
+        response_status_code = self.make_request(method)
         self.assertEqual(response_status_code, status_code)
 
     def make_request(self, test_type, route=None):
-        test_types = ["get", "put", "patch", "delete", "post", "get_list"]
-        require_data_methods = ["put", "patch", "post"]
+        require_data_methods = [RequestTypes.PUT, RequestTypes.PATCH, RequestTypes.POST]
 
         # Validate params
-        if test_type not in test_types:
+        if test_type not in RequestTypes:
             raise AttributeError("Invalid http method")
 
         # Handle test_types that are not http_methods
-        if test_type == "get_list":
-            http_method = "get"
+        if test_type == RequestTypes.GETLIST:
+            http_method = RequestTypes.GET.value
         else:
-            http_method = test_type
+            http_method = test_type.value
 
         method = getattr(self.django_client, http_method)
         route = self._get_route(test_type) if not route else route
@@ -81,10 +65,10 @@ class PermissionsTests(TestCase):
             )
             data = data.data
 
-            if http_method == 'patch':  # Send data just to one field
+            if test_type == RequestTypes.PATCH:  # Send data just to one field
                 field = data.popitem()
                 data = {field[0]: field[1]}
-            elif http_method == 'post':  # Make a new one
+            elif test_type == RequestTypes.POST:  # Make a new one
                 data.pop('id')
                 data['cpf'] = '75116625109'  # Generated online
 
@@ -97,7 +81,7 @@ class PermissionsTests(TestCase):
         return response.status_code
 
     def _get_route(self, test_type):
-        general_routes_tests = ["post", "get_list"]
+        general_routes_tests = [RequestTypes.POST, RequestTypes.GETLIST]
 
         if test_type not in general_routes_tests:
             route = '{}{}/'.format(self.base_route, self.consulted_instance.id)
