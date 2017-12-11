@@ -37,7 +37,6 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
     name = factory.Faker('word')
     value_annual = factory.Faker('pyfloat')
     accumulated = factory.Faker('pyfloat')
-    emergency_reserve = factory.SubFactory(EmergencyReserveFactory)
 
 
 class LifeInsuranceFactory(factory.DjangoModelFactory):
@@ -58,16 +57,6 @@ class ProtectionManagerFactory(factory.DjangoModelFactory):
     class Meta:
         model = ProtectionManager
 
-    reserve_in_lack = factory.SubFactory(ReserveInLackFactory)
-
-    emergency_reserve = factory.SubFactory(EmergencyReserveFactory)
-
-    private_pension = factory.RelatedFactory(PrivatePensionFactory,
-                                             'protection_manager')
-
-    life_insurance = factory.RelatedFactory(LifeInsuranceFactory,
-                                            'protection_manager')
-
 
 class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
 
@@ -81,3 +70,8 @@ class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
     other_taxes = factory.Faker('pyfloat')
 
     patrimony = factory.SubFactory(PatrimonyMainFactory)
+
+    reserve_in_lack = factory.SubFactory(ReserveInLackFactory)
+
+    private_pension = factory.RelatedFactory(PrivatePensionFactory,
+                                             'actual_patrimony_protection')

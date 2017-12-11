@@ -221,8 +221,8 @@ class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
     value_annual = models.FloatField(default=0)
     accumulated = models.FloatField(default=0)
-    protection_manager = models.ForeignKey(
-        ProtectionManager,
+    actual_patrimony_protection = models.ForeignKey(
+        ActualPatrimonyProtection,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 

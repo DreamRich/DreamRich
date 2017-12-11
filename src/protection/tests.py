@@ -10,6 +10,7 @@ from protection.factories import (
     LifeInsuranceFactory,
     EmergencyReserveFactory,
     ReserveInLackFactory,
+    ActualPatrimonyProtectionFactory,
 )
 from client.factories import ActiveClientMainFactory
 
@@ -107,10 +108,6 @@ class ProtectionManagerTest(TestCase):
             LifeInsuranceFactory(**life_insurance,
                                  protection_manager=self.protection_manager)
 
-    def test_private_pension_total(self):
-        self.assertEqual(self.protection_manager.private_pension_total(),
-                         24000)
-
     def test_life_insurances_flow(self):
         data = [5000.0, 5000.0, 5000.0, 5000.0, 3000.0, 3000.0, 3000.0, 2000.0,
                 2000.0, 2000.0]
@@ -134,3 +131,31 @@ class ProtectionManagerTest(TestCase):
     def test_life_insurance_to_recive_in_independence(self):
         self.assertEqual(self.protection_manager.
                          life_insurance_to_recive_in_independence(), 1000000)
+
+
+class ActualPatrimonyProtectionTest(TestCase):
+
+    def setUp(self):
+        financial_planning = FinancialPlanningFactory()
+        reserve_in_lack = ReserveInLackFactory(financial_planning=\
+                                                financial_planning)
+        self.actual_patrimony_protection = ActualPatrimonyProtectionFactory(
+                                            reserve_in_lack=reserve_in_lack)
+
+        for private_pension in self.actual_patrimony_protection.\
+                                    private_pensions.all():
+            private_pension.delete()
+
+        private_pensions = [
+                {'accumulated': 20000, 'value_annual': 2000},
+                {'accumulated': 4000, 'value_annual': 200},
+                ]
+
+        for private_pension in private_pensions:
+            PrivatePensionFactory(**private_pension,
+                                  actual_patrimony_protection=\
+                                          self.actual_patrimony_protection)
+
+    def test_private_pension_total(self):
+        self.assertEqual(self.actual_patrimony_protection.\
+                           private_pension_total(), 24000)
