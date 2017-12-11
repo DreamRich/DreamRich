@@ -1,13 +1,19 @@
 import datetime
 from django.db import models
 from patrimony.models import Patrimony
-from financial_planning.models import CostManager
+from financial_planning.models import CostManager, FinancialPlanning
 from django.db.models import Sum
 import numpy
 import abc
 
 
 class ReserveInLack(models.Model):
+
+    financial_planning = models.OneToOneField(
+        FinancialPlanning,
+        on_delete=models.CASCADE,
+        related_name='reserve_in_lack',
+    )
 
     value_0_to_24_mounth = models.PositiveSmallIntegerField()
 
@@ -18,7 +24,7 @@ class ReserveInLack(models.Model):
     value_120_to_240_mounth = models.PositiveSmallIntegerField()
 
     def patrimony_necessery_in_period(self, mounth_quantities, value):
-        rate = self.protection_manager.financial_planning.real_gain()
+        rate = self.financial_planning.real_gain()
         return numpy.pv(rate, mounth_quantities, -value)
 
     def patrimony_necessery_total(self):
@@ -71,12 +77,6 @@ class EmergencyReserve(models.Model):
 
 
 class ProtectionManager(models.Model):
-
-    reserve_in_lack = models.OneToOneField(
-        ReserveInLack,
-        on_delete=models.CASCADE,
-        related_name='protection_manager',
-    )
 
     financial_planning = models.OneToOneField(
         Patrimony,

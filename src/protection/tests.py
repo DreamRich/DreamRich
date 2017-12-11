@@ -9,6 +9,7 @@ from protection.factories import (
     PrivatePensionFactory,
     LifeInsuranceFactory,
     EmergencyReserveFactory,
+    ReserveInLackFactory,
 )
 from client.factories import ActiveClientMainFactory
 
@@ -59,16 +60,17 @@ class EmergencyReserveTest(TestCase):
 class ReserveInLackTest(TestCase):
     def setUp(self):
         financial_planning = FinancialPlanningFactory(cdi=0.1213, ipca=0.0750)
-        self.reserve_in_lack = financial_planning.protection_manager.\
-            reserve_in_lack
-        self.reserve_in_lack.value_0_to_24_mounth = 13000
-        self.reserve_in_lack.value_24_to_60_mounth = 10000
-        self.reserve_in_lack.value_60_to_120_mounth = 5000
-        self.reserve_in_lack.value_120_to_240_mounth = 5000
+
+        self.reserve_in_lack = ReserveInLackFactory(
+                               financial_planning=financial_planning,
+                               value_0_to_24_mounth=13000,
+                               value_24_to_60_mounth=10000,
+                               value_60_to_120_mounth=5000,
+                               value_120_to_240_mounth=5000)
 
     def test_patrimony_necessery_in_period(self):
         self.assertAlmostEqual(
-            self.reserve_in_lack. patrimony_necessery_in_period(
+            self.reserve_in_lack.patrimony_necessery_in_period(
                 24, 13000), 192124.8373901789)
 
     def test_patrimony_necessery_total(self):
