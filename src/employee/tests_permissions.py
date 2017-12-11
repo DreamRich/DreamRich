@@ -81,22 +81,22 @@ class EmployeeToFinancialAdviser(UserToFinancialAdviser):
     factory_user = EmployeeMainFactory
 
     def test_employee_get_financial_advisers_list(self):
-        self.user_get_list_request(200)
+        self.user_get_list_request(403)
 
     def test_employee_get_financial_adviser(self):
-        self.user_get_request(200)
+        self.user_get_request(403)
 
     def test_employee_post_financial_adviser(self):
-        self.user_post_request(201)
+        self.user_post_request(403)
 
     def test_employee_delete_financial_adviser(self):
-        self.user_delete_request(204)
+        self.user_delete_request(403)
 
     def test_employee_put_financial_adviser(self):
-        self.user_put_request(200)
+        self.user_put_request(403)
 
     def test_employee_patch_financial_adviser(self):
-        self.user_patch_request(200)
+        self.user_patch_request(403)
 
 
 class FinanicalAdviserToItself(UserToFinancialAdviser):

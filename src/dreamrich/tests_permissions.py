@@ -27,12 +27,11 @@ class PermissionsTests(TestCase):
         self._initialize()
 
     def _initialize(self):
-        self.django_client = APIClient()
 
         self.user = self.factory_user()  # pylint: disable=not-callable
         self.consulted_instance = self.factory_consulted()
 
-        authenticate_user(self.user)
+        self.django_client = authenticate_user(self.user)
 
     def user_get_list_request(self, status_code):
         response_status_code = self.make_request("get_list")
@@ -112,7 +111,7 @@ class UserToClient(PermissionsTests):
 
     factory_consulted = ActiveClientMainFactory
     serializer_consulted = ActiveClientSerializer
-    base_route = '/api/client/address/'
+    base_route = '/api/client/active/'
 
 
 class UserToEmployee(PermissionsTests):

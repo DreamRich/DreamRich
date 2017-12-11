@@ -16,4 +16,4 @@ def authenticate_user(user):
 
     django_client.credentials(HTTP_AUTHORIZATION=token)
 
-    return token
+    return django_client
