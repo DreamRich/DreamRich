@@ -4,7 +4,6 @@ from patrimony.models import (
     ActiveManager,
     Active,
     Arrearage,
-    ArrearageCalculator,
     RealEstate,
     CompanyParticipation,
     Equipment,
@@ -63,21 +62,8 @@ class ActiveChartSerializer(serializers.ModelSerializer):
         ]
 
 
-class ArrearageCalculatorSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ArrearageCalculator
-        fields = [
-            'calculate_arrearage',
-        ]
-
-
 class ArrearageSerializer(serializers.ModelSerializer):
 
-    arrearage_calculator = ArrearageCalculatorSerializer(
-        many=False,
-        read_only=True
-    )
     patrimony_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -90,8 +76,8 @@ class ArrearageSerializer(serializers.ModelSerializer):
             'period',
             'rate',
             'amortization_system',
-            'arrearage_calculator',
             'actual_period',
+            'calculate_arrearage',
         ]
 
 

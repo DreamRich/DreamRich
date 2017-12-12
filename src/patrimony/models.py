@@ -174,9 +174,11 @@ class Active(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
-class ArrearageCalculator(models.Model):
+class ArrearageCalculator:
 
-    @property
+    def __init__(self, arrearage):
+        self.calculate = arrearage
+
     def calculate_arrearage(self):
         data = []
         outstanding_balance = self.calculate.value
@@ -272,14 +274,13 @@ class Arrearage(models.Model):
     )
     patrimony = models.ForeignKey(
         Patrimony, on_delete=models.CASCADE,
-        related_name='arrearages')
-    arrearage_calculator = models.OneToOneField(
-        ArrearageCalculator,
-        related_name='calculate',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
+        related_name='arrearages'
     )
+
+    @property
+    def calculate_arrearage(self):
+        arrearage_calculator = ArrearageCalculator(self)
+        return arrearage_calculator.calculate_arrearage
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)

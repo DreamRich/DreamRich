@@ -181,7 +181,7 @@ class ArrearageViewSet(viewsets.ModelViewSet):
     def list_calculator(self, request, pk=None):
         arrearage = Arrearage.objects.get(pk=pk)
         return Response(
-            arrearage.arrearage_calculator.calculate_arrearage
+            arrearage.calculate_arrearage()
         )
 
     @detail_route(methods=['get'])

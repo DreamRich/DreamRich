@@ -31,12 +31,6 @@ class ActiveManagerFactory(factory.DjangoModelFactory):
     active = factory.RelatedFactory(ActiveFactory, 'active_manager')
 
 
-class ArrearageCalculatorFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.ArrearageCalculator
-
-
 class ArrearageFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -47,7 +41,6 @@ class ArrearageFactory(factory.DjangoModelFactory):
     period = 2
     rate = factory.fuzzy.FuzzyDecimal(100)
     amortization_system = factory.fuzzy.FuzzyChoice(AMORTIZATION_CHOICES_LIST)
-    arrearage_calculator = factory.SubFactory(ArrearageCalculatorFactory)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):
