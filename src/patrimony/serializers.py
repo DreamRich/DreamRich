@@ -158,7 +158,7 @@ class IncomeSerializer(serializers.ModelSerializer):
 class PatrimonySerializer(serializers.ModelSerializer):
 
     activemanager = ActiveManagerSerializer(read_only=True)
-    arrearanges = ArrearageSerializer(read_only=True, many=True)
+    arrearages = ArrearageSerializer(read_only=True, many=True)
     realestates = RealEstateSerializer(read_only=True, many=True)
     companyparticipations = CompanyParticipationSerializer(many=True,
                                                            read_only=True)
@@ -171,7 +171,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
             'fgts',
             'id',
             'activemanager',
-            'arrearanges',
+            'arrearages',
             'realestates',
             'companyparticipations',
             'equipments',

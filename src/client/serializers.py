@@ -90,6 +90,8 @@ class BankAccountSerializer(serializers.ModelSerializer):
 
 class ClientSerializer(serializers.ModelSerializer):
 
+    active_spouse_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Client
         fields = [
@@ -100,7 +102,8 @@ class ClientSerializer(serializers.ModelSerializer):
             'profession',
             'cpf',
             'telephone',
-            'hometown'
+            'hometown',
+            'active_spouse_id',
         ]
 
 
@@ -116,8 +119,15 @@ class ActiveClientSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = ActiveClient
-        fields = ClientSerializer.Meta.fields + [
+        fields = [
             'id',
+            'name',
+            'surname',
+            'birthday',
+            'profession',
+            'cpf',
+            'telephone',
+            'hometown',
             'addresses',
             'dependents',
             'id_document',

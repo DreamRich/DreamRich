@@ -97,9 +97,8 @@ class PatrimonyTest(TestCase):
 
 class ActiveManagerTest(TestCase):
     def setUp(self):
-        self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyMainFactory(activemanager=None)
-        )
+        financial_planning = FinancialPlanningFactory(cdi=0.1)
+        self.active_manager = financial_planning.patrimony.activemanager
 
         for active in self.active_manager.actives.all():
             active.delete()
@@ -120,7 +119,7 @@ class ActiveManagerTest(TestCase):
     def test_update_equivalent_rates(self):
         equivalents = self.active_manager.actives.values_list(
             'equivalent_rate')
-        self.active_manager.cdi = 0.12
+        self.active_manager.patrimony.financial_planning.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new_equivalents = self.active_manager.actives.values_list(
             'equivalent_rate'
@@ -130,7 +129,7 @@ class ActiveManagerTest(TestCase):
 
     def test_update_rates_values(self):
         equivalents = [(0.0156,), (0.0455,), (0.0415, )]
-        self.active_manager.cdi = 0.12
+        self.active_manager.patrimony.financial_planning.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new = self.active_manager.actives.values_list('equivalent_rate')
 
@@ -142,7 +141,7 @@ class ActiveManagerTest(TestCase):
             self.active_manager.real_profit_cdi(), 0.8556, 4)
 
     def test_real_profit_cdi_zero(self):
-        self.active_manager.cdi = 0
+        self.active_manager.patrimony.financial_planning.cdi = 0
         self.assertAlmostEqual(self.active_manager.real_profit_cdi(), 0, 4)
 
 
