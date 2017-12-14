@@ -1,13 +1,13 @@
 import datetime
 from django.test import TestCase, Client
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from goal.factories import (
     GoalManagerFactory,
     GoalFactory,
     GoalTypeFactory,
 )
 from patrimony.factories import (
-    PatrimonyMainFactory,
+    PatrimonyFactory,
     ActiveFactory,
     ArrearageFactory,
 )
@@ -27,7 +27,7 @@ class FinancialIndependencePlanningTest(TestCase):
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -55,7 +55,7 @@ class FinancialIndependencePlanningTest(TestCase):
 
 class FinancialIndependencePatrimonyTest(TestCase):
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             active_client=active_client)
@@ -104,7 +104,7 @@ class FinancialIndependencePatrimonyTest(TestCase):
 class RegularCostTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -132,7 +132,7 @@ class RegularCostTest(TestCase):
 
 class FinancialPlanningModelTest(TestCase):
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -166,9 +166,9 @@ class FinancialPlanningModelTest(TestCase):
 class FinancialPlanningFlowTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyMainFactory()
+        self.patrimony = PatrimonyFactory()
         self.patrimony.incomes.all().update(value_monthly=55000,
                                             thirteenth=False,
                                             vacation=False)

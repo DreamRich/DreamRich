@@ -74,7 +74,7 @@ class BankAccountFactory(factory.DjangoModelFactory):
     account = factory.Sequence(lambda n: '12345-%d' % n)
 
 
-class ActiveClientMainFactory(ClientFactory):
+class ActiveClientFactory(ClientFactory):
 
     class Meta:
         model = models.ActiveClient

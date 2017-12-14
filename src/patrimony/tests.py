@@ -1,11 +1,11 @@
 import datetime
 from django.test import TestCase
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
 from patrimony.models import Active
 from patrimony.factories import (
-    PatrimonyMainFactory,
+    PatrimonyFactory,
     IncomeFactory,
     RealEstateFactory,
     ActiveManagerFactory,
@@ -30,9 +30,9 @@ def _flatten(array):
 class PatrimonyTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyMainFactory()
+        self.patrimony = PatrimonyFactory()
         self.patrimony.incomes.all().update(value_monthly=1212.2)
         FinancialPlanningFactory(
             active_client=active_client,
@@ -148,7 +148,7 @@ class ActiveManagerTest(TestCase):
 class ActiveChartTest(TestCase):
     def setUp(self):
         self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyMainFactory(activemanager=None)
+            patrimony=PatrimonyFactory(activemanager=None)
         )
         fundos = ActiveTypeFactory(name='Fundo')
         previdencia = ActiveTypeFactory(name='Previdencia')
@@ -194,7 +194,7 @@ class ActiveChartTest(TestCase):
 class ActiveTest(TestCase):
 
     def setUp(self):
-        self.active = PatrimonyMainFactory().activemanager.actives.first()
+        self.active = PatrimonyFactory().activemanager.actives.first()
         self.active.value = 100
         self.active.rate = 1.10
         self.active.save()

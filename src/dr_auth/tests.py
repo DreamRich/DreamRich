@@ -2,19 +2,19 @@ from json import dumps
 from django.test import TestCase, Client as ClientTest
 from django.contrib.auth.models import User
 from rest_framework_jwt.settings import api_settings
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from employee.factories import (
-    EmployeeMainFactory,
-    FinancialAdviserMainFactory,
+    EmployeeFactory,
+    FinancialAdviserFactory,
 )
 
 
 class AuthTest(TestCase):
 
     def setUp(self):
-        self.employee = EmployeeMainFactory()
-        self.financial_adviser = FinancialAdviserMainFactory()
-        self.active_client = ActiveClientMainFactory()
+        self.employee = EmployeeFactory()
+        self.financial_adviser = FinancialAdviserFactory()
+        self.active_client = ActiveClientFactory()
         self.client_test = ClientTest()
 
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -70,7 +70,7 @@ class AuthTest(TestCase):
 class PasswordChange(TestCase):
 
     def setUp(self):
-        self.user = EmployeeMainFactory()
+        self.user = EmployeeFactory()
         self.client_test = ClientTest()
 
     def test_user_change_password(self):
@@ -131,7 +131,7 @@ class PasswordChange(TestCase):
 class ClientUserTest(TestCase):
 
     def setUp(self):
-        self.active_client = ActiveClientMainFactory()
+        self.active_client = ActiveClientFactory()
         self.user = User.objects.last()
 
     def test_username_client(self):

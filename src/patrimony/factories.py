@@ -91,7 +91,7 @@ class IncomeFactory(factory.DjangoModelFactory):
     vacation = True
 
 
-class PatrimonyMainFactory(factory.DjangoModelFactory):
+class PatrimonyFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.Patrimony
