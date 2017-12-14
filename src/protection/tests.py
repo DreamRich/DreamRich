@@ -234,7 +234,7 @@ class IndependencePatrimonyProtectionTest(TestCase):
     def test_private_pension_total(self):
         self.assertAlmostEqual(
             self.independence_patrimony_protection.\
-                    private_pension_total(), 0)
+                    private_pension_total(), 68297.050164)
 
     def test_private_pension_individual(self):
         self.assertAlmostEqual(self.private_pensions_array[0].\

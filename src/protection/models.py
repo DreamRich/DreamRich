@@ -198,8 +198,12 @@ class IndependencePatrimonyProtection(SuccessionTemplate):
                                            on_delete=models.CASCADE)
 
     def private_pension_total(self):
+        private_pensions = self.private_pensions.all()
+        total = 0
+        for private_pension in private_pensions:
+            total += private_pension.accumulated_moniterized()
 
-        return 0
+        return total
 
     def life_insurance_to_recive_total(self):
         value = self.life_insurances.aggregate(Sum('value_to_recive'))
