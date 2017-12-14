@@ -4,16 +4,16 @@ from django.contrib.auth.models import User
 from rest_framework_jwt.settings import api_settings
 from client.factories import ActiveClientFactory
 from employee.factories import (
-    EmployeeFactory,
-    FinancialAdviserFactory,
+    EmployeeMainFactory,
+    FinancialAdviserMainFactory,
 )
 
 
 class AuthTest(TestCase):
 
     def setUp(self):
-        self.employee = EmployeeFactory()
-        self.financial_adviser = FinancialAdviserFactory()
+        self.employee = EmployeeMainFactory()
+        self.financial_adviser = FinancialAdviserMainFactory()
         self.active_client = ActiveClientFactory()
         self.client_test = ClientTest()
 
@@ -70,7 +70,7 @@ class AuthTest(TestCase):
 class PasswordChange(TestCase):
 
     def setUp(self):
-        self.user = EmployeeFactory()
+        self.user = EmployeeMainFactory()
         self.client_test = ClientTest()
 
     def test_user_change_password(self):

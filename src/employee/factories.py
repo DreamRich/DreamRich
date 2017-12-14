@@ -4,7 +4,7 @@ from employee.models import Employee, FinancialAdviser
 from dr_auth.factories import UserFactory
 
 
-class EmployeeFactory(UserFactory):
+class EmployeeMainFactory(UserFactory):
 
     class Meta:
         model = Employee
@@ -12,7 +12,7 @@ class EmployeeFactory(UserFactory):
     cpf = factory.LazyAttribute(gen_cpf)
 
 
-class FinancialAdviserFactory(EmployeeFactory):
+class FinancialAdviserMainFactory(EmployeeMainFactory):
 
     class Meta:
         model = FinancialAdviser
