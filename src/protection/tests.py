@@ -9,7 +9,7 @@ from protection.factories import (
     PrivatePensionFactory,
     LifeInsuranceFactory,
 )
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 
 
 class EmergencyReserveTest(TestCase):
@@ -77,7 +77,7 @@ class ReserveInLackTest(TestCase):
 class ProtectionManagerTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             active_client=active_client)

@@ -1,6 +1,6 @@
 import factory
-from client.factories import ActiveClientMainFactory
-from patrimony.factories import PatrimonyMainFactory
+from client.factories import ActiveClientFactory
+from patrimony.factories import PatrimonyFactory
 from goal.factories import GoalManagerFactory, GoalFactory
 from protection.factories import ProtectionManagerFactory
 from . import models
@@ -53,8 +53,8 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.FinancialPlanning
 
-    active_client = factory.SubFactory(ActiveClientMainFactory)
-    patrimony = factory.SubFactory(PatrimonyMainFactory)
+    active_client = factory.SubFactory(ActiveClientFactory)
+    patrimony = factory.SubFactory(PatrimonyFactory)
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
     cost_manager = factory.SubFactory(CostManagerFactory)
