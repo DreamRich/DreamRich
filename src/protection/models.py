@@ -1,8 +1,13 @@
 import datetime
 from django.db import models
 from patrimony.models import Patrimony
-from financial_planning.models import CostManager, FinancialPlanning
+from financial_planning.models import (
+    CostManager,
+    FinancialPlanning,
+    FinancialIndependence,
+)
 from django.db.models import Sum
+from lib.profit.profit import actual_rate
 import numpy
 import abc
 
@@ -96,30 +101,6 @@ class ProtectionManager(models.Model):
 
         return data
 
-    def private_pension_total_in_independece(self):
-        actual_accumulated = self.private_pension_total()
-        total_value = self.private_pensions.aggregate(Sum('value_annual'))
-        total_value = (total_value['value_annual__sum'] or 0)
-        rate = self.financial_planning.real_gain()
-        duration = self.financial_planning.duration()
-        total_value_moniterized = numpy.fv(rate, duration, -total_value,
-                                           -actual_accumulated)
-
-        return total_value_moniterized
-
-    def life_insurance_to_recive_total(self):
-        value = self.life_insurances.filter(actual=True).aggregate(Sum(
-                                     'value_to_recive'))
-        value = (value['value_to_recive__sum'] or 0)
-
-        return value
-
-    def life_insurance_to_recive_in_independence(self):
-        value = self.life_insurances.aggregate(Sum('value_to_recive'))
-        value = (value['value_to_recive__sum'] or 0)
-
-        return value
-
 
 class SuccessionTemplate(models.Model):
 
@@ -211,17 +192,56 @@ class ActualPatrimonyProtection(SuccessionTemplate):
         return self.patrimony.total()
 
 
+class IndependencePatrimonyProtection(SuccessionTemplate):
+
+    financial_independence = models.OneToOneField(FinancialIndependence,
+                                           on_delete=models.CASCADE)
+
+    def private_pension_total(self):
+
+        return 0
+
+    def life_insurance_to_recive_total(self):
+        value = self.life_insurances.aggregate(Sum('value_to_recive'))
+        value = (value['value_to_recive__sum'] or 0)
+
+        return value
+
+    def patrimony_total(self):
+        return self.financial_independence.patrimony_at_end()
+
+
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
     value_annual = models.FloatField(default=0)
     accumulated = models.FloatField(default=0)
+    rate = models.FloatField(default=0)
     actual_patrimony_protection = models.ForeignKey(
         ActualPatrimonyProtection,
+        on_delete=models.CASCADE,
+        related_name='private_pensions')
+    independence_patrimony_protection = models.ForeignKey(
+        IndependencePatrimonyProtection,
+        on_delete=models.CASCADE,
+        related_name='private_pensions')
+    financial_planning = models.ForeignKey(
+        FinancialPlanning,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 
     def __str__(self):
         return "{name} {value_annual} {accumulated}".format(**self.__dict__)
+
+    def real_gain(self):
+        return actual_rate(self.rate, self.financial_planning.ipca)
+
+    def accumulated_moniterized(self):
+        rate = self.real_gain()
+        duration = self.financial_planning.duration()
+        total_value_moniterized = numpy.fv(rate, 10, -self.value_annual,
+                                           -self.accumulated)
+
+        return total_value_moniterized
 
 
 class LifeInsurance(models.Model):
@@ -238,6 +258,10 @@ class LifeInsurance(models.Model):
         related_name='life_insurances')
     actual_patrimony_protection = models.ForeignKey(
         ActualPatrimonyProtection,
+        on_delete=models.CASCADE,
+        related_name='life_insurances')
+    independence_patrimony_protection = models.ForeignKey(
+        IndependencePatrimonyProtection,
         on_delete=models.CASCADE,
         related_name='life_insurances')
 

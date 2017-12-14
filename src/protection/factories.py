@@ -1,5 +1,8 @@
 from patrimony.factories import PatrimonyMainFactory
-from financial_planning.factories import FinancialPlanningFactory
+from financial_planning.factories import (
+    FinancialPlanningFactory,
+    FinancialIndependenceFactory,
+)
 from protection.models import (
     ReserveInLack,
     EmergencyReserve,
@@ -7,6 +10,7 @@ from protection.models import (
     PrivatePension,
     LifeInsurance,
     ActualPatrimonyProtection,
+    IndependencePatrimonyProtection,
 )
 import factory
 
@@ -28,16 +32,6 @@ class EmergencyReserveFactory(factory.DjangoModelFactory):
         model = EmergencyReserve
 
     mounth_of_protection = factory.fuzzy.FuzzyInteger(0, 12)
-
-
-class PrivatePensionFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = PrivatePension
-
-    name = factory.Faker('word')
-    value_annual = factory.Faker('pyfloat')
-    accumulated = factory.Faker('pyfloat')
 
 
 class ProtectionManagerFactory(factory.DjangoModelFactory):
@@ -63,8 +57,37 @@ class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
 
     reserve_in_lack = factory.SubFactory(ReserveInLackFactory)
 
-    private_pension = factory.RelatedFactory(PrivatePensionFactory,
-                                             'actual_patrimony_protection')
+
+class IndependencePatrimonyProtectionFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = IndependencePatrimonyProtection
+
+    itcmd_tax = factory.Faker('pyfloat')
+
+    oab_tax = factory.Faker('pyfloat')
+
+    other_taxes = factory.Faker('pyfloat')
+
+    financial_independence = factory.SubFactory(FinancialIndependenceFactory)
+
+    reserve_in_lack = factory.SubFactory(ReserveInLackFactory)
+
+
+class PrivatePensionFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = PrivatePension
+
+    name = factory.Faker('word')
+    value_annual = factory.Faker('pyfloat')
+    accumulated = factory.Faker('pyfloat')
+    rate = factory.Faker('pyfloat')
+    actual_patrimony_protection = factory.SubFactory(
+                                    ActualPatrimonyProtectionFactory)
+    independence_patrimony_protection = factory.SubFactory(
+                                    IndependencePatrimonyProtectionFactory)
+    financial_planning = factory.SubFactory(FinancialPlanningFactory)
 
 
 class LifeInsuranceFactory(factory.DjangoModelFactory):
