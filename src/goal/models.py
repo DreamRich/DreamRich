@@ -49,8 +49,10 @@ class GoalManager(models.Model):
 
     def value_total_by_year(self):
         matrix = self.matrix_flow_goals()
-
         array = [sum(index) for index in zip(*matrix)]
+        if not array:
+            duration_goals = self.financial_planning.duration()
+            array = [0] * duration_goals
 
         return array
 
