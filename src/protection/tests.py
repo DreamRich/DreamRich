@@ -186,11 +186,19 @@ class ActualPatrimonySuccessionTest(TestCase):
 
     def test_patrimony_necessery_to_other_taxes(self):
         self.assertAlmostEqual(self.actual_patrimony_succession.
+<<<<<<< HEAD
                 patrimony_necessery_to_other_taxes(), 6455.7606000000005)
 
     def test_patrimony_necessery_total_to_sucession(self):
         self.assertAlmostEqual(self.actual_patrimony_succession.
                 patrimony_necessery_total_to_sucession(), 41962.443900000006)
+=======
+            patrimony_necessery_to_other_taxes(), 6455.7606000000005)
+
+    def test_patrimony_necessery_total_to_sucession(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.
+            patrimony_necessery_total_to_sucession(), 41962.443900000006)
+>>>>>>> refs/remotes/ssh/IS175_necessidade_de_sucessao
 
     def test_total_to_recive_after_death_without_taxes(self):
         self.assertEqual(self.actual_patrimony_succession.
@@ -303,9 +311,9 @@ class IndependencePatrimonySuccessionTest(TestCase):
             total_to_recive_after_death_without_taxes(), 1368297.0501640132)
 
     def test_leftover_after_sucession(self):
-        self.assertAlmostEqual(self.future_patrimony_succession.
-                               leftover_after_sucession(), 191268.78550448804)
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            leftover_after_sucession(), 191268.78550448804)
 
     def test_need_for_vialicia(self):
-        self.assertAlmostEqual(self.future_patrimony_succession.
-                               need_for_vialicia(), 8649708.0448283739)
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            need_for_vialicia(), 8649708.0448283739)
