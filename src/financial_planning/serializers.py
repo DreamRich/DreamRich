@@ -10,8 +10,8 @@ from financial_planning.models import (
 
 class FlowUnitChangeSerializer(serializers.ModelSerializer):
 
-    cost_manager_id = serializers.IntegerField(required=True, write_only=True)
-    incomes_id = serializers.IntegerField(required=True, write_only=True)
+    cost_manager_id = serializers.IntegerField(required=False, write_only=True)
+    incomes_id = serializers.IntegerField(required=False, write_only=True)
 
     class Meta:
         model = FlowUnitChange

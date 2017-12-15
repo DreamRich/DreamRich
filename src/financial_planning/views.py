@@ -176,3 +176,4 @@ class FlowUnitChangeViewSet(viewsets.ModelViewSet):
     """
     serializer_class = FlowUnitChangeSerializer
     queryset = FlowUnitChange.objects.all()
+    filter_fields = ('cost_manager_id', 'incomes_id')

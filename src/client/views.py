@@ -163,19 +163,7 @@ class StateViewSet(viewsets.ModelViewSet):
                            'GET': 'see_own_client_data'}
     serializer_class = StateSerializer
     queryset = State.objects.all()
-
-    def list(self, request):
-        country_id = request.GET.get('country_id')
-
-        if country_id:
-            states = State.objects.filter(country_id=country_id)
-        else:
-            states = self.queryset
-
-        serializer = StateSerializer(states, many=True)
-
-        return Response(serializer.data)
-
+    filter_fields = ('country_id', )
 
 class CountryViewSet(viewsets.ModelViewSet):
     """
