@@ -181,19 +181,16 @@ class ActualPatrimonySuccessionTest(TestCase):
                                patrimony_necessery_to_itcmd(), 19367.2818)
 
     def test_patrimony_necessery_to_oab(self):
-        self.assertAlmostEqual(
-            self.actual_patrimony_succession. patrimony_necessery_to_oab(),
-            16139.401500000002)
+        self.assertAlmostEqual(self.actual_patrimony_succession.
+                patrimony_necessery_to_oab(), 16139.401500000002)
 
     def test_patrimony_necessery_to_other_taxes(self):
-        self.assertAlmostEqual(
-            self.actual_patrimony_succession. patrimony_necessery_to_other_taxes(),
-            6455.7606000000005)
+        self.assertAlmostEqual(self.actual_patrimony_succession.
+                patrimony_necessery_to_other_taxes(), 6455.7606000000005)
 
     def test_patrimony_necessery_total_to_sucession(self):
-        self.assertAlmostEqual(
-            self.actual_patrimony_succession. patrimony_necessery_total_to_sucession(),
-            41962.443900000006)
+        self.assertAlmostEqual(self.actual_patrimony_succession.
+                patrimony_necessery_total_to_sucession(), 41962.443900000006)
 
     def test_total_to_recive_after_death_without_taxes(self):
         self.assertEqual(self.actual_patrimony_succession.
@@ -286,7 +283,7 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
     def test_patrimony_necessery_to_itcmd(self):
         self.assertAlmostEqual(
-            self.future_patrimony_succession. patrimony_necessery_to_itcmd(),
+            self.future_patrimony_succession.patrimony_necessery_to_itcmd(),
             543243.8144582424)
 
     def test_patrimony_necessery_to_oab(self):
@@ -294,19 +291,16 @@ class IndependencePatrimonySuccessionTest(TestCase):
                                patrimony_necessery_to_oab(), 452703.178715202)
 
     def test_patrimony_necessery_to_other_taxes(self):
-        self.assertAlmostEqual(
-            self.future_patrimony_succession. patrimony_necessery_to_other_taxes(),
-            181081.2714860808)
+        self.assertAlmostEqual(self.future_patrimony_succession.
+            patrimony_necessery_to_other_taxes(), 181081.2714860808)
 
     def test_patrimony_necessery_total_to_sucession(self):
-        self.assertAlmostEqual(
-            self.future_patrimony_succession. patrimony_necessery_total_to_sucession(),
-            1177028.2646595251)
+        self.assertAlmostEqual(self.future_patrimony_succession.
+                patrimony_necessery_total_to_sucession(), 1177028.2646595251)
 
     def test_total_to_recive_after_death_without_taxes(self):
-        self.assertAlmostEqual(
-            self.future_patrimony_succession. total_to_recive_after_death_without_taxes(),
-            1368297.0501640132)
+        self.assertAlmostEqual(self.future_patrimony_succession.
+            total_to_recive_after_death_without_taxes(), 1368297.0501640132)
 
     def test_leftover_after_sucession(self):
         self.assertAlmostEqual(self.future_patrimony_succession.
