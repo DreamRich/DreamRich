@@ -110,10 +110,6 @@ class SuccessionTemplate(models.Model):
     itcmd_tax = models.FloatField(default=0)
     oab_tax = models.FloatField(default=0)
     other_taxes = models.FloatField(default=0)
-    protection_manager = models.OneToOneField(
-        ProtectionManager,
-        on_delete=models.CASCADE,
-    )
 
     @abc.abstractmethod
     def private_pension_total(self):
@@ -175,6 +171,12 @@ class SuccessionTemplate(models.Model):
 
 class ActualPatrimonyProtection(SuccessionTemplate):
 
+    protection_manager = models.OneToOneField(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='actual_patrimony_succession'
+    )
+
     def private_pension_total(self):
         total = self.protection_manager.private_pensions.aggregate(Sum(
                                                                'accumulated'))
@@ -194,6 +196,12 @@ class ActualPatrimonyProtection(SuccessionTemplate):
 
 
 class IndependencePatrimonyProtection(SuccessionTemplate):
+
+    protection_manager = models.OneToOneField(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='independence_patrimony_succession'
+    )
 
     def private_pension_total(self):
         private_pensions = self.protection_manager.private_pensions.all()
