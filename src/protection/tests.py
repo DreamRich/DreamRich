@@ -120,7 +120,8 @@ class ProtectionManagerTest(TestCase):
 class ActualPatrimonySuccessionTest(TestCase):
 
     def setUp(self):
-        protection_manager = ProtectionManagerFactory()
+        reserve_in_lack = _create_reserve_in_lack()
+        protection_manager = reserve_in_lack.protection_manager
 
         for private_pension in protection_manager.private_pensions.all():
             private_pension.delete()
@@ -194,6 +195,14 @@ class ActualPatrimonySuccessionTest(TestCase):
     def test_total_to_recive_after_death_without_taxes(self):
         self.assertEqual(self.actual_patrimony_succession.\
             total_to_recive_after_death_without_taxes(), 824000)
+
+    def test_leftover_after_sucession(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            leftover_after_sucession(), 782037.5561)
+
+    def test_need_for_vialicia(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            need_for_vialicia(), 509201.2711198457)
 
 
 class IndependencePatrimonySuccessionTest(TestCase):
