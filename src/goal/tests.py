@@ -1,14 +1,14 @@
 import datetime
 from django.test import TestCase
 from financial_planning.factories import FinancialPlanningFactory
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from goal.factories import GoalFactory, GoalTypeFactory
 
 
 class GoalTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1977, 1, 1))
         financial_planning = FinancialPlanningFactory(
             active_client=active_client)

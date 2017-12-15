@@ -89,15 +89,15 @@ class ActiveType(models.Model):
 class ActiveManager(models.Model):
 
     patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
-    cdi = 0.10
 
     def total(self):
         return self.actives.aggregate(Sum('value')).pop('value__sum', 0)
 
     def _update_equivalent_rate(self):
         total = self.total()
+        cdi = self.patrimony.financial_planning.cdi
         for active in self.actives.all():
-            active.update_equivalent_rate(total, self.cdi)
+            active.update_equivalent_rate(total, cdi)
 
     def real_profit_cdi(self):
         self._update_equivalent_rate()
@@ -106,9 +106,10 @@ class ActiveManager(models.Model):
         ).pop(
             'equivalent_rate__sum', 0
         )
+        cdi = self.patrimony.financial_planning.cdi
 
-        if self.cdi != 0:
-            return total_rate / self.cdi
+        if cdi != 0:
+            return total_rate / cdi
         return 0
 
     @staticmethod
@@ -173,9 +174,11 @@ class Active(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
-class ArrearageCalculator(models.Model):
+class ArrearageCalculator:
 
-    @property
+    def __init__(self, arrearage):
+        self.calculate = arrearage
+
     def calculate_arrearage(self):
         data = []
         outstanding_balance = self.calculate.value
@@ -184,10 +187,10 @@ class ArrearageCalculator(models.Model):
                 self.calculate_amortization(period)
             parameter_list = {
                 'period': period,
-                'provision': self.calculate_provision(period),
-                'interest': self.calculate_interest(period),
-                'amortization': self.calculate_amortization(period),
-                'outstanding_balance': outstanding_balance
+                'provision': round(self.calculate_provision(period), 2),
+                'interest': round(self.calculate_interest(period), 2),
+                'amortization': round(self.calculate_amortization(period), 2),
+                'outstanding_balance': round(outstanding_balance, 2)
             }
             data.append(parameter_list)
 
@@ -199,17 +202,19 @@ class ArrearageCalculator(models.Model):
         value = self.calculate.value
         calculated_period = self.calculate.period
         rate = self.calculate.rate
-        provision = self.calculate_provision(period)
-        amortization = self.calculate_amortization(period)
 
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             interest = ((
                 value - (
-                    (period - 1) * calculated_period / calculated_period
+                    (period - 1) * value / calculated_period
                 )
             ) * (rate / 100))
-        else:
+        elif self.calculate.amortization_system == AMORTIZATION_CHOICES[1][0]:
+            provision = self.calculate_provision(period)
+            amortization = self.calculate_amortization(period)
             interest = provision - amortization
+        else:
+            interest = 0
 
         return interest
 
@@ -217,31 +222,36 @@ class ArrearageCalculator(models.Model):
         amortization = 0
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
             amortization = self.calculate.value / self.calculate.period
-        else:
+        elif self.calculate.amortization_system == AMORTIZATION_CHOICES[1][0]:
             first_amortization = (
                 self.calculate_provision(1) -
                 (self.calculate.value * (self.calculate.rate / 100))
             )
             amortization = first_amortization * \
                 ((1 + (self.calculate.rate / 100))**(period - 1))
+        else:
+            amortization = self.calculate.value / self.calculate.period
+
         return amortization
 
     def calculate_provision(self, period):
         provision = 0
 
-        amortization = self.calculate_amortization(period)
-        interest = self.calculate_interest(period)
         rate = self.calculate.rate
         value = self.calculate.value
         calculated_period = self.calculate.period
 
         if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+            amortization = self.calculate_amortization(period)
+            interest = self.calculate_interest(period)
             provision = amortization + interest
-        else:
+        elif self.calculate.amortization_system == AMORTIZATION_CHOICES[1][0]:
             provision = (
                 value * (rate / 100) /
                 (1 - (1 + (rate / 100))**(-calculated_period))
             )
+        else:
+            provision = self.calculate.value / self.calculate.period
 
         return provision
 
@@ -250,9 +260,8 @@ class Arrearage(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     actual_period = models.PositiveIntegerField(default=0)
-    period = models.PositiveIntegerField(default=0)
+    period = models.PositiveIntegerField(default=1)
     rate = models.FloatField(
-        default=0,
         validators=[
             MinValueValidator(
                 patrimony_validators.MIN_VALUE_RATE,
@@ -267,18 +276,16 @@ class Arrearage(models.Model):
     amortization_system = models.CharField(
         max_length=5,
         choices=AMORTIZATION_CHOICES,
-        default=AMORTIZATION_CHOICES[0][0]
     )
     patrimony = models.ForeignKey(
         Patrimony, on_delete=models.CASCADE,
-        related_name='arrearages')
-    arrearage_calculator = models.OneToOneField(
-        ArrearageCalculator,
-        related_name='calculate',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
+        related_name='arrearages'
     )
+
+    @property
+    def calculate_arrearage(self):
+        arrearage_calculator = ArrearageCalculator(self)
+        return arrearage_calculator.calculate_arrearage
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)

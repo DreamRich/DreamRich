@@ -1,13 +1,13 @@
 import datetime
 from django.test import TestCase, Client
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from goal.factories import (
     GoalManagerFactory,
     GoalFactory,
     GoalTypeFactory,
 )
 from patrimony.factories import (
-    PatrimonyMainFactory,
+    PatrimonyFactory,
     ActiveFactory,
     ArrearageFactory,
 )
@@ -26,7 +26,7 @@ class FinancialIndependencePlanningTest(TestCase):
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -54,7 +54,7 @@ class FinancialIndependencePlanningTest(TestCase):
 
 class FinancialIndependencePatrimonyTest(TestCase):
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             active_client=active_client)
@@ -103,7 +103,7 @@ class FinancialIndependencePatrimonyTest(TestCase):
 class RegularCostTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -131,7 +131,7 @@ class RegularCostTest(TestCase):
 
 class FinancialPlanningModelTest(TestCase):
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -164,9 +164,9 @@ class FinancialPlanningModelTest(TestCase):
 class FinancialPlanningFlowTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyMainFactory()
+        self.patrimony = PatrimonyFactory()
         self.patrimony.incomes.all().update(value_monthly=55000,
                                             thirteenth=False,
                                             vacation=False)
@@ -192,6 +192,7 @@ class FinancialPlanningFlowTest(TestCase):
             patrimony=self.patrimony,
             financial_independence=self.financial_independence,
             goal_manager=self.goal_manager,
+            cdi=0.1213,
         )
 
     def test_annual_leftovers_for_goal_without_change(self):
@@ -243,13 +244,14 @@ class FinancialPlanningFlowTest(TestCase):
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
 
-    def test_flow_patrimony(self):
+    def test_suggested_flow_patrimony(self):
         array = [647364.8, 1319372.6002455815, 2027906.368647767,
                  2774951.418992036, 3562600.973793622, 4393062.0295134,
                  5268661.54056872, 6191852.939466794, 7165223.011330091,
                  8191499.142076154]
 
-        self.assertEqual(self.financial_planning.flow_patrimony, array)
+        self.assertEqual(self.financial_planning.suggested_flow_patrimony,
+                         array)
 
 
 class RegularCostViewTest(TestCase):

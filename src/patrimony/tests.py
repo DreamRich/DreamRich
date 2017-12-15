@@ -1,11 +1,11 @@
 import datetime
 from django.test import TestCase
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
 from patrimony.models import Active
 from patrimony.factories import (
-    PatrimonyMainFactory,
+    PatrimonyFactory,
     IncomeFactory,
     RealEstateFactory,
     ActiveManagerFactory,
@@ -30,9 +30,9 @@ def _flatten(array):
 class PatrimonyTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyMainFactory()
+        self.patrimony = PatrimonyFactory()
         self.patrimony.incomes.all().update(value_monthly=1212.2)
         FinancialPlanningFactory(
             active_client=active_client,
@@ -97,9 +97,8 @@ class PatrimonyTest(TestCase):
 
 class ActiveManagerTest(TestCase):
     def setUp(self):
-        self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyMainFactory(activemanager=None)
-        )
+        financial_planning = FinancialPlanningFactory(cdi=0.1)
+        self.active_manager = financial_planning.patrimony.activemanager
 
         for active in self.active_manager.actives.all():
             active.delete()
@@ -120,7 +119,7 @@ class ActiveManagerTest(TestCase):
     def test_update_equivalent_rates(self):
         equivalents = self.active_manager.actives.values_list(
             'equivalent_rate')
-        self.active_manager.cdi = 0.12
+        self.active_manager.patrimony.financial_planning.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new_equivalents = self.active_manager.actives.values_list(
             'equivalent_rate'
@@ -130,7 +129,7 @@ class ActiveManagerTest(TestCase):
 
     def test_update_rates_values(self):
         equivalents = [(0.0156,), (0.0455,), (0.0415, )]
-        self.active_manager.cdi = 0.12
+        self.active_manager.patrimony.financial_planning.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new = self.active_manager.actives.values_list('equivalent_rate')
 
@@ -142,14 +141,14 @@ class ActiveManagerTest(TestCase):
             self.active_manager.real_profit_cdi(), 0.8556, 4)
 
     def test_real_profit_cdi_zero(self):
-        self.active_manager.cdi = 0
+        self.active_manager.patrimony.financial_planning.cdi = 0
         self.assertAlmostEqual(self.active_manager.real_profit_cdi(), 0, 4)
 
 
 class ActiveChartTest(TestCase):
     def setUp(self):
         self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyMainFactory(activemanager=None)
+            patrimony=PatrimonyFactory(activemanager=None)
         )
         fundos = ActiveTypeFactory(name='Fundo')
         previdencia = ActiveTypeFactory(name='Previdencia')
@@ -195,7 +194,7 @@ class ActiveChartTest(TestCase):
 class ActiveTest(TestCase):
 
     def setUp(self):
-        self.active = PatrimonyMainFactory().activemanager.actives.first()
+        self.active = PatrimonyFactory().activemanager.actives.first()
         self.active.value = 100
         self.active.rate = 1.10
         self.active.save()

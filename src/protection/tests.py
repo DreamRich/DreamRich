@@ -11,7 +11,7 @@ from protection.factories import (
     LifeInsuranceFactory,
     EmergencyReserveFactory,
 )
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 
 
 class EmergencyReserveTest(TestCase):
@@ -81,7 +81,7 @@ class ReserveInLackTest(TestCase):
 class ProtectionManagerTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             cdi=0.1213, ipca=0.075, active_client=active_client)
@@ -166,7 +166,7 @@ class ActualPatrimonySuccessionTest(TestCase):
 class IndependencePatrimonySuccessionTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             active_client=active_client, ipca=0.075)

@@ -60,7 +60,8 @@ class FinancialIndependence(models.Model):
 
     def patrimony_at_end(self):
         actual_patrimony = self.financial_planning.patrimony.total()
-        patrimony_in_independence = self.financial_planning.flow_patrimony[-1]
+        patrimony_in_independence = self.financial_planning.\
+            suggested_flow_patrimony[-1]
         goals_monetized = self.goals_monetized()
         total = actual_patrimony + patrimony_in_independence +\
             goals_monetized
@@ -245,17 +246,16 @@ class FinancialPlanning(models.Model):
         return actual_rate(self.target_profitability / 100 * self.cdi,
                            self.ipca)
 
-    def resource_monetization(self, flow):
+    def resource_monetization(self, flow, rate):
         total_goals = self.goal_manager.value_total_by_year()
         duration = self.duration()
 
         resource = [0] * (duration)
         resource[0] = flow[0]
-        real_gain = self.real_gain_related_cdi() + 1
 
         for index in range(duration - 1):
             leftover_this_year = resource[index] - total_goals[index]
-            resource_monetized = leftover_this_year * real_gain
+            resource_monetized = leftover_this_year * rate
             resource[index + 1] = flow[index] + resource_monetized
 
         return resource
@@ -263,14 +263,24 @@ class FinancialPlanning(models.Model):
     @property
     def total_resource_for_annual_goals(self):
         annual_leftovers_for_goal = self.annual_leftovers_for_goal()
+        rate = self.real_gain_related_cdi() + 1
         resource_for_goal = self.resource_monetization(
-            annual_leftovers_for_goal)
+            annual_leftovers_for_goal, rate)
 
         return resource_for_goal
 
     @property
-    def flow_patrimony(self):
+    def suggested_flow_patrimony(self):
         annual_leftovers = self.annual_leftovers()
-        flow = self.resource_monetization(annual_leftovers)
+        rate = self.real_gain_related_cdi() + 1
+        flow = self.resource_monetization(annual_leftovers, rate)
+
+        return flow
+
+    @property
+    def actual_flow_patrimony(self):
+        annual_leftovers = self.annual_leftovers()
+        real_gain = self.patrimony.activemanager.real_profit_cdi()
+        flow = self.resource_monetization(annual_leftovers, real_gain)
 
         return flow
