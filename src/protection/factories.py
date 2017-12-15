@@ -42,7 +42,6 @@ class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
     other_taxes = factory.Faker('pyfloat')
 
 
-
 class IndependencePatrimonyProtectionFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -86,14 +85,14 @@ class ProtectionManagerFactory(factory.DjangoModelFactory):
 
     financial_planning = factory.SubFactory(FinancialPlanningFactory)
     reserve_in_lack = factory.RelatedFactory(ReserveInLackFactory,
-                                    'protection_manager')
+                                             'protection_manager')
     actual_patrimony_protection = factory.RelatedFactory(
-                                    ActualPatrimonyProtectionFactory,
-                                    'protection_manager')
-    independence_patrimony_protection = factory.RelatedFactory(
-                                    IndependencePatrimonyProtectionFactory,
-                                    'protection_manager')
+        ActualPatrimonyProtectionFactory,
+        'protection_manager')
+    future_patrimony_protection = factory.RelatedFactory(
+        IndependencePatrimonyProtectionFactory,
+        'protection_manager')
     private_pensions = factory.RelatedFactory(PrivatePensionFactory,
-                                                'protection_manager')
+                                              'protection_manager')
     life_insurances = factory.RelatedFactory(LifeInsuranceFactory,
-                                                'protection_manager')
+                                             'protection_manager')

@@ -1,14 +1,13 @@
 import datetime
+import abc
+import numpy
 from django.db import models
 from patrimony.models import Patrimony
 from financial_planning.models import (
     CostManager,
     FinancialPlanning,
 )
-from django.db.models import Sum
 from lib.profit.profit import actual_rate
-import numpy
-import abc
 
 
 class EmergencyReserve(models.Model):
@@ -143,28 +142,28 @@ class SuccessionTemplate(models.Model):
 
     def patrimony_necessery_total_to_sucession(self):
         total = self.patrimony_necessery_to_itcmd() +\
-                self.patrimony_necessery_to_oab() +\
-                self.patrimony_necessery_to_other_taxes()
+            self.patrimony_necessery_to_oab() +\
+            self.patrimony_necessery_to_other_taxes()
 
         return total
 
     def total_to_recive_after_death_without_taxes(self):
         total = self.private_pension_total() +\
-                self.life_insurance_to_recive_total()
+            self.life_insurance_to_recive_total()
 
         return total
 
     def leftover_after_sucession(self):
         total = self.total_to_recive_after_death_without_taxes() -\
-                self.patrimony_necessery_total_to_sucession()
+            self.patrimony_necessery_total_to_sucession()
 
         return total
 
     def need_for_vialicia(self):
         total = self.leftover_after_sucession() +\
-                self.patrimony_total() -\
-                self.protection_manager.reserve_in_lack.\
-                patrimony_necessery_total()
+            self.patrimony_total() -\
+            self.protection_manager.reserve_in_lack.\
+            patrimony_necessery_total()
 
         return total
 
@@ -178,15 +177,15 @@ class ActualPatrimonyProtection(SuccessionTemplate):
     )
 
     def private_pension_total(self):
-        total = self.protection_manager.private_pensions.aggregate(Sum(
-                                                               'accumulated'))
+        total = self.protection_manager.private_pensions.aggregate(models.Sum(
+            'accumulated'))
         total = (total['accumulated__sum'] or 0)
 
         return total
 
     def life_insurance_to_recive_total(self):
         value = self.protection_manager.life_insurances.filter(actual=True).\
-                                        aggregate(Sum('value_to_recive'))
+            aggregate(models.Sum('value_to_recive'))
         value = (value['value_to_recive__sum'] or 0)
 
         return value
@@ -200,7 +199,7 @@ class IndependencePatrimonyProtection(SuccessionTemplate):
     protection_manager = models.OneToOneField(
         ProtectionManager,
         on_delete=models.CASCADE,
-        related_name='independence_patrimony_succession'
+        related_name='future_patrimony_succession'
     )
 
     def private_pension_total(self):
@@ -212,15 +211,15 @@ class IndependencePatrimonyProtection(SuccessionTemplate):
         return total
 
     def life_insurance_to_recive_total(self):
-        value = self.protection_manager.life_insurances.aggregate(Sum(
-                                                           'value_to_recive'))
+        value = self.protection_manager.life_insurances.aggregate(models.Sum(
+            'value_to_recive'))
         value = (value['value_to_recive__sum'] or 0)
 
         return value
 
     def patrimony_total(self):
         return self.protection_manager.financial_planning.\
-                    financial_independence.patrimony_at_end()
+            financial_independence.patrimony_at_end()
 
 
 class PrivatePension(models.Model):
@@ -237,14 +236,16 @@ class PrivatePension(models.Model):
         return "{name} {value_annual} {accumulated}".format(**self.__dict__)
 
     def real_gain(self):
-        return actual_rate(self.rate, self.protection_manager.\
-                                      financial_planning.ipca)
+        return actual_rate(self.rate, self.protection_manager.
+                           financial_planning.ipca)
 
     def accumulated_moniterized(self):
         rate = self.real_gain()
         duration = self.protection_manager.financial_planning.duration()
-        total_value_moniterized = numpy.fv(rate, 10, -self.value_annual,
-                                           -self.accumulated)
+        value_annual = self.value_annual * -1
+        accumulated = self.accumulated * -1
+        total_value_moniterized = numpy.fv(rate, duration, value_annual,
+                                           accumulated)
 
         return total_value_moniterized
 
