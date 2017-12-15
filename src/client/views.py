@@ -2,7 +2,6 @@ from dr_auth.permissions import ClientsPermission
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
-
 from client.serializers import (
     ClientSerializer,
     ActiveClientSerializer,
@@ -164,6 +163,7 @@ class StateViewSet(viewsets.ModelViewSet):
     serializer_class = StateSerializer
     queryset = State.objects.all()
     filter_fields = ('country_id', )
+
 
 class CountryViewSet(viewsets.ModelViewSet):
     """
