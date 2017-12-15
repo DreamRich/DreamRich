@@ -3,8 +3,25 @@ from financial_planning.models import (
     RegularCost,
     CostManager,
     CostType,
-    FinancialPlanning
+    FinancialPlanning,
+    FlowUnitChange,
 )
+
+
+class FlowUnitChangeSerializer(serializers.ModelSerializer):
+
+    cost_manager_id = serializers.IntegerField(required=True, write_only=True)
+    incomes_id = serializers.IntegerField(required=True, write_only=True)
+
+    class Meta:
+        model = FlowUnitChange
+        fields = [
+            'id',
+            'annual_value',
+            'year',
+            'cost_manager_id',
+            'incomes_id',
+        ]
 
 
 class CostTypeSerializer(serializers.ModelSerializer):

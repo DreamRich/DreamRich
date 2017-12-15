@@ -7,12 +7,14 @@ from financial_planning.serializers import (
     CostManagerSerializer,
     CostTypeSerializer,
     FinancialPlanningSerializer,
+    FlowUnitChangeSerializer,
 )
 from financial_planning.models import (
     RegularCost,
     CostManager,
     CostType,
     FinancialPlanning,
+    FlowUnitChange,
 )
 from employee.models import FinancialAdviser
 from dr_auth.permissions import FinancialPlanningPermission
@@ -151,3 +153,26 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
             return Response(fp_and_gm_pks)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+class FlowUnitChangeViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a change in cost or income.
+
+    list:
+        Return all changes, ordered by most recently joined.
+
+    create:
+        Create a new change in cost or income.
+
+    delete:
+        Remove an existing change in cost or income.
+
+    partial_update:
+        Update one or more fields on an existing change.
+
+    update:
+        Update a change in flow.
+    """
+    serializer_class = FlowUnitChangeSerializer
+    queryset = FlowUnitChange.objects.all()

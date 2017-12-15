@@ -5,6 +5,7 @@ from financial_planning.views import (
     CostTypeViewList,
     CostManagerViewSet,
     FinancialPlanningViewSet,
+    FlowUnitChangeViewSet,
 )
 
 
@@ -14,5 +15,6 @@ ROUTER = routers.DefaultRouter()
 ROUTER.register(r'^regular_cost', RegularCostViewSet)
 ROUTER.register(r'^cost_manager', CostManagerViewSet)
 ROUTER.register(r'financial_planning', FinancialPlanningViewSet)
+ROUTER.register(r'unit_change', FlowUnitChangeViewSet)
 
 urlpatterns = [url(r'cost_type/$', CostTypeViewList.as_view())] + ROUTER.urls
