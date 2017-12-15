@@ -8,7 +8,7 @@ class ActiveTypeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.ActiveType
 
-    name = factory.Sequence(lambda n: "ActiveType {0}".format(n))
+    name = factory.Sequence(lambda n: "ActiveType #%s" % n)
 
 
 class ActiveFactory(factory.DjangoModelFactory):
