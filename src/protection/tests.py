@@ -186,8 +186,6 @@ class ActualPatrimonySuccessionTest(TestCase):
             patrimony_necessery_total_to_sucession(), 41962.443900000006)
 
 
-
-
 class IndependencePatrimonySuccessionTest(TestCase):
 
     def setUp(self):
@@ -232,11 +230,13 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
         self.future_patrimony_succession =\
             protection_manager.future_patrimony_succession
+        self.future_patrimony_succession.itcmd_tax = 0.06
+        self.future_patrimony_succession.oab_tax = 0.05
+        self.future_patrimony_succession.other_taxes = 0.02
         self.protection_manager = protection_manager
 
     def test_private_pension_total(self):
-        self.assertAlmostEqual(
-            self.future_patrimony_succession.
+        self.assertAlmostEqual(self.future_patrimony_succession.
             private_pension_total(), 68297.050164)
 
     def test_private_pension_individual(self):
@@ -252,3 +252,23 @@ class IndependencePatrimonySuccessionTest(TestCase):
     def test_life_insurance_to_recive_total(self):
         self.assertEqual(self.future_patrimony_succession.
                          life_insurance_to_recive_total(), 1000000)
+
+    def test_patrimony_total(self):
+        self.assertEqual(self.future_patrimony_succession.patrimony_total(),
+                         9054063.57430404)
+
+    def test_patrimony_necessery_to_itcmd(self):
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            patrimony_necessery_to_itcmd(), 543243.8144582424)
+
+    def test_patrimony_necessery_to_oab(self):
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            patrimony_necessery_to_oab(), 452703.178715202)
+
+    def test_patrimony_necessery_to_other_taxes(self):
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            patrimony_necessery_to_other_taxes(), 181081.2714860808)
+
+    def test_patrimony_necessery_total_to_sucession(self):
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            patrimony_necessery_total_to_sucession(), 1177028.2646595251)
