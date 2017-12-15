@@ -88,9 +88,8 @@ class ProtectionManagerTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             cdi=0.1213, ipca=0.075, active_client=active_client)
-        self.protection_manager = financial_planning.protection_manager
-        self.protection_manager.financial_planning.active_client =\
-            active_client
+        self.protection_manager = ProtectionManagerFactory(
+                                    financial_planning=financial_planning)
         self.protection_manager.private_pensions.all().update(
             accumulated=20000, value_annual=2000)
         PrivatePensionFactory(protection_manager=self.protection_manager,
@@ -99,12 +98,11 @@ class ProtectionManagerTest(TestCase):
             life_insurance.delete()
 
         life_insurances = [
-            {'value_to_pay_annual': 2000, 'has_year_end': False,
-                'value_to_recive': 500000, 'actual': True},
+            {'value_to_pay_annual': 2000, 'has_year_end': False},
             {'value_to_pay_annual': 2000, 'has_year_end': True,
-                'year_end': 2020, 'value_to_recive': 200000, 'actual': False},
+                'year_end': 2020, },
             {'value_to_pay_annual': 1000, 'has_year_end': True,
-                'year_end': 2023, 'value_to_recive': 300000, 'actual': True}]
+                'year_end': 2023,}]
 
         for life_insurance in life_insurances:
             LifeInsuranceFactory(**life_insurance,
