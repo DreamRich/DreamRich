@@ -146,6 +146,9 @@ class ActualPatrimonySuccessionTest(TestCase):
 
         self.actual_patrimony_succession = protection_manager.\
             actual_patrimony_succession
+        self.actual_patrimony_succession.itcmd_tax = 0.06
+        self.actual_patrimony_succession.oab_tax = 0.05
+        self.actual_patrimony_succession.other_taxes = 0.02
         self.protection_manager = protection_manager
 
     def test_private_pension_total(self):
@@ -161,6 +164,28 @@ class ActualPatrimonySuccessionTest(TestCase):
     def test_life_insurance_to_recive_total(self):
         self.assertEqual(self.actual_patrimony_succession.
                          life_insurance_to_recive_total(), 800000)
+
+    def test_patrimony_total(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            patrimony_total(), 322788.03)
+
+    def test_patrimony_necessery_to_itcmd(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            patrimony_necessery_to_itcmd(), 19367.2818)
+
+    def test_patrimony_necessery_to_oab(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            patrimony_necessery_to_oab(), 16139.401500000002)
+
+    def test_patrimony_necessery_to_other_taxes(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            patrimony_necessery_to_other_taxes(), 6455.7606000000005)
+
+    def test_patrimony_necessery_total_to_sucession(self):
+        self.assertAlmostEqual(self.actual_patrimony_succession.\
+            patrimony_necessery_total_to_sucession(), 41962.443900000006)
+
+
 
 
 class IndependencePatrimonySuccessionTest(TestCase):
