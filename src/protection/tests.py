@@ -111,7 +111,7 @@ class ProtectionManagerTest(TestCase):
         self.assertEqual(self.protection_manager.life_insurances_flow(), data)
 
 
-class ActualPatrimonyProtectionTest(TestCase):
+class ActualPatrimonySuccessionTest(TestCase):
 
     def setUp(self):
         protection_manager = ProtectionManagerFactory()
@@ -163,7 +163,7 @@ class ActualPatrimonyProtectionTest(TestCase):
                          life_insurance_to_recive_total(), 800000)
 
 
-class IndependencePatrimonyProtectionTest(TestCase):
+class IndependencePatrimonySuccessionTest(TestCase):
 
     def setUp(self):
         active_client = ActiveClientMainFactory(

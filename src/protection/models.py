@@ -168,7 +168,7 @@ class SuccessionTemplate(models.Model):
         return total
 
 
-class ActualPatrimonyProtection(SuccessionTemplate):
+class ActualPatrimonySuccession(SuccessionTemplate):
 
     protection_manager = models.OneToOneField(
         ProtectionManager,
@@ -194,7 +194,7 @@ class ActualPatrimonyProtection(SuccessionTemplate):
         return self.protection_manager.financial_planning.patrimony.total()
 
 
-class IndependencePatrimonyProtection(SuccessionTemplate):
+class IndependencePatrimonySuccession(SuccessionTemplate):
 
     protection_manager = models.OneToOneField(
         ProtectionManager,

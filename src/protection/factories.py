@@ -5,8 +5,8 @@ from protection.models import (
     ProtectionManager,
     PrivatePension,
     LifeInsurance,
-    ActualPatrimonyProtection,
-    IndependencePatrimonyProtection,
+    ActualPatrimonySuccession,
+    IndependencePatrimonySuccession,
 )
 import factory
 
@@ -30,10 +30,10 @@ class EmergencyReserveFactory(factory.DjangoModelFactory):
     mounth_of_protection = factory.fuzzy.FuzzyInteger(0, 12)
 
 
-class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
+class ActualPatrimonySuccessionFactory(factory.DjangoModelFactory):
 
     class Meta:
-        model = ActualPatrimonyProtection
+        model = ActualPatrimonySuccession
 
     itcmd_tax = factory.Faker('pyfloat')
 
@@ -42,10 +42,10 @@ class ActualPatrimonyProtectionFactory(factory.DjangoModelFactory):
     other_taxes = factory.Faker('pyfloat')
 
 
-class IndependencePatrimonyProtectionFactory(factory.DjangoModelFactory):
+class IndependencePatrimonySuccessionFactory(factory.DjangoModelFactory):
 
     class Meta:
-        model = IndependencePatrimonyProtection
+        model = IndependencePatrimonySuccession
 
     itcmd_tax = factory.Faker('pyfloat')
 
@@ -87,10 +87,10 @@ class ProtectionManagerFactory(factory.DjangoModelFactory):
     reserve_in_lack = factory.RelatedFactory(ReserveInLackFactory,
                                              'protection_manager')
     actual_patrimony_protection = factory.RelatedFactory(
-        ActualPatrimonyProtectionFactory,
+        ActualPatrimonySuccessionFactory,
         'protection_manager')
     future_patrimony_protection = factory.RelatedFactory(
-        IndependencePatrimonyProtectionFactory,
+        IndependencePatrimonySuccessionFactory,
         'protection_manager')
     private_pensions = factory.RelatedFactory(PrivatePensionFactory,
                                               'protection_manager')
