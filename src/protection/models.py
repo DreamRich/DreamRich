@@ -4,48 +4,11 @@ from patrimony.models import Patrimony
 from financial_planning.models import (
     CostManager,
     FinancialPlanning,
-    FinancialIndependence,
 )
 from django.db.models import Sum
 from lib.profit.profit import actual_rate
 import numpy
 import abc
-
-
-class ReserveInLack(models.Model):
-
-    financial_planning = models.OneToOneField(
-        FinancialPlanning,
-        on_delete=models.CASCADE,
-        related_name='reserve_in_lack',
-    )
-
-    value_0_to_24_mounth = models.PositiveSmallIntegerField()
-
-    value_24_to_60_mounth = models.PositiveSmallIntegerField()
-
-    value_60_to_120_mounth = models.PositiveSmallIntegerField()
-
-    value_120_to_240_mounth = models.PositiveSmallIntegerField()
-
-    def patrimony_necessery_in_period(self, mounth_quantities, value):
-        rate = self.financial_planning.real_gain()
-        return numpy.pv(rate, mounth_quantities, -value)
-
-    def patrimony_necessery_total(self):
-        portion_0_to_24_mounth = self.patrimony_necessery_in_period(
-            24, self.value_0_to_24_mounth)
-        portion_24_to_60_mounth = self.patrimony_necessery_in_period(
-            36, self.value_24_to_60_mounth)
-        portion_60_to_120_mounth = self.patrimony_necessery_in_period(
-            60, self.value_60_to_120_mounth)
-        portion_120_to_240_mounth = self.patrimony_necessery_in_period(
-            120, self.value_120_to_240_mounth)
-
-        total = portion_0_to_24_mounth + portion_24_to_60_mounth +\
-            portion_60_to_120_mounth + portion_120_to_240_mounth
-
-        return total
 
 
 class EmergencyReserve(models.Model):
@@ -102,6 +65,42 @@ class ProtectionManager(models.Model):
         return data
 
 
+class ReserveInLack(models.Model):
+
+    protection_manager = models.OneToOneField(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='reserve_in_lack',
+    )
+
+    value_0_to_24_mounth = models.PositiveSmallIntegerField()
+
+    value_24_to_60_mounth = models.PositiveSmallIntegerField()
+
+    value_60_to_120_mounth = models.PositiveSmallIntegerField()
+
+    value_120_to_240_mounth = models.PositiveSmallIntegerField()
+
+    def patrimony_necessery_in_period(self, mounth_quantities, value):
+        rate = self.protection_manager.financial_planning.real_gain()
+        return numpy.pv(rate, mounth_quantities, -value)
+
+    def patrimony_necessery_total(self):
+        portion_0_to_24_mounth = self.patrimony_necessery_in_period(
+            24, self.value_0_to_24_mounth)
+        portion_24_to_60_mounth = self.patrimony_necessery_in_period(
+            36, self.value_24_to_60_mounth)
+        portion_60_to_120_mounth = self.patrimony_necessery_in_period(
+            60, self.value_60_to_120_mounth)
+        portion_120_to_240_mounth = self.patrimony_necessery_in_period(
+            120, self.value_120_to_240_mounth)
+
+        total = portion_0_to_24_mounth + portion_24_to_60_mounth +\
+            portion_60_to_120_mounth + portion_120_to_240_mounth
+
+        return total
+
+
 class SuccessionTemplate(models.Model):
 
     class Meta:
@@ -111,8 +110,8 @@ class SuccessionTemplate(models.Model):
     itcmd_tax = models.FloatField(default=0)
     oab_tax = models.FloatField(default=0)
     other_taxes = models.FloatField(default=0)
-    reserve_in_lack = models.OneToOneField(
-        ReserveInLack,
+    protection_manager = models.OneToOneField(
+        ProtectionManager,
         on_delete=models.CASCADE,
     )
 
@@ -168,37 +167,36 @@ class SuccessionTemplate(models.Model):
     def need_for_vialicia(self):
         total = self.leftover_after_sucession() +\
                 self.patrimony_total() -\
-                self.reserve_in_lack.patrimony_necessery_total()
+                self.protection_manager.reserve_in_lack.\
+                patrimony_necessery_total()
+
+        return total
 
 
 class ActualPatrimonyProtection(SuccessionTemplate):
 
-    patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
-
     def private_pension_total(self):
-        total = self.private_pensions.aggregate(Sum('accumulated'))
+        total = self.protection_manager.private_pensions.aggregate(Sum(
+                                                               'accumulated'))
         total = (total['accumulated__sum'] or 0)
 
         return total
 
     def life_insurance_to_recive_total(self):
-        value = self.life_insurances.filter(actual=True).aggregate(Sum(
-                                     'value_to_recive'))
+        value = self.protection_manager.life_insurances.filter(actual=True).\
+                                        aggregate(Sum('value_to_recive'))
         value = (value['value_to_recive__sum'] or 0)
 
         return value
 
     def patrimony_total(self):
-        return self.patrimony.total()
+        return self.protection_manager.financial_planning.patrimony.total()
 
 
 class IndependencePatrimonyProtection(SuccessionTemplate):
 
-    financial_independence = models.OneToOneField(FinancialIndependence,
-                                           on_delete=models.CASCADE)
-
     def private_pension_total(self):
-        private_pensions = self.private_pensions.all()
+        private_pensions = self.protection_manager.private_pensions.all()
         total = 0
         for private_pension in private_pensions:
             total += private_pension.accumulated_moniterized()
@@ -206,13 +204,15 @@ class IndependencePatrimonyProtection(SuccessionTemplate):
         return total
 
     def life_insurance_to_recive_total(self):
-        value = self.life_insurances.aggregate(Sum('value_to_recive'))
+        value = self.protection_manager.life_insurances.aggregate(Sum(
+                                                           'value_to_recive'))
         value = (value['value_to_recive__sum'] or 0)
 
         return value
 
     def patrimony_total(self):
-        return self.financial_independence.patrimony_at_end()
+        return self.protection_manager.financial_planning.\
+                    financial_independence.patrimony_at_end()
 
 
 class PrivatePension(models.Model):
@@ -220,16 +220,8 @@ class PrivatePension(models.Model):
     value_annual = models.FloatField(default=0)
     accumulated = models.FloatField(default=0)
     rate = models.FloatField(default=0)
-    actual_patrimony_protection = models.ForeignKey(
-        ActualPatrimonyProtection,
-        on_delete=models.CASCADE,
-        related_name='private_pensions')
-    independence_patrimony_protection = models.ForeignKey(
-        IndependencePatrimonyProtection,
-        on_delete=models.CASCADE,
-        related_name='private_pensions')
-    financial_planning = models.ForeignKey(
-        FinancialPlanning,
+    protection_manager = models.ForeignKey(
+        ProtectionManager,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 
@@ -237,11 +229,12 @@ class PrivatePension(models.Model):
         return "{name} {value_annual} {accumulated}".format(**self.__dict__)
 
     def real_gain(self):
-        return actual_rate(self.rate, self.financial_planning.ipca)
+        return actual_rate(self.rate, self.protection_manager.\
+                                      financial_planning.ipca)
 
     def accumulated_moniterized(self):
         rate = self.real_gain()
-        duration = self.financial_planning.duration()
+        duration = self.protection_manager.financial_planning.duration()
         total_value_moniterized = numpy.fv(rate, 10, -self.value_annual,
                                            -self.accumulated)
 
@@ -258,14 +251,6 @@ class LifeInsurance(models.Model):
     has_year_end = models.BooleanField()
     protection_manager = models.ForeignKey(
         ProtectionManager,
-        on_delete=models.CASCADE,
-        related_name='life_insurances')
-    actual_patrimony_protection = models.ForeignKey(
-        ActualPatrimonyProtection,
-        on_delete=models.CASCADE,
-        related_name='life_insurances')
-    independence_patrimony_protection = models.ForeignKey(
-        IndependencePatrimonyProtection,
         on_delete=models.CASCADE,
         related_name='life_insurances')
 
