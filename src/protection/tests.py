@@ -14,6 +14,19 @@ from protection.factories import (
 from client.factories import ActiveClientFactory
 
 
+def _create_reserve_in_lack():
+    financial_planning = FinancialPlanningFactory(cdi=0.1213, ipca=0.0750)
+    protection_manager = ProtectionManagerFactory(
+     financial_planning=financial_planning)
+    reserve_in_lack = protection_manager.reserve_in_lack
+    reserve_in_lack.value_0_to_24_mounth = 13000
+    reserve_in_lack.value_24_to_60_mounth = 10000
+    reserve_in_lack.value_60_to_120_mounth = 5000
+    reserve_in_lack.value_120_to_240_mounth = 5000
+
+    return reserve_in_lack
+
+
 class EmergencyReserveTest(TestCase):
 
     def setUp(self):
@@ -59,14 +72,7 @@ class EmergencyReserveTest(TestCase):
 
 class ReserveInLackTest(TestCase):
     def setUp(self):
-        financial_planning = FinancialPlanningFactory(cdi=0.1213, ipca=0.0750)
-        protection_manager = ProtectionManagerFactory(
-            financial_planning=financial_planning)
-        self.reserve_in_lack = protection_manager.reserve_in_lack
-        self.reserve_in_lack.value_0_to_24_mounth = 13000
-        self.reserve_in_lack.value_24_to_60_mounth = 10000
-        self.reserve_in_lack.value_60_to_120_mounth = 5000
-        self.reserve_in_lack.value_120_to_240_mounth = 5000
+        self.reserve_in_lack = _create_reserve_in_lack()
 
     def test_patrimony_necessery_in_period(self):
         self.assertAlmostEqual(
@@ -75,7 +81,7 @@ class ReserveInLackTest(TestCase):
 
     def test_patrimony_necessery_total(self):
         self.assertAlmostEqual(self.reserve_in_lack.
-                               patrimony_necessery_total(), 595624.31498015427)
+            patrimony_necessery_total(), 595624.31498015427)
 
 
 class ProtectionManagerTest(TestCase):
@@ -185,6 +191,10 @@ class ActualPatrimonySuccessionTest(TestCase):
         self.assertAlmostEqual(self.actual_patrimony_succession.\
             patrimony_necessery_total_to_sucession(), 41962.443900000006)
 
+    def test_total_to_recive_after_death_without_taxes(self):
+        self.assertEqual(self.actual_patrimony_succession.\
+            total_to_recive_after_death_without_taxes(), 824000)
+
 
 class IndependencePatrimonySuccessionTest(TestCase):
 
@@ -272,3 +282,7 @@ class IndependencePatrimonySuccessionTest(TestCase):
     def test_patrimony_necessery_total_to_sucession(self):
         self.assertAlmostEqual(self.future_patrimony_succession.\
             patrimony_necessery_total_to_sucession(), 1177028.2646595251)
+
+    def test_total_to_recive_after_death_without_taxes(self):
+        self.assertAlmostEqual(self.future_patrimony_succession.\
+            total_to_recive_after_death_without_taxes(), 1068297.050164)
