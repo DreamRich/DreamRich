@@ -95,10 +95,11 @@ class ProtectionManagerTest(TestCase):
             financial_planning=financial_planning)
         self.protection_manager.private_pensions.all().update(
             accumulated=20000, value_annual=2000)
-        PrivatePensionFactory(protection_manager=self.protection_manager,
-                              accumulated=4000, value_annual=200)
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
+
+        for private_pension in self.protection_manager.private_pensions.all():
+            private_pension.delete()
 
         life_insurances = [
             {'value_to_pay_annual': 2000, 'has_year_end': False},
@@ -111,10 +112,23 @@ class ProtectionManagerTest(TestCase):
             LifeInsuranceFactory(**life_insurance,
                                  protection_manager=self.protection_manager)
 
+        private_pensions = [
+            {'value_annual': 5000}, {'value_annual': 3000},
+            {'value_annual': 2000}, {'value_annual': 8000},
+        ]
+
+        for private_pension in private_pensions:
+            PrivatePensionFactory(protection_manager=self.protection_manager,
+                                  **private_pension)
+
     def test_life_insurances_flow(self):
         data = [5000.0, 5000.0, 5000.0, 5000.0, 3000.0, 3000.0, 3000.0, 2000.0,
                 2000.0, 2000.0]
         self.assertEqual(self.protection_manager.life_insurances_flow(), data)
+
+    def test_private_pensions_total(self):
+        self.assertEqual(self.protection_manager.private_pensions_total(),
+                         18000)
 
 
 class ActualPatrimonySuccessionTest(TestCase):

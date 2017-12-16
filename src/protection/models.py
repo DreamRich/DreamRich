@@ -63,6 +63,13 @@ class ProtectionManager(models.Model):
 
         return data
 
+    def private_pensions_total(self):
+
+        total = self.private_pensions.aggregate(models.Sum('value_annual'))
+        total = (total['value_annual__sum'] or 0)
+
+        return total
+
 
 class ReserveInLack(models.Model):
 
