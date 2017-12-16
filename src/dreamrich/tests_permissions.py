@@ -2,8 +2,6 @@ import json
 from http import HTTPStatus
 from rest_framework.test import APIClient
 from django.test import TestCase
-from client.factories import ActiveClientMainFactory
-from client.serializers import ActiveClientSerializer
 from employee.serializers import (
     EmployeeSerializer,
     FinancialAdviserSerializer
@@ -12,6 +10,10 @@ from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
 )
+from client.factories import ActiveClientMainFactory
+from client.serializers import ActiveClientSerializer
+from patrimony.factories import PatrimonyMainFactory
+from patrimony.serializers import PatrimonySerializer
 from dreamrich.requests import RequestTypes
 from .utils import authenticate_user
 
@@ -115,3 +117,11 @@ class UserToFinancialAdviser(PermissionsTests):
     factory_consulted = FinancialAdviserMainFactory
     serializer_consulted = FinancialAdviserSerializer
     base_route = '/api/employee/financial/'
+
+
+# Refer to all others classes which have the same permissions
+class UserToGeneral(PermissionsTests):
+
+    factory_consulted = PatrimonyMainFactory
+    serializer_consulted = PatrimonySerializer
+    base_route = '/api/patrimony/'
