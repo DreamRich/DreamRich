@@ -19,10 +19,10 @@ class ClientToItself(UserToClient):
         self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
 
     def test_client_put_itself(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
 
     def test_client_patch_itself(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
 class ClientToClient(UserToClient):
@@ -80,19 +80,19 @@ class ClientToFinancialAdviser(UserToFinancialAdviser):
     factory_user = ActiveClientMainFactory
 
     def test_clients_get_financial_advisers_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
 
     def test_client_get_financial_adviser(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
 
     def test_client_post_financial_adviser(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.CREATED)
+        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
 
     def test_client_delete_financial_adviser(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.NO_CONTENT)
+        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
 
     def test_client_put_financial_adviser(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
 
     def test_client_patch_financial_adviser(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
