@@ -1,14 +1,15 @@
+from http import HTTPStatus
 from dreamrich.tests_permissions import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser
 )
+from dreamrich.requests import RequestTypes
 from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
 )
-from dreamrich.requests import RequestTypes
-from http import HTTPStatus
+
 
 class EmployeeToItself(UserToEmployee):
 

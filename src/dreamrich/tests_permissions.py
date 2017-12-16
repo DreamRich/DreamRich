@@ -1,6 +1,7 @@
 import json
-from django.test import TestCase
+from http import HTTPStatus
 from rest_framework.test import APIClient
+from django.test import TestCase
 from client.factories import ActiveClientMainFactory
 from client.serializers import ActiveClientSerializer
 from employee.serializers import (
@@ -11,12 +12,11 @@ from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
 )
-from .utils import authenticate_user
 from dreamrich.requests import RequestTypes
+from .utils import authenticate_user
 
 
 class PermissionsTests(TestCase):
-
 
     # Children will fill these variables
     factory_consulted = None
@@ -24,30 +24,35 @@ class PermissionsTests(TestCase):
     serializer_consulted = None
     consulted_instance = None
     base_route = None
+    django_client = None
 
     def setUp(self):
         self._initialize()
 
     def _initialize(self):
-
         self.user = self.factory_user()  # pylint: disable=not-callable
-        self.consulted_instance = self.factory_consulted()
-
-        self.django_client = authenticate_user(self.user)
-
-    def user_is_authenticated():
-        pass
+        self.consulted_instance = \
+            self.factory_consulted()  # pylint: disable=not-callable
 
     def user_test_request(self, method, status_code):
+
+        # Test if user can make requests without being authenticated
+        self.django_client = APIClient()
+        response_status_code = self.make_request(method)
+        self.assertEqual(response_status_code, HTTPStatus.UNAUTHORIZED)
+
+        self.django_client = authenticate_user(self.user)
         response_status_code = self.make_request(method)
         self.assertEqual(response_status_code, status_code)
 
     def make_request(self, test_type, route=None):
-        require_data_methods = [RequestTypes.PUT, RequestTypes.PATCH, RequestTypes.POST]
+        require_data_methods = [RequestTypes.PUT,
+                                RequestTypes.PATCH,
+                                RequestTypes.POST]
 
         # Validate params
         if test_type not in RequestTypes:
-            raise AttributeError("Invalid http method")
+            raise AttributeError('Invalid http method')
 
         # Handle test_types that are not http_methods
         if test_type == RequestTypes.GETLIST:
@@ -60,8 +65,8 @@ class PermissionsTests(TestCase):
 
         # Prepare data and make request
         if test_type in require_data_methods:
-            data = self.serializer_consulted(
-                self.consulted_instance  # pylint: disable=not-callable
+            data = self.serializer_consulted(  # pylint: disable=not-callable
+                self.consulted_instance
             )
             data = data.data
 
