@@ -12,8 +12,8 @@ from employee.factories import (
 )
 from client.factories import ActiveClientMainFactory
 from client.serializers import ActiveClientSerializer
-from patrimony.factories import PatrimonyMainFactory
-from patrimony.serializers import PatrimonySerializer
+from financial_planning.factories import FinancialPlanningFactory
+from financial_planning.serializers import FinancialPlanningSerializer
 from dreamrich.requests import RequestTypes
 from .utils import authenticate_user
 
@@ -135,6 +135,6 @@ class UserToFinancialAdviser(PermissionsTests):
 # Refer to all others classes which have the same permissions
 class UserToGeneral(PermissionsTests):
 
-    factory_consulted = PatrimonyMainFactory
-    serializer_consulted = PatrimonySerializer
-    base_route = '/api/patrimony/'
+    factory_consulted = FinancialPlanningFactory
+    serializer_consulted = FinancialPlanningSerializer
+    base_route = '/api/financial_planning/'
