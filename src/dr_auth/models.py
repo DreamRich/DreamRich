@@ -22,8 +22,8 @@ class BaseUser(User):
         if not self.pk:  # not registered
             self.username = self.cpf  # user can't change password
 
-            self.password = 'default123' if not self.password \
-                else self.password  # must generate random, not ok yet
+            self.password = 'default123' if not self.password else \
+                self.password  # must generate random, not ok yet
             self.set_password(self.password)
 
         self.full_clean()

@@ -41,9 +41,9 @@ class Patrimony(models.Model):
         return total
 
     def total_annual_income(self):
-        total = 0
         incomes = list(self.incomes.all())
 
+        total = 0
         for income in incomes:
             total += income.annual()
 
@@ -88,7 +88,12 @@ class ActiveType(models.Model):
 
 class ActiveManager(models.Model):
 
-    patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
+    patrimony = models.OneToOneField(
+        Patrimony,
+        on_delete=models.CASCADE,
+        primary_key=True
+    )
+
     cdi = 0.10
 
     def total(self):

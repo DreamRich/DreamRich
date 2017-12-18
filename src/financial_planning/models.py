@@ -33,16 +33,15 @@ class FinancialIndependence(models.Model):
             current_net_investment()
         total = numpy.pmt(rate_target_profitability, years_for_retirement,
                           current_net_investment, assets_required)
+
+        total = max(total, 0)
         total /= 12
-        if total < 0:
-            total = 0
 
         return total
 
     # Will be considerate only goals that represent properties and equity
     # interests
     def filter_goals_that_will_be_monetized(self):
-
         goal_manager = self.financial_planning.goal_manager
         type_home = GoalType.objects.filter(name='Moradia').first()
         type_society_participation = GoalType.objects.filter(
@@ -257,7 +256,7 @@ class FinancialPlanning(models.Model):
         total_goals = self.goal_manager.value_total_by_year()
         duration = self.duration()
 
-        resource = [0] * (duration)
+        resource = [0] * duration
         resource[0] = flow[0]
         real_gain = self.real_gain_related_cdi() + 1
 
