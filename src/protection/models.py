@@ -194,8 +194,8 @@ class ActualPatrimonySuccession(SuccessionTemplate):
 
     def private_pension_total(self):
         total = self.protection_manager.private_pensions.aggregate(models.Sum(
-            'accumulated'))
-        total = (total['accumulated__sum'] or 0)
+            'value'))
+        total = (total['value__sum'] or 0)
 
         return total
 
@@ -222,7 +222,7 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
         private_pensions = self.protection_manager.private_pensions.all()
         total = 0
         for private_pension in private_pensions:
-            total += private_pension.accumulated_moniterized()
+            total += private_pension.value_moniterized()
 
         return total
 
@@ -241,7 +241,7 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
     value_annual = models.FloatField(default=0)
-    accumulated = models.FloatField(default=0)
+    value = models.FloatField(default=0)
     rate = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
         ProtectionManager,
@@ -249,19 +249,19 @@ class PrivatePension(models.Model):
         related_name='private_pensions')
 
     def __str__(self):
-        return "{name} {value_annual} {accumulated}".format(**self.__dict__)
+        return "{name} {value_annual} {value}".format(**self.__dict__)
 
     def real_gain(self):
         return actual_rate(self.rate, self.protection_manager.
                            financial_planning.ipca)
 
-    def accumulated_moniterized(self):
+    def value_moniterized(self):
         rate = self.real_gain()
         duration = self.protection_manager.financial_planning.duration()
         value_annual = self.value_annual * -1
-        accumulated = self.accumulated * -1
+        value = self.value * -1
         total_value_moniterized = numpy.fv(rate, duration, value_annual,
-                                           accumulated)
+                                           value)
 
         return total_value_moniterized
 

@@ -94,7 +94,7 @@ class ProtectionManagerTest(TestCase):
         self.protection_manager = ProtectionManagerFactory(
             financial_planning=financial_planning)
         self.protection_manager.private_pensions.all().update(
-            accumulated=20000, value_annual=2000)
+            value=20000, value_annual=2000)
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
 
@@ -149,8 +149,8 @@ class ActualPatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'accumulated': 20000, 'value_annual': 2000},
-            {'accumulated': 4000, 'value_annual': 200},
+            {'value': 20000, 'value_annual': 2000},
+            {'value': 4000, 'value_annual': 200},
         ]
 
         for private_pension in private_pensions:
@@ -250,9 +250,9 @@ class IndependencePatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'accumulated': 20000, 'value_annual': 2000, 'rate': 0.1213},
-            {'accumulated': 4000, 'value_annual': 200, 'rate': 0.09},
-            {'accumulated': 4000, 'value_annual': 200, 'rate': 0.09},
+            {'value': 20000, 'value_annual': 2000, 'rate': 0.1213},
+            {'value': 4000, 'value_annual': 200, 'rate': 0.09},
+            {'value': 4000, 'value_annual': 200, 'rate': 0.09},
         ]
 
         self.private_pensions_array = []
@@ -290,7 +290,7 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
     def test_private_pension_individual(self):
         self.assertAlmostEqual(self.private_pensions_array[0].
-                               accumulated_moniterized(), 54847.2658609)
+                               value_moniterized(), 54847.2658609)
 
     def test_dont_have_life_insurance(self):
         for life_insurance in self.protection_manager.life_insurances.all():
