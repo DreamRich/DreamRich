@@ -110,6 +110,7 @@ class ActiveManagerTest(TestCase):
         for active in data:
             ActiveFactory(**active, active_manager=self.active_manager)
 
+        # Update all equivalent_rates of that manager
         self.active_manager.real_profit_cdi()
 
     def test_total_manager(self):
