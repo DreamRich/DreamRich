@@ -1,11 +1,13 @@
+from http import HTTPStatus
 from dreamrich.tests_permissions import (
+    PermissionsTests,
+    UserToGeneral,
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser
 )
-from client.factories import ActiveClientMainFactory
 from dreamrich.requests import RequestTypes
-from http import HTTPStatus
+from client.factories import ActiveClientMainFactory
 
 
 class ClientToItself(UserToClient):
@@ -31,7 +33,7 @@ class ClientToClient(UserToClient):
 
     def setUp(self):
         self._initialize()
-        self.consulted_instance = ActiveClientMainFactory()
+        self.consulted = ActiveClientMainFactory()
 
     def test_client_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -95,4 +97,52 @@ class ClientToFinancialAdviser(UserToFinancialAdviser):
         self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
 
     def test_client_patch_financial_adviser(self):
+        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+
+
+class ClientToRelatedGeneral(UserToGeneral):
+
+    factory_user = ActiveClientMainFactory
+
+    consulted_relationship = PermissionsTests.ConsultedRelationship(
+        many=False,
+        relationship_attr='active_client'
+    )
+
+    def test_client_get_generals_list(self):
+        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+
+    def test_client_get_general(self):
+        self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
+
+    def test_client_delete_general(self):
+        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+
+    def test_client_put_general(self):
+        self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
+
+    def test_client_patch_general(self):
+        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
+
+
+class ClientToGeneral(UserToGeneral):
+
+    factory_user = ActiveClientMainFactory
+
+    def test_client_get_generals_list(self):
+        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+
+    def test_client_get_general(self):
+        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+
+    def test_client_post_general(self):
+        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+
+    def test_client_delete_general(self):
+        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+
+    def test_client_put_general(self):
+        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+
+    def test_client_patch_general(self):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)

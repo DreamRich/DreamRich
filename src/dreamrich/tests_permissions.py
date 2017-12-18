@@ -1,5 +1,6 @@
 import json
 from http import HTTPStatus
+from collections import namedtuple
 from rest_framework.test import APIClient
 from django.test import TestCase
 from employee.serializers import (
@@ -14,27 +15,27 @@ from client.factories import ActiveClientMainFactory
 from client.serializers import ActiveClientSerializer
 from financial_planning.factories import FinancialPlanningFactory
 from financial_planning.serializers import FinancialPlanningSerializer
-from dreamrich.requests import RequestTypes
+from .requests import RequestTypes
 from .utils import authenticate_user
 
 
 class PermissionsTests(TestCase):
 
-    # Children will fill these variables
+    # For checking for instances which have relationship with user
+    ConsultedRelationship = namedtuple('ConsultedRelationship',
+                                       'many relationship_attr')
+
+    # Children will fill these attributes
     factory_consulted = None
     factory_user = None
     serializer_consulted = None
-    consulted_instance = None
-    base_route = None
+    consulted = None
     django_client = None
+    consulted_relationship = None
+    base_route = ''
 
     def setUp(self):
         self._initialize()
-
-    def _initialize(self):
-        self.user = self.factory_user()  # pylint: disable=not-callable
-        self.consulted_instance = \
-            self.factory_consulted()  # pylint: disable=not-callable
 
     def user_test_request(self, method, status_code):
 
@@ -59,19 +60,45 @@ class PermissionsTests(TestCase):
 
         # Prepare data and make request
         if test_type in required_data_methods:
-            response = self._make_required_data_request(
-                test_type,
-                method,
-                route
-            )
+            response = self._make_required_data_request(test_type,
+                                                        method,
+                                                        route)
         else:
             response = method(route)
 
         return response.status_code
 
+    def _initialize(self):
+        self.user = self.factory_user()  # pylint: disable=not-callable
+        self.consulted = \
+            self.factory_consulted()  # pylint: disable=not-callable
+
+        if self.consulted_relationship:
+            self._make_relationship(self.consulted, self.user)
+
+    def _make_relationship(self, primary, secondary):
+        # No problem at passing primary and secondary at reversed order
+        many, attr = self.consulted_relationship  # pylint: disable=all
+
+        # Primary will have primary key and secondary the foreign key
+        if not hasattr(secondary, attr):
+            primary, secondary = secondary, primary
+
+            if not hasattr(secondary, attr):
+                raise AttributeError('There is no relationship between'
+                                     ' user and consulted classes')
+
+        if many:
+            attr = getattr(secondary, attr)
+            attr.add(primary)  # Making relationship 1 or n to many
+        else:
+            secondary.delete()  # Avoid unique constraint problems
+            setattr(secondary, attr, primary)  # Making relationship 1 to 1
+            secondary.save()
+
     def _make_required_data_request(self, test_type, method, route):
         data = self.serializer_consulted(  # pylint: disable=not-callable
-            self.consulted_instance
+            self.consulted
         )
         data = data.data
 
@@ -79,7 +106,7 @@ class PermissionsTests(TestCase):
             field = data.popitem()
             data = {field[0]: field[1]}
         elif test_type == RequestTypes.POST:  # Make a new one
-            data.pop('id')
+            data.pop('pk')
             data['cpf'] = '75116625109'  # Generated online
 
         data = json.dumps(data)
@@ -91,7 +118,7 @@ class PermissionsTests(TestCase):
         general_routes_tests = [RequestTypes.POST, RequestTypes.GETLIST]
 
         if test_type not in general_routes_tests:
-            route = '{}{}/'.format(self.base_route, self.consulted_instance.id)
+            route = '{}{}/'.format(self.base_route, self.consulted.pk)
         else:
             route = self.base_route
 
@@ -100,7 +127,7 @@ class PermissionsTests(TestCase):
     @staticmethod
     def _handle_test_type(test_type):
         if test_type not in RequestTypes:
-            raise AttributeError('Invalid http method')
+            raise AttributeError('Invalid test type')
 
         # Handle test_types that are not http_methods
         if test_type == RequestTypes.GETLIST:
@@ -137,4 +164,4 @@ class UserToGeneral(PermissionsTests):
 
     factory_consulted = FinancialPlanningFactory
     serializer_consulted = FinancialPlanningSerializer
-    base_route = '/api/financial_planning/'
+    base_route = '/api/financial_planning/financial_planning/'
