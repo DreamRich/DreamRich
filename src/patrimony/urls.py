@@ -2,29 +2,29 @@ from rest_framework import routers
 from patrimony.views import (
     PatrimonyViewSet,
     ActiveViewSet,
-    ActiveManagerViewSet,
     ArrearageViewSet,
     RealEstateViewSet,
     CompanyParticipationViewSet,
     EquipmentViewSet,
-    LifeInsuranceViewSet,
     IncomeViewSet,
     ActiveTypeViewSet,
+    ActiveManagerViewSet,
+    ActiveChartDetailView,
 )
 
 
-app_name = 'patrimony'  # pylint: disable=invalid-name
+APP_NAME = 'patrimony'
 
-router = routers.DefaultRouter()  # pylint: disable=invalid-name
-router.register(r'^active', ActiveViewSet)
-router.register(r'^active_type', ActiveTypeViewSet)
-router.register(r'^active_manager', ActiveManagerViewSet)
-router.register(r'^arrearage', ArrearageViewSet)
-router.register(r'^realestate', RealEstateViewSet)
-router.register(r'^companyparticipation', CompanyParticipationViewSet)
-router.register(r'^equipment', EquipmentViewSet)
-router.register(r'^lifeinsurance', LifeInsuranceViewSet)
-router.register(r'^income', IncomeViewSet)
-router.register(r'', PatrimonyViewSet)
+ROUTER = routers.DefaultRouter()
+ROUTER.register(r'^active', ActiveViewSet)
+ROUTER.register(r'^active_type', ActiveTypeViewSet)
+ROUTER.register(r'^active_manager', ActiveManagerViewSet)
+ROUTER.register(r'^active_chart', ActiveChartDetailView)
+ROUTER.register(r'^arrearage', ArrearageViewSet)
+ROUTER.register(r'^realestate', RealEstateViewSet)
+ROUTER.register(r'^companyparticipation', CompanyParticipationViewSet)
+ROUTER.register(r'^equipment', EquipmentViewSet)
+ROUTER.register(r'^income', IncomeViewSet)
+ROUTER.register(r'', PatrimonyViewSet)
 
-urlpatterns = router.urls
+urlpatterns = ROUTER.urls

@@ -1,4 +1,3 @@
-# pylint: skip-file
 """
 WSGI config for dreamrich project.
 

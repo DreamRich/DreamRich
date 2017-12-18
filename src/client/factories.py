@@ -50,7 +50,7 @@ class ClientFactory(factory.DjangoModelFactory):
     birthday = factory.fuzzy.FuzzyNaiveDateTime(datetime.datetime(1967, 1, 1),
                                                 datetime.datetime(1987, 1, 1))
     profession = factory.Faker('job')
-    telephone = factory.Sequence(lambda n: '(61) 91234-56%02d' % n)
+    telephone = factory.Sequence(lambda n: '(61) 91234-5%03d' % n)
     hometown = factory.Faker('city')
     cpf = factory.LazyAttribute(gen_cpf)
 
@@ -74,7 +74,7 @@ class BankAccountFactory(factory.DjangoModelFactory):
     account = factory.Sequence(lambda n: '12345-%d' % n)
 
 
-class ActiveClientMainFactory(ClientFactory):
+class ActiveClientFactory(ClientFactory):
 
     class Meta:
         model = models.ActiveClient
@@ -84,7 +84,7 @@ class ActiveClientMainFactory(ClientFactory):
     client_bank_account = factory.RelatedFactory(BankAccountFactory,
                                                  'active_client')
 
-    username = factory.Faker('word')
+    username = factory.Faker('first_name')
     password = factory.PostGenerationMethodCall('set_password',
                                                 'default123')
     email = factory.LazyAttribute(lambda x: '{}@mail.com'.format(x.username))

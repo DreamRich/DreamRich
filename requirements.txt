@@ -27,5 +27,6 @@ radon==2.0.2
 six==1.10.0
 wrapt==1.10.10
 djangorestframework-jwt==1.11.0
+django-rest-swagger==2.1.2
 django-role-permissions==2.1.0
 pyyaml==3.12

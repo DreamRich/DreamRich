@@ -1,6 +1,3 @@
-import datetime
-
-
 def generic_flow(array_change, duration, total):
     data = []
 

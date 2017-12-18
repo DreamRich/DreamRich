@@ -1,33 +1,31 @@
 import os
-import sys
 import subprocess
+from django.core.management.base import CommandError
 from dreamrich.settings import BASE_DIR
+
 
 SRC_FOLDER = os.path.join(BASE_DIR, 'src')
 
 
+# Cannot use same logic that load_all.py because there can be nested modules
 def get_modules():
-    get_abs_paths = subprocess.Popen(
-        ['find', SRC_FOLDER, '-name', '__init__.py'], stdout=subprocess.PIPE)
-    find_error = get_abs_paths.wait()
+    get_abs_paths = subprocess.Popen(['find', SRC_FOLDER, '-name',
+                                      '__init__.py'], stdout=subprocess.PIPE)
+    find_return_code = get_abs_paths.wait()
 
     remove_leading = subprocess.Popen(['sed', 's@{}@@'.format(SRC_FOLDER)],
                                       stdin=get_abs_paths.stdout,
                                       stdout=subprocess.PIPE)
-    sed_error = remove_leading.wait()
+    sed_return_code = remove_leading.wait()
 
     remove_trailing = subprocess.Popen(['cut', '-d', '/', '-f', '2'],
                                        stdin=remove_leading.stdout,
                                        stdout=subprocess.PIPE)
-    cut_error = remove_leading.wait()
+    cut_return_code = remove_leading.wait()
 
     modules, _ = remove_trailing.communicate()
 
-    if find_error or sed_error or cut_error:
-        print("Some bash command returned an error, is not possible to get" +
-              " the modules list", file=sys.stderr)
-        exit(1)
-    else:
+    if not find_return_code and not sed_return_code and not cut_return_code:
         modules = modules.decode('utf-8')
         modules = set(modules.split('\n'))
 
@@ -35,6 +33,18 @@ def get_modules():
         modules = sorted([module for module in modules if len(module)])
 
         return modules
+    else:
+        raise CommandError(
+            "Some bash command returned an error, is not possible to get"
+            " the modules list."
+            "\nfind_return_code: {}"
+            "\nsed_return_code: {}"
+            "\ncut_return_code: {}".format(
+                find_return_code,
+                sed_return_code,
+                cut_return_code
+            )
+        )
 
 
 def get_script_name(path):
@@ -63,7 +73,7 @@ def apply_to_all_modules(function, script_name):
         module = os.path.join(SRC_FOLDER, module)
 
         returncode = function(module)
-        has_error = True if returncode else False
+        has_error = True if returncode or has_error else False
 
     if has_error:
-        exit(1)
+        raise CommandError("Error while applying {}".format(script_name))

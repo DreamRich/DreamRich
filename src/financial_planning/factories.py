@@ -1,6 +1,6 @@
 import factory
-from client.factories import ActiveClientMainFactory
-from patrimony.factories import PatrimonyMainFactory
+from client.factories import ActiveClientFactory
+from patrimony.factories import PatrimonyFactory
 from goal.factories import GoalManagerFactory, GoalFactory
 from . import models
 
@@ -13,13 +13,14 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
     age = 60
     duration_of_usufruct = 20
     remain_patrimony = 200000
+    rate = factory.Faker('pyfloat')
 
 
 class CostTypeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.CostType
 
-    name = factory.Faker('word')
+    name = factory.Sequence(lambda n: "RegularCost %03d" % n)
 
 
 class RegularCostFactory(factory.DjangoModelFactory):
@@ -37,8 +38,7 @@ class CostManagerFactory(factory.DjangoModelFactory):
         model = models.CostManager
 
     @factory.post_generation
-    def _regular_cost(self, create, extracted, **kwargs):  # pylint: disable=unused-argument
-
+    def _regular_cost(self, create, *unused_args, **unused_kwargs):
         if create:
             return RegularCostFactory.create_batch(18,
                                                    cost_manager=self,
@@ -52,8 +52,8 @@ class FinancialPlanningFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.FinancialPlanning
 
-    active_client = factory.SubFactory(ActiveClientMainFactory)
-    patrimony = factory.SubFactory(PatrimonyMainFactory)
+    active_client = factory.SubFactory(ActiveClientFactory)
+    patrimony = factory.SubFactory(PatrimonyFactory)
     financial_independence = factory.SubFactory(FinancialIndependenceFactory)
     goal_manager = factory.SubFactory(GoalManagerFactory)
     cost_manager = factory.SubFactory(CostManagerFactory)

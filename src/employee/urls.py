@@ -1,10 +1,10 @@
 from rest_framework import routers
 from employee.views import EmployeeViewSet, FinancialAdviserViewSet
 
-app_name = 'employee'  # pylint: disable=invalid-name
+APP_NAME = 'employee'  # pylint: disable=invalid-name
 
-router = routers.DefaultRouter()  # pylint: disable=invalid-name
-router.register(r'^employee', EmployeeViewSet)
-router.register(r'^financial', FinancialAdviserViewSet)
+ROUTER = routers.DefaultRouter()  # pylint: disable=invalid-name
+ROUTER.register(r'^employee', EmployeeViewSet)
+ROUTER.register(r'^financial', FinancialAdviserViewSet)
 
-urlpatterns = router.urls
+urlpatterns = ROUTER.urls

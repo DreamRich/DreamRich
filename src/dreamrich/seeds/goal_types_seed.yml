@@ -1,25 +1,25 @@
-- name: Moradia/Mobília
+- name: Moradia
+- name: Compra De Cotas Societárias
+- name: Reforma e Manutenção Da Casa
+- name: Casa Extra
+- name: Mobília
 - name: Carro
 - name: Viagens
 - name: Presentes
 - name: Aniversários
-- name: Joias/relógios
+- name: Joias/Relógios
 - name: Vestuários
-- name: Mudança de grau na escolaridade
-- name: Filhos
-- name: Faculdade
-- name: Carro
-- name: Patrimônios
+- name: Mudança De Grau Na Escolaridade
+- name: Faculdade Filhos
+- name: Carro Filhos
+- name: Intercambio Filhos
+- name: Festa 15 Anos Filhos
 - name: Intercambio
-- name: Festa 15 anos
 - name: Congressos/Cursos
-- name: Auxílio a familiares
-- name: Casa extra
+- name: Auxílio a Familiares
 - name: Casamento
-- name: Lua de mel
-- name: Reforma e manutenção da casa
-- name: Aquisição de empresas
-- name: Compra de cotas societárias
+- name: Lua De Mel
+- name: Aquisição De Empresas
 - name: Hobbies
 - name: Eletrônicos
 - name: Celular

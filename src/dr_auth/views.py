@@ -14,10 +14,11 @@ class AuthView(APIView):
             data = request.data
             user = User.objects.get(pk=data.get('userid'))
 
+            response = Response()
             if data.get('new_password') != data.get('new_password' +
                                                     '_confirmation'):
 
-                return Response(
+                response = Response(
                     dumps({'detail': 'different password'}),
                     status=400
                 )
@@ -25,15 +26,20 @@ class AuthView(APIView):
             elif user.check_password(data.get('password')):
                 user.set_password(data.get('new_password'))
                 user.save()
-                return Response(
+                response = Response(
                     dumps({'detail': 'password changed'}),
                     status=200
                 )
 
-            return Response(dumps({'detail': 'invalid password'}), status=400)
+            else:
+                response = Response(dumps({'detail': 'invalid password'}),
+                                    status=400)
 
         except User.DoesNotExist:
-            return Response(dumps({'detail': 'user not found'}), status=404)
+            response = Response(dumps({'detail': 'user not found'}),
+                                status=404)
+
+        return response
 
     def get(self, request, email=None):
         """Reset password sending in e-mail"""

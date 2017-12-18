@@ -7,7 +7,7 @@ from dreamrich import models as base_models
 class Country(base_models.BaseModel):
 
     name = models.CharField(
-        max_length=30
+        max_length=55
     )
 
     abbreviation = models.CharField(
@@ -21,7 +21,7 @@ class Country(base_models.BaseModel):
 class State(base_models.BaseModel):
 
     name = models.CharField(
-        max_length=30
+        max_length=55
     )
 
     abbreviation = models.CharField(
@@ -75,22 +75,23 @@ class ClientBase(base_models.BaseModel):
     )
 
     def __str__(self):
-        return "name: {} cpf: {}".format(self.name, self.cpf)
+        return "{} cpf: {}".format(self.name, self.cpf)
 
 
 class ActiveClient(BaseUser, ClientBase):
 
     id_document = models.ImageField(
-        upload_to='public/id_documents',
         null=True,
         blank=True
     )
 
     proof_of_address = models.ImageField(
-        upload_to='public/proof_of_address',
         null=True,
         blank=True
     )
+
+    def __str__(self):
+        return "{0.name} {0.username}".format(self)
 
 
 class Client(ClientBase):
@@ -137,6 +138,8 @@ class BankAccount(base_models.BaseModel):
         max_length=6,
         validators=[validators.validate_agency]
     )  # BR pattern: '[4alg]-[1dig]'
+
+    joint_account = models.BooleanField(default=False)
 
     account = models.CharField(
         max_length=13,

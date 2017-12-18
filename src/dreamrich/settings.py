@@ -51,6 +51,7 @@ LOCAL_APPS = [
     'employee',
     'dr_auth',
     'goal',
+    'protection',
     'financial_planning'
 ]
 
@@ -67,6 +68,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
     'rolepermissions',
 ]
 
@@ -109,14 +111,18 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        #    'rest_framework.permissions.IsAuthenticated',
-        "rest_framework.permissions.AllowAny",
+        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     )
 }
 
@@ -171,6 +177,8 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("goal.serializers", ("*")),
     ("financial_planning.factories", ("*")),
     ("financial_planning.serializers", ("*")),
+    ("protection.factories", ("*")),
+    ("dr_auth.serializers", ("*")),
 ]
 
 # Internationalization
@@ -185,6 +193,9 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Setting path for files uploaded by the user
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public')
 
 
 # Static files (CSS, JavaScript, Images)

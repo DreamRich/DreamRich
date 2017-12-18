@@ -13,7 +13,7 @@ class GoalSerializer(serializers.ModelSerializer):
 
     goal_manager_id = serializers.IntegerField(write_only=True)
     goal_type = GoalTypeSerializer(read_only=True)
-    goal_type_id = serializers.IntegerField(write_only=True)
+    goal_type_id = serializers.IntegerField()
 
     class Meta:
         model = Goal
@@ -21,8 +21,8 @@ class GoalSerializer(serializers.ModelSerializer):
             'id',
             'value',
             'periodicity',
-            'year_end',
-            'year_init',
+            'end_year',
+            'init_year',
             'has_end_date',
             'goal_type_id',
             'goal_type',
@@ -32,10 +32,13 @@ class GoalSerializer(serializers.ModelSerializer):
 
 class GoalManagerSerializer(serializers.ModelSerializer):
 
+    goals = GoalSerializer(many=True, read_only=True)
+
     class Meta:
         model = GoalManager
         fields = [
             'id',
             'goals_flow_dic',
             'year_init_to_year_end',
+            'goals',
         ]

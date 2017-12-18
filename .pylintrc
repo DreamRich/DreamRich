@@ -1,11 +1,21 @@
+# Problems
+# Tuple imports - https://github.com/PyCQA/pylint/issues/1422
+# Override save method - https://github.com/landscapeio/pylint-django/issues/94 
+
 [MESSAGES CONTROL]
-disable=missing-docstring, bad-continuation, indent-after-paren, indent-string, max-line-lengh,
-	    max-module-lines, too-few-public-methods, too-many-ancestors 
+disable=missing-docstring, bad-continuation, indent-after-paren, indent-string,
+		max-line-lengh, max-module-lines, too-few-public-methods,
+		too-many-ancestors 
 
 [MASTER]
 load-plugins=pylint_django
 
 ignore=wsgi.py,manage.py,migrations,settings.py
+
+[BASIC]
+
+# Regular expression matching correct method names
+method-rgx=(([a-z][a-z0-9_]{2,55})|(_[a-z0-9_]*))$
 
 [SIMILARITIES]
 
@@ -13,7 +23,7 @@ ignore-comments=no
 
 ignore-docstrings=no
 
-ignore-imports=yes # Problem with tuple imports - https://github.com/PyCQA/pylint/issues/1422
+ignore-imports=yes
 
 min-similarity-lines=4
 
