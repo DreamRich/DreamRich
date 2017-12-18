@@ -1,11 +1,11 @@
 from financial_planning.factories import FinancialPlanningFactory
+from patrimony.factories import (
+    ActiveManagerBaseFactory, ActiveTypeFactory,
+)
 from protection.models import (
-    ReserveInLack,
-    EmergencyReserve,
-    ProtectionManager,
-    PrivatePension,
-    LifeInsurance,
-    ActualPatrimonySuccession,
+    ReserveInLack, EmergencyReserve,
+    ProtectionManager, PrivatePension,
+    LifeInsurance, ActualPatrimonySuccession,
     IndependencePatrimonySuccession,
 )
 import factory
@@ -63,6 +63,8 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
     annual_investment = factory.Faker('pyfloat')
     value = factory.Faker('pyfloat')
     rate = factory.Faker('pyfloat')
+    active_manager = factory.SubFactory(ActiveManagerBaseFactory)
+    active_type = factory.SubFactory(ActiveTypeFactory)
 
 
 class LifeInsuranceFactory(factory.DjangoModelFactory):

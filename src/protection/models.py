@@ -2,7 +2,7 @@ import datetime
 import abc
 import numpy
 from django.db import models
-from patrimony.models import Patrimony
+from patrimony.models import Patrimony, Active
 from financial_planning.models import (
     CostManager,
     FinancialPlanning,
@@ -239,11 +239,8 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
             financial_independence.patrimony_at_end()
 
 
-class PrivatePension(models.Model):
-    name = models.CharField(max_length=100)
+class PrivatePension(Active):
     annual_investment = models.FloatField(default=0)
-    value = models.FloatField(default=0)
-    rate = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
