@@ -170,10 +170,18 @@ class FinancialPlanningFlowTest(TestCase):
         self.patrimony.incomes.all().update(value_monthly=55000,
                                             thirteenth=False,
                                             vacation=False)
-        ActiveFactory(value=30000.00,
-                      active_manager=self.patrimony.activemanager)
-        ActiveFactory(value=321200.00,
-                      active_manager=self.patrimony.activemanager)
+
+        for active in self.patrimony.activemanager.actives.all():
+            active.delete()
+
+        data = [{'value': 30000.00, 'rate': 1.1879},
+                {'value': 321200.00, 'rate': 0.7500},
+                {'value': 351200.00, 'rate': 0.7500}]
+
+        for active in data:
+            ActiveFactory(**active,
+                          active_manager=self.patrimony.activemanager)
+
         ArrearageFactory(patrimony=self.patrimony, value=351200.00)
         self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
@@ -251,6 +259,15 @@ class FinancialPlanningFlowTest(TestCase):
                  8191499.142076154]
 
         self.assertEqual(self.financial_planning.suggested_flow_patrimony,
+                         array)
+
+    def test_actual_flow_patrimony(self):
+        array = [647364.8, 1137309.0454692484, 1513930.665722565,
+                 1803440.8419394144, 2025988.188203647, 2197061.004974534,
+                 2328565.195562265, 2429652.8637760575, 2507359.259437149,
+                 2567092.4003170785]
+
+        self.assertEqual(self.financial_planning.actual_flow_patrimony,
                          array)
 
 
