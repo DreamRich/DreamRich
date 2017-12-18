@@ -7,12 +7,13 @@ from financial_planning.serializers import (
     CostManagerSerializer,
     CostTypeSerializer,
     FinancialPlanningSerializer,
+    FlowUnitChangeSerializer,
+    FinancialIndependenceSerializer,
 )
 from financial_planning.models import (
-    RegularCost,
-    CostManager,
-    CostType,
-    FinancialPlanning,
+    RegularCost, CostManager,
+    CostType, FinancialPlanning,
+    FlowUnitChange, FinancialIndependence,
 )
 from employee.models import FinancialAdviser
 from dr_auth.permissions import FinancialPlanningPermission
@@ -151,3 +152,53 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
             return Response(fp_and_gm_pks)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class FlowUnitChangeViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a change in cost or income.
+
+    list:
+        Return all changes, ordered by most recently joined.
+
+    create:
+        Create a new change in cost or income.
+
+    delete:
+        Remove an existing change in cost or income.
+
+    partial_update:
+        Update one or more fields on an existing change.
+
+    update:
+        Update a change in flow.
+    """
+    serializer_class = FlowUnitChangeSerializer
+    queryset = FlowUnitChange.objects.all()
+    filter_fields = ('cost_manager_id', 'incomes_id')
+
+
+class FinancialIndependenceViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+        Return a financial independence instance.
+
+    list:
+        Return all financial independences, ordered by most recently joined.
+
+    create:
+        Create a new financial independence.
+
+    delete:
+        Remove an existing financial independence.
+
+    partial_update:
+        Update one or more fields on an existing financial independence.
+
+    update:
+        Update a financial independence.
+    """
+
+    serializer_class = FinancialIndependenceSerializer
+    queryset = FinancialIndependence.objects.all()

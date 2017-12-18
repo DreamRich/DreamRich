@@ -1,10 +1,38 @@
 from rest_framework import serializers
 from financial_planning.models import (
-    RegularCost,
-    CostManager,
-    CostType,
-    FinancialPlanning
+    RegularCost, CostManager,
+    CostType, FinancialPlanning,
+    FlowUnitChange, FinancialIndependence,
 )
+
+
+class FinancialIndependenceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialIndependence
+        fields = [
+            'id',
+            'age',
+            'duration_of_usufruct',
+            'rate',
+            'remain_patrimony',
+        ]
+
+
+class FlowUnitChangeSerializer(serializers.ModelSerializer):
+
+    cost_manager_id = serializers.IntegerField(required=False, write_only=True)
+    incomes_id = serializers.IntegerField(required=False, write_only=True)
+
+    class Meta:
+        model = FlowUnitChange
+        fields = [
+            'id',
+            'annual_value',
+            'year',
+            'cost_manager_id',
+            'incomes_id',
+        ]
 
 
 class CostTypeSerializer(serializers.ModelSerializer):
@@ -53,6 +81,10 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
     patrimony_id = serializers.IntegerField(required=False, allow_null=True)
     goal_manager_id = serializers.IntegerField(required=False, allow_null=True)
     cost_manager_id = serializers.IntegerField(required=False, allow_null=True)
+    financial_independence_id = serializers.IntegerField(
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = FinancialPlanning
