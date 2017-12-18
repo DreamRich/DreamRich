@@ -60,7 +60,7 @@ class PrivatePensionFactory(factory.DjangoModelFactory):
         model = PrivatePension
 
     name = factory.Faker('word')
-    value_annual = factory.Faker('pyfloat')
+    annual_investment = factory.Faker('pyfloat')
     value = factory.Faker('pyfloat')
     rate = factory.Faker('pyfloat')
 

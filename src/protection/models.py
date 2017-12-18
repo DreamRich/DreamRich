@@ -65,8 +65,9 @@ class ProtectionManager(models.Model):
 
     def private_pensions_total(self):
 
-        total = self.private_pensions.aggregate(models.Sum('value_annual'))
-        total = (total['value_annual__sum'] or 0)
+        total = self.private_pensions.aggregate(models.Sum(
+            'annual_investment'))
+        total = (total['annual_investment__sum'] or 0)
 
         return total
 
@@ -240,7 +241,7 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
 
 class PrivatePension(models.Model):
     name = models.CharField(max_length=100)
-    value_annual = models.FloatField(default=0)
+    annual_investment = models.FloatField(default=0)
     value = models.FloatField(default=0)
     rate = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
@@ -249,7 +250,7 @@ class PrivatePension(models.Model):
         related_name='private_pensions')
 
     def __str__(self):
-        return "{name} {value_annual} {value}".format(**self.__dict__)
+        return "{name} {annual_investment} {value}".format(**self.__dict__)
 
     def real_gain(self):
         return actual_rate(self.rate, self.protection_manager.
@@ -258,9 +259,9 @@ class PrivatePension(models.Model):
     def value_moniterized(self):
         rate = self.real_gain()
         duration = self.protection_manager.financial_planning.duration()
-        value_annual = self.value_annual * -1
+        annual_investment = self.annual_investment * -1
         value = self.value * -1
-        total_value_moniterized = numpy.fv(rate, duration, value_annual,
+        total_value_moniterized = numpy.fv(rate, duration, annual_investment,
                                            value)
 
         return total_value_moniterized

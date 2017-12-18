@@ -94,7 +94,7 @@ class ProtectionManagerTest(TestCase):
         self.protection_manager = ProtectionManagerFactory(
             financial_planning=financial_planning)
         self.protection_manager.private_pensions.all().update(
-            value=20000, value_annual=2000)
+            value=20000, annual_investment=2000)
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
 
@@ -113,8 +113,8 @@ class ProtectionManagerTest(TestCase):
                                  protection_manager=self.protection_manager)
 
         private_pensions = [
-            {'value_annual': 5000}, {'value_annual': 3000},
-            {'value_annual': 2000}, {'value_annual': 8000},
+            {'annual_investment': 5000}, {'annual_investment': 3000},
+            {'annual_investment': 2000}, {'annual_investment': 8000},
         ]
 
         for private_pension in private_pensions:
@@ -149,8 +149,8 @@ class ActualPatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'value': 20000, 'value_annual': 2000},
-            {'value': 4000, 'value_annual': 200},
+            {'value': 20000, 'annual_investment': 2000},
+            {'value': 4000, 'annual_investment': 200},
         ]
 
         for private_pension in private_pensions:
@@ -250,9 +250,9 @@ class IndependencePatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'value': 20000, 'value_annual': 2000, 'rate': 0.1213},
-            {'value': 4000, 'value_annual': 200, 'rate': 0.09},
-            {'value': 4000, 'value_annual': 200, 'rate': 0.09},
+            {'value': 20000, 'annual_investment': 2000, 'rate': 0.1213},
+            {'value': 4000, 'annual_investment': 200, 'rate': 0.09},
+            {'value': 4000, 'annual_investment': 200, 'rate': 0.09},
         ]
 
         self.private_pensions_array = []
