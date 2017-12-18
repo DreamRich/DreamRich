@@ -93,6 +93,13 @@ class ActiveClient(BaseUser, ClientBase):
     def __str__(self):
         return "{0.name} {0.username}".format(self)
 
+    @property
+    def is_complete(self):
+        if hasattr(self, 'financial_planning'):
+            return self.financial_planning.is_complete()
+        else:
+            return False
+
 
 class Client(ClientBase):
 

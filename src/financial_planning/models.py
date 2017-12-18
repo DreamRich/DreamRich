@@ -190,6 +190,18 @@ class FinancialPlanning(models.Model):
 
         super(FinancialPlanning, self).save(*args, **kwargs)
 
+    def is_complete(self):
+        fields = ['cost_manager', 'goal_manager', 'financial_independence',
+        'patrimony']
+
+        for field in fields:
+            if not hasattr(self, field):
+                return False
+            if getattr(self,field+'_id') is None:
+                return False
+
+        return True
+
     def end_year(self):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
