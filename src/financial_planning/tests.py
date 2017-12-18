@@ -2,20 +2,20 @@ import datetime
 from django.test import TestCase, Client
 from client.factories import ActiveClientFactory
 from goal.factories import (
-    GoalManagerFactory,
-    GoalFactory,
+    GoalManagerFactory, GoalFactory,
     GoalTypeFactory,
 )
 from patrimony.factories import (
-    PatrimonyFactory,
-    ActiveFactory,
+    PatrimonyFactory, ActiveFactory,
     ArrearageFactory,
 )
 from lib.financial_planning.flow import create_array_change_annual
+from protection.factories import (
+    ProtectionManagerFactory, LifeInsuranceFactory
+)
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
-    CostManagerFactory,
-    FinancialIndependenceFactory,
+    CostManagerFactory, FinancialIndependenceFactory,
     FinancialPlanningFactory
 )
 
@@ -202,6 +202,17 @@ class FinancialPlanningFlowTest(TestCase):
             goal_manager=self.goal_manager,
             cdi=0.1213,
         )
+        protection_manager = ProtectionManagerFactory(
+            financial_planning=self.financial_planning)
+
+        for private_pension in protection_manager.private_pensions.all():
+            private_pension.delete()
+
+        for life_insurance in protection_manager.life_insurances.all():
+            life_insurance.delete()
+
+        LifeInsuranceFactory(protection_manager=protection_manager,
+                             value_to_pay_annual=2000, has_year_end=False)
 
     def test_annual_leftovers_for_goal_without_change(self):
         array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
