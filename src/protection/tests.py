@@ -130,6 +130,12 @@ class ProtectionManagerTest(TestCase):
         self.assertEqual(self.protection_manager.private_pensions_total(),
                          18000)
 
+    def test_flow(self):
+        data = [23000.0, 23000.0, 23000.0, 23000.0, 21000.0, 21000.0, 21000.0,
+                20000.0, 20000.0, 20000.0]
+        self.assertEqual(self.protection_manager.flow(), data)
+
+
 
 class ActualPatrimonySuccessionTest(TestCase):
 

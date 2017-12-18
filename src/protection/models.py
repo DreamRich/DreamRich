@@ -70,6 +70,15 @@ class ProtectionManager(models.Model):
 
         return total
 
+    def flow(self):
+
+        data = []
+        private_pension_total = self.private_pensions_total()
+        for element in self.life_insurances_flow():
+            data.append(element + private_pension_total)
+
+        return data
+
 
 class ReserveInLack(models.Model):
 
