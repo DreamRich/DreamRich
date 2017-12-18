@@ -136,7 +136,6 @@ class ProtectionManagerTest(TestCase):
         self.assertEqual(self.protection_manager.flow(), data)
 
 
-
 class ActualPatrimonySuccessionTest(TestCase):
 
     def setUp(self):

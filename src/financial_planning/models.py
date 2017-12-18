@@ -220,7 +220,7 @@ class FinancialPlanning(models.Model):
                 goal_value_total_by_year[index] -\
                 regular_cost_flow[index] -\
                 remain_necessary_for_retirement -\
-                spent_with_annual_protection
+                spent_with_annual_protection[index]
 
             data.append(actual_leftovers_for_goals)
 
@@ -230,7 +230,7 @@ class FinancialPlanning(models.Model):
 
         remain_necessary_for_retirement = self.financial_independence.\
             remain_necessary_for_retirement()
-        spent_with_annual_protection = 2000
+        spent_with_annual_protection = self.protection_manager.flow()
 
         data = self.generic_annual_leftovers(remain_necessary_for_retirement,
                                              spent_with_annual_protection)
@@ -238,7 +238,9 @@ class FinancialPlanning(models.Model):
         return data
 
     def annual_leftovers(self):
-        data = self.generic_annual_leftovers(0, 0)
+        duration = self.duration()
+        array_zero = [0] * duration
+        data = self.generic_annual_leftovers(0, array_zero)
 
         return data
 
