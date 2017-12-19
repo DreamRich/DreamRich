@@ -61,7 +61,7 @@ class FinancialIndependence(models.Model):
     def patrimony_at_end(self):
         actual_patrimony = self.financial_planning.patrimony.total()
         patrimony_in_independence = self.financial_planning.\
-            suggested_flow_patrimony[-1]
+            suggested_flow_patrimony['flow'][-1]
         goals_monetized = self.goals_monetized()
         total = actual_patrimony + patrimony_in_independence +\
             goals_monetized
@@ -301,7 +301,7 @@ class FinancialPlanning(models.Model):
         rate = self.real_gain_related_cdi() + 1
         flow = self.resource_monetization(annual_leftovers, rate)
 
-        return flow
+        return {'flow': flow, 'rate': rate}
 
     @property
     def actual_flow_patrimony(self):
@@ -309,4 +309,4 @@ class FinancialPlanning(models.Model):
         real_gain = self.patrimony.activemanager.real_profit_cdi()
         flow = self.resource_monetization(annual_leftovers, real_gain)
 
-        return flow
+        return {'flow': flow, 'rate': real_gain}
