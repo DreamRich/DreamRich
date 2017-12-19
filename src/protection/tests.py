@@ -94,7 +94,7 @@ class ProtectionManagerTest(TestCase):
         self.protection_manager = ProtectionManagerFactory(
             financial_planning=financial_planning)
         self.protection_manager.private_pensions.all().update(
-            accumulated=20000, value_annual=2000)
+            value=20000, annual_investment=2000)
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
 
@@ -113,8 +113,8 @@ class ProtectionManagerTest(TestCase):
                                  protection_manager=self.protection_manager)
 
         private_pensions = [
-            {'value_annual': 5000}, {'value_annual': 3000},
-            {'value_annual': 2000}, {'value_annual': 8000},
+            {'annual_investment': 5000}, {'annual_investment': 3000},
+            {'annual_investment': 2000}, {'annual_investment': 8000},
         ]
 
         for private_pension in private_pensions:
@@ -149,8 +149,8 @@ class ActualPatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'accumulated': 20000, 'value_annual': 2000},
-            {'accumulated': 4000, 'value_annual': 200},
+            {'value': 20000, 'annual_investment': 2000},
+            {'value': 4000, 'annual_investment': 200},
         ]
 
         for private_pension in private_pensions:
@@ -250,9 +250,9 @@ class IndependencePatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'accumulated': 20000, 'value_annual': 2000, 'rate': 0.1213},
-            {'accumulated': 4000, 'value_annual': 200, 'rate': 0.09},
-            {'accumulated': 4000, 'value_annual': 200, 'rate': 0.09},
+            {'value': 20000, 'annual_investment': 2000, 'rate': 0.1213},
+            {'value': 4000, 'annual_investment': 200, 'rate': 0.09},
+            {'value': 4000, 'annual_investment': 200, 'rate': 0.09},
         ]
 
         self.private_pensions_array = []
@@ -290,7 +290,7 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
     def test_private_pension_individual(self):
         self.assertAlmostEqual(self.private_pensions_array[0].
-                               accumulated_moniterized(), 54847.2658609)
+                               value_moniterized(), 54847.2658609)
 
     def test_dont_have_life_insurance(self):
         for life_insurance in self.protection_manager.life_insurances.all():
@@ -341,3 +341,27 @@ class IndependencePatrimonySuccessionTest(TestCase):
         self.assertAlmostEqual(
             self.future_patrimony_succession.need_for_vialicia(),
             8649708.0448283739)
+
+
+class PrivatePensionTest(TestCase):
+
+    def setUp(self):
+        protection_manager = ProtectionManagerFactory()
+        self.private_pension = protection_manager.private_pensions.first()
+
+    def test_active_type_when_create(self):
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+    def test_active_type_if_deleted(self):
+        self.private_pension.active_type.delete()
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+    def test_active_type_if_deleted_and_save(self):
+        self.private_pension.active_type.delete()
+        self.private_pension.active_type.save()
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+    def test_active_type_if_changed_name(self):
+        self.private_pension.active_type.name = 'Other name'
+        self.private_pension.save()
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')

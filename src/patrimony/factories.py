@@ -8,7 +8,7 @@ class ActiveTypeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.ActiveType
 
-    name = factory.Sequence(lambda n: "ActiveType #%s" % n)
+    name = factory.Sequence(lambda n: "ActiveType %03d" % n)
 
 
 class ActiveFactory(factory.DjangoModelFactory):
@@ -105,3 +105,17 @@ class PatrimonyFactory(factory.DjangoModelFactory):
     incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')
     movable_property = factory.RelatedFactory(MovablePropertyFactory,
                                               'patrimony')
+
+
+class PatrimonyBaseFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.Patrimony
+
+
+class ActiveManagerBaseFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.ActiveManager
+
+    patrimony = factory.SubFactory(PatrimonyBaseFactory)

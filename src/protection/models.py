@@ -2,7 +2,7 @@ import datetime
 import abc
 import numpy
 from django.db import models
-from patrimony.models import Patrimony
+from patrimony.models import Patrimony, Active, ActiveType
 from financial_planning.models import (
     CostManager,
     FinancialPlanning,
@@ -65,8 +65,9 @@ class ProtectionManager(models.Model):
 
     def private_pensions_total(self):
 
-        total = self.private_pensions.aggregate(models.Sum('value_annual'))
-        total = (total['value_annual__sum'] or 0)
+        total = self.private_pensions.aggregate(models.Sum(
+            'annual_investment'))
+        total = (total['annual_investment__sum'] or 0)
 
         return total
 
@@ -194,8 +195,8 @@ class ActualPatrimonySuccession(SuccessionTemplate):
 
     def private_pension_total(self):
         total = self.protection_manager.private_pensions.aggregate(models.Sum(
-            'accumulated'))
-        total = (total['accumulated__sum'] or 0)
+            'value'))
+        total = (total['value__sum'] or 0)
 
         return total
 
@@ -222,7 +223,7 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
         private_pensions = self.protection_manager.private_pensions.all()
         total = 0
         for private_pension in private_pensions:
-            total += private_pension.accumulated_moniterized()
+            total += private_pension.value_moniterized()
 
         return total
 
@@ -238,30 +239,33 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
             financial_independence.patrimony_at_end()
 
 
-class PrivatePension(models.Model):
-    name = models.CharField(max_length=100)
-    value_annual = models.FloatField(default=0)
-    accumulated = models.FloatField(default=0)
-    rate = models.FloatField(default=0)
+class PrivatePension(Active):
+    annual_investment = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        active_type = ActiveType.objects.get_or_create(name='PREVIDÊNCIA')
+        self.active_type = active_type[0]
+
+        super(PrivatePension, self).save(*args, **kwargs)
+
     def __str__(self):
-        return "{name} {value_annual} {accumulated}".format(**self.__dict__)
+        return "{name} {annual_investment} {value}".format(**self.__dict__)
 
     def real_gain(self):
         return actual_rate(self.rate, self.protection_manager.
                            financial_planning.ipca)
 
-    def accumulated_moniterized(self):
+    def value_moniterized(self):
         rate = self.real_gain()
         duration = self.protection_manager.financial_planning.duration()
-        value_annual = self.value_annual * -1
-        accumulated = self.accumulated * -1
-        total_value_moniterized = numpy.fv(rate, duration, value_annual,
-                                           accumulated)
+        annual_investment = self.annual_investment * -1
+        value = self.value * -1
+        total_value_moniterized = numpy.fv(rate, duration, annual_investment,
+                                           value)
 
         return total_value_moniterized
 
