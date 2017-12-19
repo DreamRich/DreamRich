@@ -1,11 +1,11 @@
 from http import HTTPStatus
 from dreamrich.tests_permissions import (
-    PermissionsTests,
     UserToGeneral,
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser
 )
+from dreamrich.tests_permissions import Relationship
 from dreamrich.requests import RequestTypes
 from client.factories import ActiveClientMainFactory
 
@@ -104,7 +104,7 @@ class ClientToRelatedGeneral(UserToGeneral):
 
     factory_user = ActiveClientMainFactory
 
-    consulted_relationship = PermissionsTests.ConsultedRelationship(
+    consulted_relationship = Relationship(
         many=False,
         relationship_attr='active_client'
     )

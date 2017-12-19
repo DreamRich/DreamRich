@@ -1,11 +1,11 @@
 from http import HTTPStatus
 from dreamrich.tests_permissions import (
-    PermissionsTests,
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,
     UserToGeneral
 )
+from dreamrich.tests_permissions import Relationship
 from dreamrich.requests import RequestTypes
 from .factories import (
     EmployeeMainFactory,
@@ -168,10 +168,12 @@ class FinancialAdviserToRelatedClient(UserToClient):
 
     factory_user = FinancialAdviserMainFactory
 
-    consulted_relationship = PermissionsTests.ConsultedRelationship(
-        many=True,
-        relationship_attr='financial_advisers'
-    )
+    def setUp(self):
+        self._initialize()
+        self.consulted_relationship.make(
+            many=True,
+            relationship_attr='financial_advisers'
+        )
 
     def test_financial_adviser_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -239,9 +241,9 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral):
 
     factory_user = FinancialAdviserMainFactory
 
-    # consulted_relationship = PermissionsTests.ConsultedRelationship(
+    # consulted_relationship = Relationship(
     #     many=True,
-    #     relationship_attr='' # Add transitive case
+    #     relationship_attr=['']  # Add transitive case
     # )
 
     def test_financial_adviser_get_financial_advisers_list(self):

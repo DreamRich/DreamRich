@@ -1,6 +1,5 @@
 import json
 from http import HTTPStatus
-from collections import namedtuple
 from rest_framework.test import APIClient
 from django.test import TestCase
 from employee.serializers import (
@@ -19,23 +18,86 @@ from .requests import RequestTypes
 from .utils import authenticate_user
 
 
-class PermissionsTests(TestCase):
+# For checking for instances which have relationship with user
+class Relationship:
+    def __init__(self, primary, secondary, many=None, relationship_attr=None):
+        self.many, self.relationship_attr = many, relationship_attr
+        self.primary, self.secondary = primary, secondary
 
-    # For checking for instances which have relationship with user
-    ConsultedRelationship = namedtuple('ConsultedRelationship',
-                                       'many relationship_attr')
+        if many is not None and relationship_attr:  # If has enough info
+            self.make()
+
+    def make(self, primary=None, secondary=None,
+             many=None, relationship_attr=None):
+
+        self._fill_missing_attributes(primary, secondary, many,
+                                      relationship_attr)
+
+        if not self._has_relationship():
+            raise AttributeError('There is no relationship between'
+                                 ' user and consulted classes')
+
+        if many is None and not relationship_attr:
+            raise Exception('Not enough information for making relationship')
+
+        primary, secondary, attr = self.primary, self.secondary, \
+            self.relationship_attr
+
+        if many:
+            attr = getattr(secondary, attr)
+            attr.add(primary)  # Making relationship 1 or n to many
+        else:
+            secondary.delete()  # Avoid unique constraint problems
+            setattr(secondary, attr, primary)  # Making relationship 1 to 1
+            secondary.save()
+
+    def get_info(self):
+        return (self.many, self.relationship_attr,
+                self.primary, self.secondary)
+
+    def _has_relationship(self):
+
+        # Primary will have primary key and secondary the foreign key
+        # hasattr called twice to tests A to B and B to A relationships
+        if not hasattr(self.secondary, self.relationship_attr):
+            self.primary, self.secondary = self.secondary, self.primary
+
+        return hasattr(self.secondary, self.relationship_attr)
+
+    # Can't use None because None will be used to check what params were passed
+    def _fill_missing_attributes(self, primary=None, secondary=None,
+                                 many=None, relationship_attr=None):
+
+        self.primary = primary or self.primary
+        self.secondary = secondary or self.secondary
+        self.many = many or self.many
+        self.relationship_attr = relationship_attr or self.relationship_attr
+
+    def __str__(self):
+        return str(self.get_info())
+
+
+class PermissionsTests(TestCase):
 
     # Children will fill these attributes
     factory_consulted = None
     factory_user = None
     serializer_consulted = None
-    consulted = None
     django_client = None
-    consulted_relationship = None
     base_route = ''
 
     def setUp(self):
         self._initialize()
+
+    def _initialize(self):
+        self.user = self.factory_user()  # pylint: disable=not-callable
+        self.consulted = \
+            self.factory_consulted()  # pylint: disable=not-callable
+
+        self.consulted_relationship = Relationship(
+            primary=self.user,
+            secondary=self.consulted,
+        )
 
     def user_test_request(self, method, status_code):
 
@@ -67,34 +129,6 @@ class PermissionsTests(TestCase):
             response = method(route)
 
         return response.status_code
-
-    def _initialize(self):
-        self.user = self.factory_user()  # pylint: disable=not-callable
-        self.consulted = \
-            self.factory_consulted()  # pylint: disable=not-callable
-
-        if self.consulted_relationship:
-            self._make_relationship(self.consulted, self.user)
-
-    def _make_relationship(self, primary, secondary):
-        # No problem at passing primary and secondary at reversed order
-        many, attr = self.consulted_relationship  # pylint: disable=all
-
-        # Primary will have primary key and secondary the foreign key
-        if not hasattr(secondary, attr):
-            primary, secondary = secondary, primary
-
-            if not hasattr(secondary, attr):
-                raise AttributeError('There is no relationship between'
-                                     ' user and consulted classes')
-
-        if many:
-            attr = getattr(secondary, attr)
-            attr.add(primary)  # Making relationship 1 or n to many
-        else:
-            secondary.delete()  # Avoid unique constraint problems
-            setattr(secondary, attr, primary)  # Making relationship 1 to 1
-            secondary.save()
 
     def _make_required_data_request(self, test_type, method, route):
         data = self.serializer_consulted(  # pylint: disable=not-callable
