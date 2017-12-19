@@ -269,8 +269,8 @@ class FinancialPlanningFlowTest(TestCase):
                  5268661.54056872, 6191852.939466794, 7165223.011330091,
                  8191499.142076154]
 
-        self.assertEqual(self.financial_planning.suggested_flow_patrimony,
-                         array)
+        self.assertEqual(self.financial_planning
+                         .suggested_flow_patrimony['flow'], array)
 
     def test_actual_flow_patrimony(self):
         array = [647364.8, 1137309.0454692484, 1513930.665722565,
@@ -278,7 +278,7 @@ class FinancialPlanningFlowTest(TestCase):
                  2328565.195562265, 2429652.8637760575, 2507359.259437149,
                  2567092.4003170785]
 
-        self.assertEqual(self.financial_planning.actual_flow_patrimony,
+        self.assertEqual(self.financial_planning.actual_flow_patrimony['flow'],
                          array)
 
 

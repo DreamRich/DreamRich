@@ -15,13 +15,13 @@ class GoalManager(models.Model):
 
     @property
     def year_init_to_year_end(self):
-        array = []
-        init_year = self.financial_planning.init_year
-        duration_goals = self.financial_planning.duration()
-        for index in range(duration_goals):
-            array.append(init_year + index)
+        # array = []
+        # init_year = self.financial_planning.init_year
+        # duration_goals = self.financial_planning.duration()
+        # for index in range(duration_goals):
+        #     array.append(init_year + index)
 
-        return array
+        return self.financial_planning.year_init_to_end
 
     @property
     def goals_flow_dic(self):
