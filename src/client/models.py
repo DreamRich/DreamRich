@@ -157,7 +157,7 @@ class Address(base_models.BaseModel):
     )  # work or residential
 
     neighborhood = models.CharField(
-        max_length=20
+        max_length=30
     )
 
     detail = models.CharField(

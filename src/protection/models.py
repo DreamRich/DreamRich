@@ -2,7 +2,7 @@ import datetime
 import abc
 import numpy
 from django.db import models
-from patrimony.models import Patrimony, Active
+from patrimony.models import Patrimony, Active, ActiveType
 from financial_planning.models import (
     CostManager,
     FinancialPlanning,
@@ -245,6 +245,12 @@ class PrivatePension(Active):
         ProtectionManager,
         on_delete=models.CASCADE,
         related_name='private_pensions')
+
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        active_type = ActiveType.objects.get_or_create(name='PREVIDÊNCIA')
+        self.active_type = active_type[0]
+
+        super(PrivatePension, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{name} {annual_investment} {value}".format(**self.__dict__)
