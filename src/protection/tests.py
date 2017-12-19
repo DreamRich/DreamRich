@@ -217,6 +217,36 @@ class ActualPatrimonySuccessionTest(TestCase):
             patrimony_necessery_total_to_sucession(),
             41962.443900000006)
 
+    def test_patrimony_necessery_to_itcmd_with_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(self.actual_patrimony_succession.
+                               patrimony_necessery_to_itcmd(), 9683.6409)
+
+    def test_patrimony_necessery_to_oab_with_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(
+            self.actual_patrimony_succession.
+            patrimony_necessery_to_oab(),
+            8069.700750000001)
+
+    def test_patrimony_necessery_to_other_taxes_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(
+            self.actual_patrimony_succession.
+            patrimony_necessery_to_other_taxes(),
+            3227.8803000000003)
+
+    def test_patrimony_necessery_to_sucession_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(
+            self.actual_patrimony_succession.
+            patrimony_necessery_total_to_sucession(),
+            20981.221950000003)
+
     def test_total_to_recive_after_death_without_taxes(self):
         self.assertEqual(self.actual_patrimony_succession.
                          total_to_recive_after_death_without_taxes(), 824000)
