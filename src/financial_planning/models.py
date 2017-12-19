@@ -192,12 +192,18 @@ class FinancialPlanning(models.Model):
 
     def is_complete(self):
         fields = ['cost_manager', 'goal_manager', 'financial_independence',
-        'patrimony']
+                  'patrimony']
 
         for field in fields:
-            if not hasattr(self, field):
-                return False
-            if getattr(self,field+'_id') is None:
+            if not hasattr(
+                self,
+                field) or (
+                hasattr(
+                    self,
+                    field) and getattr(
+                    self,
+                    field +
+                    '_id') is None):
                 return False
 
         return True
@@ -271,6 +277,14 @@ class FinancialPlanning(models.Model):
             resource[index + 1] = flow[index] + resource_monetized
 
         return resource
+
+    @property
+    def year_init_to_end(self):
+        init_year = self.init_year
+        duration_goals = self.duration()
+        range_year = range(init_year, init_year + duration_goals)
+        array = list(range_year)
+        return array
 
     @property
     def total_resource_for_annual_goals(self):

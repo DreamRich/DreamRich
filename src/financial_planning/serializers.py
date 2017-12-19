@@ -99,3 +99,16 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
             'ipca',
             'target_profitability',
         ]
+
+
+class FinancialPlanningFlowSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialPlanning
+        fields = [
+            'pk',
+            'actual_flow_patrimony',
+            'suggested_flow_patrimony',
+            'year_init_to_end',
+        ]
+        read_only_fields = fields
