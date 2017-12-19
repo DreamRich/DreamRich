@@ -142,18 +142,29 @@ class SuccessionTemplate(models.Model):
         """Recover the total patrimony in respective period"""
         pass
 
+    def real_succession(self, total):
+        has_joint_account = self.protection_manager.financial_planning.\
+            active_client.bank_account.joint_account
+        if has_joint_account:
+            total *= 0.5
+
+        return total
+
     def patrimony_necessery_to_itcmd(self):
         total = self.patrimony_total() * self.itcmd_tax
+        total = self.real_succession(total)
 
         return total
 
     def patrimony_necessery_to_oab(self):
         total = self.patrimony_total() * self.oab_tax
+        total = self.real_succession(total)
 
         return total
 
     def patrimony_necessery_to_other_taxes(self):
         total = self.patrimony_total() * self.other_taxes
+        total = self.real_succession(total)
 
         return total
 
