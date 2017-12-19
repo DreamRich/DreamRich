@@ -59,6 +59,7 @@ class ActiveChartSerializer(serializers.ModelSerializer):
         model = ActiveManager
         fields = [
             'active_type_chart',
+            'active_chart_dataset',
         ]
 
 
