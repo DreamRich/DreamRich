@@ -17,7 +17,7 @@ ROUTER.register(r'protection_manager', ProtectionManagerViewSet)
 ROUTER.register(r'reserve_lack', ReserveInLackViewSet)
 ROUTER.register(r'actual_patrimony', ActualPatrimonySuccessionViewSet)
 ROUTER.register(r'independence_patrimony',
-        IndependencePatrimonySuccessionViewSet)
+                IndependencePatrimonySuccessionViewSet)
 ROUTER.register(r'private_pension', PrivatePensionViewSet)
 ROUTER.register(r'life_insurance', LifeInsuranceViewSet)
 
