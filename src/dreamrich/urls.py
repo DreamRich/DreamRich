@@ -17,5 +17,6 @@ urlpatterns = [
         url(r'^auth/', include('dr_auth.urls')),
         url(r'^goal/', include('goal.urls')),
         url(r'^financial_planning/', include('financial_planning.urls')),
+        url(r'^protection/', include('protection.urls')),
     ]))
 ]
