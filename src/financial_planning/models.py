@@ -182,7 +182,7 @@ class FinancialPlanning(models.Model):
 
     ipca = models.FloatField()
 
-    target_profitability = models.PositiveSmallIntegerField()
+    target_profitability = models.FloatField()
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.init_year:
