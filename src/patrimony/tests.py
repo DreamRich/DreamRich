@@ -3,7 +3,7 @@ from django.test import TestCase
 from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
-from patrimony.models import Active
+from patrimony.models import Active, Arrearage
 from patrimony.factories import (
     PatrimonyFactory,
     IncomeFactory,
@@ -212,3 +212,97 @@ class ActiveTest(TestCase):
         self.active.update_equivalent_rate(1000, 0.1201)
         new_rate = Active.objects.get(pk=self.active.pk).equivalent_rate
         self.assertAlmostEqual(new_rate, last_rate, 15)
+
+
+class ArrearageTest(TestCase):
+
+    def setUp(self):
+        self.arrearage = [
+            Arrearage(
+                value=120000, period=3, rate=1, amortization_system="SAC"),
+            Arrearage(
+                value=120000, period=3, rate=1, amortization_system="PRICE"),
+            Arrearage(
+                value=120000, period=3, amortization_system="COMUM")
+        ]
+
+    def test_calculate_arrearage_sac(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 41200.0,
+                'interest': 1200.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 80000.0
+            },
+            {
+                'period': 2,
+                'provision': 40800.0,
+                'interest': 800.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 40000.0
+            },
+            {
+                'period': 3,
+                'provision': 40400.0,
+                'interest': 400.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 0.0
+            }
+        ]
+        data_test = self.arrearage[0].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_calculate_arrearage_price(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 40802.65,
+                'interest': 1200.0,
+                'amortization': 39602.65,
+                'outstanding_balance': 80397.35
+            },
+            {
+                'period': 2,
+                'provision': 40802.65,
+                'interest': 803.97,
+                'amortization': 39998.68,
+                'outstanding_balance': 40398.67
+            },
+            {
+                'period': 3,
+                'provision': 40802.65,
+                'interest': 403.99,
+                'amortization': 40398.67,
+                'outstanding_balance': 0.0
+            }
+        ]
+        data_test = self.arrearage[1].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_calculate_arrearage_common(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 80000.0
+            },
+            {
+                'period': 2,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 40000.0
+            },
+            {
+                'period': 3,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 0.0
+            }
+        ]
+        data_test = self.arrearage[2].calculate_arrearage()
+        self.assertEqual(data, data_test)
