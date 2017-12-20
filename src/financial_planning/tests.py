@@ -334,7 +334,26 @@ class FlowUnitChangeTest(TestCase):
         self.cost_manager = CostManagerFactory()
         self.incomes = PatrimonyFactory()
 
-    def test_validation_cost_manager_and_incomes_null_tofether(self):
+    def test_validation_cost_manager_and_incomes_null_together(self):
         change = FlowUnitChange(annual_value=123.40, year=2021)
         with self.assertRaises(ValidationError):
             change.save()
+
+    def test_validation_cost_manager_and_incomes_instanciate(self):
+        change = FlowUnitChange(
+            annual_value=123.40,
+            year=2021,
+            cost_manager=self.cost_manager,
+            incomes=self.incomes)
+        with self.assertRaises(ValidationError):
+            change.save()
+
+    def test_validation_cost_manager_instaciate_only(self):
+        change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                               cost_manager=self.cost_manager)
+        self.assertTrue(change.cost_manager is not None)
+
+    def test_validation_incomes_instaciate_only(self):
+        change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                               incomes=self.incomes)
+        self.assertTrue(change.incomes is not None)

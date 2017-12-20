@@ -144,12 +144,12 @@ class FlowUnitChange(base_models.BaseModel):
         # Don't allow cost_manager and incomes id's null together
         if self.cost_manager is None and self.incomes is None:
             raise ValidationError("cost_manager_id and incomes_id can't be" +
-                " null together. Instaciate one")
+                                  " null together. Instaciate one")
 
         # Don't allow cost_manager and incomes instaciate together
         if self.cost_manager is not None and self.incomes is not None:
             raise ValidationError("cost_manager_id and incomes_id can't be" +
-                " instanciate together. Instaciate just one")
+                                  " instanciate together. Instaciate just one")
 
 
 class FinancialPlanning(models.Model):
