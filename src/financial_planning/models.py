@@ -1,6 +1,8 @@
 import datetime
 import numpy
+from django.core.exceptions import ValidationError
 from django.db import models
+from dreamrich import models as base_models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager, GoalType
@@ -126,17 +128,28 @@ class RegularCost(models.Model):
         return str(self.value)
 
 
-class FlowUnitChange(models.Model):
+class FlowUnitChange(base_models.BaseModel):
 
     annual_value = models.FloatField()
 
     year = models.PositiveSmallIntegerField()
 
     cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
-                                     null=True)
+                                     null=True, blank=True)
 
     incomes = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
-                                null=True)
+                                null=True, blank=True)
+
+    def clean(self):
+        # Don't allow cost_manager and incomes id's null together
+        if self.cost_manager is None and self.incomes is None:
+            raise ValidationError("cost_manager_id and incomes_id can't be" +
+                                  " null together. Instaciate one")
+
+        # Don't allow cost_manager and incomes instaciate together
+        if self.cost_manager is not None and self.incomes is not None:
+            raise ValidationError("cost_manager_id and incomes_id can't be" +
+                                  " instanciate together. Instaciate just one")
 
 
 class FinancialPlanning(models.Model):
