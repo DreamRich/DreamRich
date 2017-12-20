@@ -1,5 +1,6 @@
 import datetime
 from django.test import TestCase, Client
+from django.core.exceptions import ValidationError
 from client.factories import ActiveClientFactory
 from goal.factories import (
     GoalManagerFactory, GoalFactory,
@@ -16,7 +17,7 @@ from protection.factories import (
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
     CostManagerFactory, FinancialIndependenceFactory,
-    FinancialPlanningFactory
+    FinancialPlanningFactory,
 )
 
 
@@ -325,3 +326,15 @@ class FlowTest(TestCase):
         array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
         self.assertEqual(array_compare, create_array_change_annual(
             self.changes, 10, 2017))
+
+
+class FlowUnitChangeTest(TestCase):
+
+    def setUp(self):
+        self.cost_manager = CostManagerFactory()
+        self.incomes = PatrimonyFactory()
+
+    def test_validation_cost_manager_and_incomes_null_tofether(self):
+        change = FlowUnitChange(annual_value=123.40, year=2021)
+        with self.assertRaises(ValidationError):
+            change.save()
