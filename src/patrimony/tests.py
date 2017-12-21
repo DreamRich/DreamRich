@@ -306,3 +306,17 @@ class ArrearageTest(TestCase):
         ]
         data_test = self.arrearage[2].calculate_arrearage()
         self.assertEqual(data, data_test)
+
+    def test_sac_price_commom_equals_rate_zero(self):
+        self.arrearage[0].rate = 0
+        self.arrearage[1].rate = 0
+        self.arrearage[2].rate = 0
+        self.assertEqual(
+            self.arrearage[0].calculate_arrearage(),
+            self.arrearage[1].calculate_arrearage())
+        self.assertEqual(
+            self.arrearage[0].calculate_arrearage(),
+            self.arrearage[2].calculate_arrearage())
+        self.assertEqual(
+            self.arrearage[1].calculate_arrearage(),
+            self.arrearage[2].calculate_arrearage())

@@ -203,7 +203,8 @@ class ArrearageCalculator:
         calculated_period = self.calculate.period
         rate = self.calculate.rate
 
-        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+        if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
+                self.calculate.rate == 0):
             interest = ((
                 value - (
                     (period - 1) * value / calculated_period
@@ -220,7 +221,8 @@ class ArrearageCalculator:
 
     def calculate_amortization(self, period):
         amortization = 0
-        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+        if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
+                self.calculate.rate == 0):
             amortization = self.calculate.value / self.calculate.period
         elif self.calculate.amortization_system == AMORTIZATION_CHOICES[1][0]:
             first_amortization = (
@@ -241,7 +243,8 @@ class ArrearageCalculator:
         value = self.calculate.value
         calculated_period = self.calculate.period
 
-        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+        if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
+                self.calculate.rate == 0):
             amortization = self.calculate_amortization(period)
             interest = self.calculate_interest(period)
             provision = amortization + interest
