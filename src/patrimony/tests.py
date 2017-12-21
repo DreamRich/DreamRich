@@ -248,6 +248,13 @@ class ArrearageTest(TestCase):
                 'interest': 400.0,
                 'amortization': 40000.0,
                 'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 122400.0,
+                'interest': 2400.0,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
             }
         ]
         data_test = self.arrearage[0].calculate_arrearage()
@@ -275,6 +282,13 @@ class ArrearageTest(TestCase):
                 'interest': 403.99,
                 'amortization': 40398.67,
                 'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 122407.96,
+                'interest': 2407.96,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
             }
         ]
         data_test = self.arrearage[1].calculate_arrearage()
@@ -302,6 +316,13 @@ class ArrearageTest(TestCase):
                 'interest': 0,
                 'amortization': 40000.0,
                 'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 120000.0,
+                'interest': 0,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
             }
         ]
         data_test = self.arrearage[2].calculate_arrearage()

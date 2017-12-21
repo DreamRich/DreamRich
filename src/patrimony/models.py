@@ -178,22 +178,40 @@ class ArrearageCalculator:
 
     def __init__(self, arrearage):
         self.calculate = arrearage
+        self.outstanding_balance = self.calculate.value
+        self.total_provision = 0
+        self.total_interest = 0
+        self.total_amortization = 0
 
     def calculate_arrearage(self):
         data = []
-        outstanding_balance = self.calculate.value
         for period in range(1, self.calculate.period + 1):
-            outstanding_balance = outstanding_balance - \
-                self.calculate_amortization(period)
+            provision = self.calculate_provision(period)
+            self.total_provision += provision
+
+            interest = self.calculate_interest(period)
+            self.total_interest += interest
+
+            amortization = self.calculate_amortization(period)
+            self.total_amortization += amortization
+
+            self.outstanding_balance -= amortization
             parameter_list = {
                 'period': period,
-                'provision': round(self.calculate_provision(period), 2),
-                'interest': round(self.calculate_interest(period), 2),
-                'amortization': round(self.calculate_amortization(period), 2),
-                'outstanding_balance': round(outstanding_balance, 2)
+                'provision': round(provision, 2),
+                'interest': round(interest, 2),
+                'amortization': round(amortization, 2),
+                'outstanding_balance': round(self.outstanding_balance, 2)
             }
             data.append(parameter_list)
 
+        data.append({
+            'period': '>>',
+            'provision': round(self.total_provision, 2),
+            'interest': round(self.total_interest, 2),
+            'amortization': round(self.total_amortization, 2),
+            'outstanding_balance': '<< TOTAIS'
+        })
         return data
 
     def calculate_interest(self, period):
