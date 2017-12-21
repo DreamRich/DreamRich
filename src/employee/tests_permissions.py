@@ -5,8 +5,9 @@ from dreamrich.tests_permissions import (
     UserToFinancialAdviser,
     UserToGeneral
 )
-from dreamrich.tests_permissions import Relationship
+from dreamrich.utils import Relationship
 from dreamrich.requests import RequestTypes
+from client.factories import ActiveClientMainFactory
 from .factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
@@ -35,7 +36,8 @@ class EmployeeToEmployee(UserToEmployee):
     factory_user = EmployeeMainFactory
 
     def setUp(self):
-        self._initialize()
+        super(EmployeeToEmployee, self).setUp()
+
         self.consulted = EmployeeMainFactory()
 
     def test_employee_get_employees_list(self):
@@ -119,6 +121,9 @@ class EmployeeToGeneral(UserToGeneral):
     def test_employee_patch_general(self):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
+    def test_employee_post_general(self):
+        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+
 
 class FinanicalAdviserToItself(UserToFinancialAdviser):
 
@@ -142,7 +147,7 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser):
     factory_user = FinancialAdviserMainFactory
 
     def setUp(self):
-        self._initialize()
+        super(FinanicalAdviserToFinanicalAdviser, self).setUp()
         self.consulted = FinancialAdviserMainFactory()
 
     def test_get_financial_advisers_list(self):
@@ -169,8 +174,9 @@ class FinancialAdviserToRelatedClient(UserToClient):
     factory_user = FinancialAdviserMainFactory
 
     def setUp(self):
-        self._initialize()
-        self.consulted_relationship.make(
+        super(FinancialAdviserToRelatedClient, self).setUp()
+
+        self.consulted_relationships.make(
             many=True,
             relationship_attr='financial_advisers'
         )
@@ -241,10 +247,23 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral):
 
     factory_user = FinancialAdviserMainFactory
 
-    # consulted_relationship = Relationship(
-    #     many=True,
-    #     relationship_attr=['']  # Add transitive case
-    # )
+    def setUp(self):
+        super(FinancialAdviserToRelatedGeneral, self).setUp()
+
+        active_client = ActiveClientMainFactory()
+
+        # Financial adviser and active client
+        # Active client and general representant
+        self.consulted_relationships = [
+            Relationship(primary=self.user,
+                         secondary=active_client,
+                         many=True,
+                         relationship_attr='clients'),
+            Relationship(primary=active_client,
+                         secondary=self.consulted,
+                         many=False,
+                         relationship_attr='active_client')
+        ]
 
     def test_financial_adviser_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -266,20 +285,20 @@ class FinancialAdviserToGeneral(UserToGeneral):
 
     factory_user = FinancialAdviserMainFactory
 
-    def test_financial_adviser_get_financial_advisers_list(self):
+    def test_financial_adviser_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
 
-    def test_financial_adviser_get_financial_adviser(self):
+    def test_financial_adviser_get_general(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
 
-    def test_financial_adviser_post_financial_adviser(self):
+    def test_financial_adviser_post_general(self):
         self.user_test_request(RequestTypes.POST, HTTPStatus.CREATED)
 
-    def test_financial_adviser_delete_financial_adviser(self):
+    def test_financial_adviser_delete_general(self):
         self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
 
-    def test_financial_adviser_put_financial_adviser(self):
+    def test_financial_adviser_put_general(self):
         self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
 
-    def test_financial_adviser_patch_financial_adviser(self):
+    def financial_adviser_patch_general(self):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)

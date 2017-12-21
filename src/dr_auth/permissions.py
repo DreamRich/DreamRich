@@ -12,7 +12,7 @@ class EmployeesPermission(BasePermission):
         if (has_permission(request.user, 'see_employee_data') and not
                 has_permission(request.user, 'see_financial_adviser_data')):
             return True
-        return True
+        return False
 
 
 class ClientsPermission(BasePermission):

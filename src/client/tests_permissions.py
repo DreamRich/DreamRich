@@ -5,7 +5,6 @@ from dreamrich.tests_permissions import (
     UserToEmployee,
     UserToFinancialAdviser
 )
-from dreamrich.tests_permissions import Relationship
 from dreamrich.requests import RequestTypes
 from client.factories import ActiveClientMainFactory
 
@@ -32,7 +31,8 @@ class ClientToClient(UserToClient):
     factory_user = ActiveClientMainFactory
 
     def setUp(self):
-        self._initialize()
+        super(ClientToClient, self).setUp()
+
         self.consulted = ActiveClientMainFactory()
 
     def test_client_get_clients_list(self):
@@ -104,10 +104,13 @@ class ClientToRelatedGeneral(UserToGeneral):
 
     factory_user = ActiveClientMainFactory
 
-    consulted_relationship = Relationship(
-        many=False,
-        relationship_attr='active_client'
-    )
+    def setUp(self):
+        super(ClientToRelatedGeneral, self).setUp()
+
+        self.consulted_relationships.make(
+            many=False,
+            relationship_attr='active_client'
+        )
 
     def test_client_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
