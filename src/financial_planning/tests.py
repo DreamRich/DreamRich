@@ -14,10 +14,13 @@ from lib.financial_planning.flow import create_array_change_annual
 from protection.factories import (
     ProtectionManagerFactory, LifeInsuranceFactory
 )
-from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
     CostManagerFactory, FinancialIndependenceFactory,
     FinancialPlanningFactory,
+)
+from financial_planning.models import (
+    RegularCost, FinancialIndependence,
+    FinancialPlanning, FlowUnitChange
 )
 
 
@@ -357,3 +360,26 @@ class FlowUnitChangeTest(TestCase):
         change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
                                                incomes=self.incomes)
         self.assertTrue(change.incomes is not None)
+
+
+class HistoricalEmployeeCreateTest(TestCase):
+
+    def _test_create_historic(self, model):
+        self.assertEqual(model.history.count(), 0)
+        FinancialPlanningFactory()
+        self.assertTrue(model.history.count() > 0)
+
+    def test_financial_independence(self):
+        self._test_create_historic(FinancialIndependence)
+
+    def test_regular_cost(self):
+        self._test_create_historic(RegularCost)
+
+    def test_flow_change(self):
+        self.assertEqual(FlowUnitChange.history.count(), 0)
+        FlowUnitChange.objects.create(year=2020, annual_value=1233,
+                cost_manager=CostManagerFactory())
+            self.assertTrue(FlowUnitChange.history.count() > 0)
+
+    def test_financial_planning(self):
+        self._test_create_historic(FinancialPlanning)

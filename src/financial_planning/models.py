@@ -11,6 +11,7 @@ from lib.financial_planning.flow import (
     create_array_change_annual,
 )
 from lib.profit.profit import actual_rate
+from simple_history.models import HistoricalRecords
 
 
 class FinancialIndependence(models.Model):
@@ -18,6 +19,7 @@ class FinancialIndependence(models.Model):
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
     rate = models.FloatField()
+    history = HistoricalRecords()
 
     def assets_required(self):
         rate = self.financial_planning.real_gain()
@@ -116,6 +118,7 @@ class RegularCost(models.Model):
 
     value = models.FloatField(default=0)
     cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
+    history = HistoricalRecords()
     cost_manager = models.ForeignKey(
         CostManager,
         related_name='regular_costs',
@@ -133,6 +136,8 @@ class FlowUnitChange(base_models.BaseModel):
     annual_value = models.FloatField()
 
     year = models.PositiveSmallIntegerField()
+
+    history = HistoricalRecords()
 
     cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
                                      null=True, blank=True)
@@ -196,6 +201,8 @@ class FinancialPlanning(models.Model):
     ipca = models.FloatField()
 
     target_profitability = models.PositiveSmallIntegerField()
+
+    history = HistoricalRecords()
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.init_year:
