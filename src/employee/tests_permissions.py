@@ -1,9 +1,11 @@
 from http import HTTPStatus
-from dreamrich.tests_permissions import (
+from dreamrich.permissions_tests import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,
-    UserToGeneral
+    UserToGeneral,
+    NotAuthenticatedToItselfTests,
+    NotAuthenticatedToOtherObjectTests
 )
 from dreamrich.utils import Relationship
 from dreamrich.requests import RequestTypes
@@ -14,7 +16,7 @@ from .factories import (
 )
 
 
-class EmployeeToItself(UserToEmployee):
+class EmployeeToItself(UserToEmployee, NotAuthenticatedToItselfTests):
 
     factory_user = EmployeeMainFactory
 
@@ -31,13 +33,13 @@ class EmployeeToItself(UserToEmployee):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToEmployee(UserToEmployee):
+class EmployeeToEmployee(UserToEmployee,
+                         NotAuthenticatedToOtherObjectTests):
 
     factory_user = EmployeeMainFactory
 
     def setUp(self):
         super(EmployeeToEmployee, self).setUp()
-
         self.consulted = EmployeeMainFactory()
 
     def test_employee_get_employees_list(self):
@@ -59,7 +61,7 @@ class EmployeeToEmployee(UserToEmployee):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToClient(UserToClient):
+class EmployeeToClient(UserToClient, NotAuthenticatedToOtherObjectTests):
 
     factory_user = EmployeeMainFactory
 
@@ -82,7 +84,8 @@ class EmployeeToClient(UserToClient):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToFinancialAdviser(UserToFinancialAdviser):
+class EmployeeToFinancialAdviser(UserToFinancialAdviser,
+                                 NotAuthenticatedToOtherObjectTests):
 
     factory_user = EmployeeMainFactory
 
@@ -105,7 +108,7 @@ class EmployeeToFinancialAdviser(UserToFinancialAdviser):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToGeneral(UserToGeneral):
+class EmployeeToGeneral(UserToGeneral, NotAuthenticatedToOtherObjectTests):
 
     factory_user = EmployeeMainFactory
 
@@ -125,7 +128,8 @@ class EmployeeToGeneral(UserToGeneral):
         self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
 
 
-class FinanicalAdviserToItself(UserToFinancialAdviser):
+class FinanicalAdviserToItself(UserToFinancialAdviser,
+                               NotAuthenticatedToItselfTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -142,7 +146,8 @@ class FinanicalAdviserToItself(UserToFinancialAdviser):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
-class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser):
+class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
+                                         NotAuthenticatedToOtherObjectTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -169,7 +174,8 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
-class FinancialAdviserToRelatedClient(UserToClient):
+class FinancialAdviserToRelatedClient(UserToClient,
+                                      NotAuthenticatedToOtherObjectTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -197,7 +203,8 @@ class FinancialAdviserToRelatedClient(UserToClient):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
-class FinancialAdviserToClient(UserToClient):
+class FinancialAdviserToClient(UserToClient,
+                               NotAuthenticatedToOtherObjectTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -220,7 +227,8 @@ class FinancialAdviserToClient(UserToClient):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class FinancialAdviserToEmployee(UserToEmployee):
+class FinancialAdviserToEmployee(UserToEmployee,
+                                 NotAuthenticatedToOtherObjectTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -243,7 +251,8 @@ class FinancialAdviserToEmployee(UserToEmployee):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class FinancialAdviserToRelatedGeneral(UserToGeneral):
+class FinancialAdviserToRelatedGeneral(UserToGeneral,
+                                       NotAuthenticatedToOtherObjectTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -281,7 +290,8 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
-class FinancialAdviserToGeneral(UserToGeneral):
+class FinancialAdviserToGeneral(UserToGeneral,
+                                NotAuthenticatedToOtherObjectTests):
 
     factory_user = FinancialAdviserMainFactory
 

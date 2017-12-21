@@ -1,32 +1,38 @@
 from http import HTTPStatus
-from dreamrich.tests_permissions import (
+from dreamrich.permissions_tests import (
     UserToGeneral,
     UserToClient,
     UserToEmployee,
-    UserToFinancialAdviser
+    UserToFinancialAdviser,
+    NotAuthenticatedToItselfTests,
+    NotAuthenticatedToOtherObjectTests
 )
 from dreamrich.requests import RequestTypes
 from client.factories import ActiveClientMainFactory
 
 
-class ClientToItself(UserToClient):
+class ClientToItself(UserToClient, NotAuthenticatedToItselfTests):
 
     factory_user = ActiveClientMainFactory
 
     def test_client_get_itself(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.GET,
+                                                      HTTPStatus.OK)
 
     def test_client_delete_itself(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.DELETE,
+                                                      HTTPStatus.FORBIDDEN)
 
     def test_client_put_itself(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.PUT,
+                                                      HTTPStatus.OK)
 
     def test_client_patch_itself(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.PATCH,
+                                                      HTTPStatus.OK)
 
 
-class ClientToClient(UserToClient):
+class ClientToClient(UserToClient, NotAuthenticatedToOtherObjectTests):
 
     factory_user = ActiveClientMainFactory
 
@@ -36,48 +42,50 @@ class ClientToClient(UserToClient):
         self.consulted = ActiveClientMainFactory()
 
     def test_client_get_clients_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.GETLIST,
+                                                      HTTPStatus.FORBIDDEN)
 
     def test_client_get_client(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.GET,
+                                                      HTTPStatus.FORBIDDEN)
 
     def test_client_post_client(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.POST,
+                                                      HTTPStatus.FORBIDDEN)
 
     def test_client_delete_client(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.DELETE,
+                                                      HTTPStatus.FORBIDDEN)
 
     def test_client_put_client(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.PUT,
+                                                      HTTPStatus.FORBIDDEN)
 
     def test_client_patch_client(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.PATCH,
+                                                      HTTPStatus.FORBIDDEN)
 
 
-class ClientToEmployee(UserToEmployee):
+class ClientToEmployee(UserToEmployee, NotAuthenticatedToOtherObjectTests):
 
     factory_user = ActiveClientMainFactory
 
     def test_clients_get_employees_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
 
-    def test_client_get_employee(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+    def test_client_get_employee(self): self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
 
-    def test_client_post_employee(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+    def test_client_post_employee(self): self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
 
-    def test_client_delete_employee(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+    def test_client_delete_employee(self): self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
 
-    def test_client_put_employee(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+    def test_client_put_employee(self): self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
 
-    def test_client_patch_employee(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+    def test_client_patch_employee(self): self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class ClientToFinancialAdviser(UserToFinancialAdviser):
+class ClientToFinancialAdviser(UserToFinancialAdviser,
+                               NotAuthenticatedToOtherObjectTests):
 
     factory_user = ActiveClientMainFactory
 
@@ -100,7 +108,8 @@ class ClientToFinancialAdviser(UserToFinancialAdviser):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class ClientToRelatedGeneral(UserToGeneral):
+class ClientToRelatedGeneral(UserToGeneral,
+                             NotAuthenticatedToOtherObjectTests):
 
     factory_user = ActiveClientMainFactory
 
@@ -128,8 +137,7 @@ class ClientToRelatedGeneral(UserToGeneral):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
-class ClientToGeneral(UserToGeneral):
-
+class ClientToGeneral(UserToGeneral, NotAuthenticatedToOtherObjectTests):
     factory_user = ActiveClientMainFactory
 
     def test_client_get_generals_list(self):
