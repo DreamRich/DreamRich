@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from client.models import (
-    ActiveClient,
+    ActiveClient, Address,
     Client,
     BankAccount,
 )
@@ -91,3 +91,14 @@ class ClientModelTest(TestCase):
 
         with self.assertRaises(ValidationError):
             active_client2.save()
+
+
+class HistoricalClientCreateTest(TestCase):
+
+    def _test_create_historic(self, model):
+        self.assertEqual(model.history.count(), 0)
+        ActiveClientFactory()
+        self.assertEqual(model.history.count(), 1)
+
+    def test_address(self):
+        self._test_create_historic(Address)
