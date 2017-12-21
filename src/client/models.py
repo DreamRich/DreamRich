@@ -79,8 +79,6 @@ class ClientBase(base_models.BaseModel):
         max_length=50
     )
 
-    history = HistoricalRecords()
-
     def __str__(self):
         return "{} cpf: {}".format(self.name, self.cpf)
 
@@ -97,6 +95,8 @@ class ActiveClient(BaseUser, ClientBase):
         blank=True
     )
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return "{0.name} {0.username}".format(self)
 
@@ -108,6 +108,8 @@ class ActiveClient(BaseUser, ClientBase):
 
 
 class Client(ClientBase):
+
+    history = HistoricalRecords()
 
     active_spouse = models.OneToOneField(
         ActiveClient,

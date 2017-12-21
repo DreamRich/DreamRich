@@ -2,8 +2,9 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from client.models import (
     ActiveClient, Address,
-    Client,
-    BankAccount,
+    Client, Country,
+    BankAccount, State,
+    Dependent,
 )
 from client.factories import (
     ActiveClientFactory,
@@ -102,3 +103,23 @@ class HistoricalClientCreateTest(TestCase):
 
     def test_address(self):
         self._test_create_historic(Address)
+
+    def test_active_client(self):
+        self.assertEqual(ActiveClient.history.count(), 0)
+        ActiveClientFactory()
+        self.assertEqual(ActiveClient.history.count(), 2)
+
+    def test_country(self):
+        self._test_create_historic(Country)
+
+    def test_bank_account(self):
+        self._test_create_historic(BankAccount)
+
+    def test_state(self):
+        self._test_create_historic(State)
+
+    def test_client(self):
+        self._test_create_historic(Client)
+
+    def test_dependent(self):
+        self._test_create_historic(Dependent)
