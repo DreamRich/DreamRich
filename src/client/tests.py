@@ -96,30 +96,28 @@ class ClientModelTest(TestCase):
 
 class HistoricalClientCreateTest(TestCase):
 
-    def _test_create_historic(self, model):
+    def _test_create_historic(self, model, count_final):
         self.assertEqual(model.history.count(), 0)
         ActiveClientFactory()
-        self.assertEqual(model.history.count(), 1)
+        self.assertEqual(model.history.count(), count_final)
 
     def test_address(self):
-        self._test_create_historic(Address)
+        self._test_create_historic(Address, 1)
 
     def test_active_client(self):
-        self.assertEqual(ActiveClient.history.count(), 0)
-        ActiveClientFactory()
-        self.assertEqual(ActiveClient.history.count(), 2)
+        self._test_create_historic(ActiveClient, 2)
 
     def test_country(self):
-        self._test_create_historic(Country)
+        self._test_create_historic(Country, 1)
 
     def test_bank_account(self):
-        self._test_create_historic(BankAccount)
+        self._test_create_historic(BankAccount, 1)
 
     def test_state(self):
-        self._test_create_historic(State)
+        self._test_create_historic(State, 1)
 
     def test_client(self):
-        self._test_create_historic(Client)
+        self._test_create_historic(Client, 1)
 
     def test_dependent(self):
-        self._test_create_historic(Dependent)
+        self._test_create_historic(Dependent, 1)
