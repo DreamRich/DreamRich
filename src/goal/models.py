@@ -13,11 +13,20 @@ class GoalType(models.Model):
 
 class GoalManager(models.Model):
 
+    financial_planning = models.OneToOneField(
+        'financial_planning.FinancialPlanning',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='goal_manager'
+    )
+
     @property
     def year_init_to_year_end(self):
         array = []
-        init_year = self.financial_planning.init_year
-        duration_goals = self.financial_planning.duration()
+        init_year = \
+            self.financial_planning.init_year  # pylint: disable=no-member
+        duration_goals = \
+            self.financial_planning.duration()  # pylint: disable=no-member
         for index in range(duration_goals):
             array.append(init_year + index)
 

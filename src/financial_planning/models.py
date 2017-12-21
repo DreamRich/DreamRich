@@ -2,140 +2,12 @@ import datetime
 import numpy
 from django.db import models
 from client.models import ActiveClient
-from patrimony.models import Patrimony
-from goal.models import GoalManager, GoalType
+from goal.models import GoalType
 from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
 )
 from lib.profit.profit import actual_rate
-from protection.models import ProtectionManager
-
-
-class FinancialIndependence(models.Model):
-    age = models.PositiveSmallIntegerField()
-    duration_of_usufruct = models.PositiveSmallIntegerField()
-    remain_patrimony = models.PositiveIntegerField()
-    rate = models.FloatField()
-
-    def assets_required(self):
-        rate = self.financial_planning.real_gain()
-
-        return numpy.pv(rate, self.duration_of_usufruct,
-                        -self.remain_patrimony * 12)
-
-    def remain_necessary_for_retirement(self):
-        assets_required = -self.assets_required()
-        rate_target_profitability = self.financial_planning. \
-            real_gain_related_cdi()
-        years_for_retirement = self.financial_planning.duration()
-        current_net_investment = self.financial_planning.patrimony.\
-            current_net_investment()
-        total = numpy.pmt(rate_target_profitability, years_for_retirement,
-                          current_net_investment, assets_required)
-
-        total = max(total, 0)
-        total /= 12
-
-        return total
-
-    # Will be considerate only goals that represent properties and equity
-    # interests
-    def filter_goals_that_will_be_monetized(self):
-        goal_manager = self.financial_planning.goal_manager
-        type_home = GoalType.objects.filter(name='Moradia').first()
-        type_society_participation = GoalType.objects.filter(
-            name='Compra De Cotas Societárias').first()
-        type_extra_home = GoalType.objects.filter(name='Casa Extra').first()
-        type_house_reform = GoalType.objects.filter(
-            name='Reforma e Manutenção Da Casa').first()
-
-        goals = goal_manager.goals.filter(
-            models.Q(
-                goal_type=type_home) | models.Q(
-                goal_type=type_society_participation) | models.Q(
-                goal_type=type_extra_home) | models.Q(
-                    goal_type=type_house_reform))
-        return list(goals)
-
-    def patrimony_at_end(self):
-        actual_patrimony = self.financial_planning.patrimony.total()
-        patrimony_in_independence = self.financial_planning.flow_patrimony[-1]
-        goals_monetized = self.goals_monetized()
-        total = actual_patrimony + patrimony_in_independence +\
-            goals_monetized
-
-        return total
-
-    def goals_monetized(self):
-        goals = self.filter_goals_that_will_be_monetized()
-        total = 0
-
-        for goal in goals:
-            year_monitized = self.financial_planning.end_year() - goal.end_year
-            final_rate = (1 + self.rate) ** year_monitized
-            total += goal.total() * final_rate
-
-        return total
-
-
-class CostType(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class CostManager(models.Model):
-
-    def total(self):
-        total_query = self.regular_costs.aggregate(models.Sum('value'))
-        total = total_query.pop('value__sum', 0)
-        return total
-
-    @property
-    def total_cost(self):
-        return self.total()
-
-    def flow(self):
-        cost_changes = self.flowunitchange_set.all()
-        duration = self.financial_planning.duration()
-        array_change = create_array_change_annual(cost_changes, duration,
-                                                  self.financial_planning.
-                                                  init_year)
-        total_annual = self.total() * 12
-        data = generic_flow(array_change, duration, total_annual)
-
-        return data
-
-
-class RegularCost(models.Model):
-
-    value = models.FloatField(default=0)
-    cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
-    cost_manager = models.ForeignKey(
-        CostManager,
-        related_name='regular_costs',
-        on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        if self.cost_type_id is not None:
-            return '{} {}'.format(self.cost_type.name, self.value)
-        return str(self.value)
-
-
-class FlowUnitChange(models.Model):
-
-    annual_value = models.FloatField()
-
-    year = models.PositiveSmallIntegerField()
-
-    cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
-                                     null=True)
-
-    incomes = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
-                                null=True)
 
 
 class FinancialPlanning(models.Model):
@@ -144,41 +16,6 @@ class FinancialPlanning(models.Model):
         ActiveClient,
         on_delete=models.CASCADE,
         primary_key=True,
-        related_name='financial_planning'
-    )
-
-    patrimony = models.OneToOneField(
-        Patrimony,
-        on_delete=models.CASCADE,
-        null=True,
-        related_name='financial_planning'
-    )
-
-    financial_independence = models.OneToOneField(
-        FinancialIndependence,
-        on_delete=models.CASCADE,
-        null=True,
-        related_name='financial_planning'
-    )
-
-    goal_manager = models.OneToOneField(
-        GoalManager,
-        on_delete=models.CASCADE,
-        null=True,
-        related_name='financial_planning'
-    )
-
-    cost_manager = models.OneToOneField(
-        CostManager,
-        on_delete=models.CASCADE,
-        null=True,
-        related_name='financial_planning'
-    )
-
-    protection_manager = models.OneToOneField(
-        ProtectionManager,
-        on_delete=models.CASCADE,
-        null=True,
         related_name='financial_planning'
     )
 
@@ -281,3 +118,143 @@ class FinancialPlanning(models.Model):
         flow = self.resource_monetization(annual_leftovers)
 
         return flow
+
+
+class FinancialIndependence(models.Model):
+    age = models.PositiveSmallIntegerField()
+    duration_of_usufruct = models.PositiveSmallIntegerField()
+    remain_patrimony = models.PositiveIntegerField()
+    rate = models.FloatField()
+
+    financial_planning = models.OneToOneField(
+        FinancialPlanning,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='financial_independence'
+    )
+
+    def assets_required(self):
+        rate = self.financial_planning.real_gain()
+
+        return numpy.pv(rate, self.duration_of_usufruct,
+                        -self.remain_patrimony * 12)
+
+    def remain_necessary_for_retirement(self):
+        assets_required = -self.assets_required()
+        rate_target_profitability = self.financial_planning. \
+            real_gain_related_cdi()
+        years_for_retirement = self.financial_planning.duration()
+        current_net_investment = self.financial_planning.patrimony.\
+            current_net_investment()
+        total = numpy.pmt(rate_target_profitability, years_for_retirement,
+                          current_net_investment, assets_required)
+
+        total = max(total, 0)
+        total /= 12
+
+        return total
+
+    # Will be considerate only goals that represent properties and equity
+    # interests
+    def filter_goals_that_will_be_monetized(self):
+        goal_manager = self.financial_planning.goal_manager
+        type_home = GoalType.objects.filter(name='Moradia').first()
+        type_society_participation = GoalType.objects.filter(
+            name='Compra De Cotas Societárias').first()
+        type_extra_home = GoalType.objects.filter(name='Casa Extra').first()
+        type_house_reform = GoalType.objects.filter(
+            name='Reforma e Manutenção Da Casa').first()
+
+        goals = goal_manager.goals.filter(
+            models.Q(
+                goal_type=type_home) | models.Q(
+                goal_type=type_society_participation) | models.Q(
+                goal_type=type_extra_home) | models.Q(
+                    goal_type=type_house_reform))
+        return list(goals)
+
+    def patrimony_at_end(self):
+        actual_patrimony = self.financial_planning.patrimony.total()
+        patrimony_in_independence = self.financial_planning.flow_patrimony[-1]
+        goals_monetized = self.goals_monetized()
+        total = actual_patrimony + patrimony_in_independence +\
+            goals_monetized
+
+        return total
+
+    def goals_monetized(self):
+        goals = self.filter_goals_that_will_be_monetized()
+        total = 0
+
+        for goal in goals:
+            year_monitized = self.financial_planning.end_year() - goal.end_year
+            final_rate = (1 + self.rate) ** year_monitized
+            total += goal.total() * final_rate
+
+        return total
+
+
+class CostType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class CostManager(models.Model):
+
+    financial_planning = models.OneToOneField(
+        FinancialPlanning,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='cost_manager'
+    )
+
+    def total(self):
+        total_query = self.regular_costs.aggregate(models.Sum('value'))
+        total = total_query.pop('value__sum', 0)
+        return total
+
+    @property
+    def total_cost(self):
+        return self.total()
+
+    def flow(self):
+        cost_changes = self.flowunitchange_set.all()
+        duration = self.financial_planning.duration()
+        array_change = create_array_change_annual(cost_changes, duration,
+                                                  self.financial_planning.
+                                                  init_year)
+        total_annual = self.total() * 12
+        data = generic_flow(array_change, duration, total_annual)
+
+        return data
+
+
+class RegularCost(models.Model):
+
+    value = models.FloatField(default=0)
+    cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
+    cost_manager = models.ForeignKey(
+        CostManager,
+        related_name='regular_costs',
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        if self.cost_type_id is not None:
+            return '{} {}'.format(self.cost_type.name, self.value)
+        return str(self.value)
+
+
+class FlowUnitChange(models.Model):
+
+    annual_value = models.FloatField()
+
+    year = models.PositiveSmallIntegerField()
+
+    cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
+                                     null=True)
+
+    incomes = models.ForeignKey('patrimony.Patrimony', on_delete=models.CASCADE,
+                                null=True)

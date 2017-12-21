@@ -15,6 +15,13 @@ from patrimony.choices import AMORTIZATION_CHOICES
 class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
 
+    financial_planning = models.OneToOneField(
+        'financial_planning.FinancialPlanning',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='patrimony'
+    )
+
     def current_net_investment(self):
         total_active = self.activemanager.total()
         total_arrearage = self.arrearages.filter(period__lte=2).aggregate(

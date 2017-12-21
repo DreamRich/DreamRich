@@ -1,7 +1,8 @@
 import datetime
+import numpy
 from django.db import models
 from django.db.models import Sum
-import numpy
+from financial_planning.models import FinancialPlanning
 
 
 class ReserveInLack(models.Model):
@@ -58,6 +59,13 @@ class EmergencyReserve(models.Model):
 
 
 class ProtectionManager(models.Model):
+
+    financial_planning = models.OneToOneField(
+        FinancialPlanning,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='protection_manager'
+    )
 
     reserve_in_lack = models.OneToOneField(
         ReserveInLack,
