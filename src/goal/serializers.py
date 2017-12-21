@@ -6,7 +6,7 @@ class GoalTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GoalType
-        fields = ['name', 'id']
+        fields = ['name', 'pk']
 
 
 class GoalSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class GoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goal
         fields = [
-            'id',
+            'pk',
             'value',
             'periodicity',
             'end_year',
@@ -37,7 +37,7 @@ class GoalManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = GoalManager
         fields = [
-            'id',
+            'pk',
             'goals_flow_dic',
             'year_init_to_year_end',
             'goals',

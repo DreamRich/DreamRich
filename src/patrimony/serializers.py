@@ -16,7 +16,7 @@ class ActiveTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ActiveType
-        fields = ['id', 'name']
+        fields = ['pk', 'name']
 
 
 class ActiveSerializer(serializers.ModelSerializer):
@@ -28,7 +28,7 @@ class ActiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Active
         fields = [
-            'id',
+            'pk',
             'name',
             'value',
             'rate',
@@ -47,7 +47,7 @@ class ActiveManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActiveManager
         fields = [
-            'id',
+            'pk',
             'patrimony_id',
             'actives',
         ]
@@ -69,7 +69,7 @@ class ArrearageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Arrearage
         fields = [
-            'id',
+            'pk',
             'name',
             'patrimony_id',
             'value',
@@ -87,7 +87,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RealEstate
         fields = [
-            'id',
+            'pk',
             'name',
             'value',
             'salable',
@@ -102,7 +102,7 @@ class CompanyParticipationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyParticipation
         fields = [
-            'id',
+            'pk',
             'name',
             'value',
             'patrimony_id',
@@ -116,7 +116,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipment
         fields = [
-            'id',
+            'pk',
             'name',
             'value',
             'patrimony_id',
@@ -130,7 +130,7 @@ class IncomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Income
         fields = [
-            'id',
+            'pk',
             'source',
             'value_monthly',
             'thirteenth',
@@ -154,7 +154,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
         model = Patrimony
         fields = [
             'fgts',
-            'id',
+            'pk',
             'activemanager',
             'arrearanges',
             'realestates',

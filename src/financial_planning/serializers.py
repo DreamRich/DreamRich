@@ -5,6 +5,8 @@ from financial_planning.models import (
     CostType,
     FinancialPlanning
 )
+from patrimony.serializers import PatrimonySerializer
+from goal.serializers import GoalManagerSerializer
 
 
 class CostTypeSerializer(serializers.ModelSerializer):
@@ -12,7 +14,7 @@ class CostTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostType
         fields = [
-            'id',
+            'pk',
             'name'
         ]
 
@@ -26,7 +28,7 @@ class RegularCostSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegularCost
         fields = [
-            'id',
+            'pk',
             'cost_type_id',
             'cost_manager_id',
             'value',
@@ -42,7 +44,7 @@ class CostManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostManager
         fields = [
-            'id',
+            'pk',
             'regular_costs',
             'total_cost',
         ]
@@ -50,19 +52,19 @@ class CostManagerSerializer(serializers.ModelSerializer):
 
 class FinancialPlanningSerializer(serializers.ModelSerializer):
 
-    patrimony_id = serializers.IntegerField(required=False, allow_null=True)
-    goal_manager_id = serializers.IntegerField(required=False, allow_null=True)
-    cost_manager_id = serializers.IntegerField(required=False, allow_null=True)
+    patrimony = PatrimonySerializer(read_only=True)
+    goal_manager = GoalManagerSerializer(read_only=True)
+    cost_manager = CostManagerSerializer(read_only=True)
 
     class Meta:
         model = FinancialPlanning
         fields = [
             'pk',
             'active_client_id',
-            'patrimony_id',
-            'financial_independence_id',
-            'goal_manager_id',
-            'cost_manager_id',
+            'patrimony',
+            'financial_independence',
+            'goal_manager',
+            'cost_manager',
             'cdi',
             'ipca',
             'target_profitability',

@@ -7,7 +7,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = [
-            'id',
+            'pk',
             'first_name',
             'last_name',
             'cpf',
@@ -20,7 +20,7 @@ class FinancialAdviserSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialAdviser
         fields = [
-            'id',
+            'pk',
             'first_name',
             'last_name',
             'cpf',
