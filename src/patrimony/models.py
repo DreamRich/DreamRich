@@ -386,10 +386,12 @@ class Income(models.Model):
         total = self.value_monthly * 12
         if self.thirteenth:
             total += self.value_monthly
+        if self.fourteenth:
+            total += self.value_monthly
         if self.vacation:
             total += self.value_monthly / 3
 
-        return round(total, 2)
+        return total
 
     def __str__(self):
         return "Annual({}) {}".format(self.source, self.annual())

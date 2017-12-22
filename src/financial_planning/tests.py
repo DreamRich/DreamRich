@@ -102,7 +102,7 @@ class FinancialIndependencePatrimonyTest(TestCase):
 
     def test_patrimony_at_end(self):
         self.assertAlmostEqual(self.financial_independence.patrimony_at_end(),
-                               6377329.7596444273)
+                6377329.802432582)
 
 
 class RegularCostTest(TestCase):
