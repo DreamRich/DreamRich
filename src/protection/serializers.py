@@ -63,7 +63,7 @@ class ActualPatrimonySuccessionSerializer(PatrimonySuccessionSerializer):
         fields = PatrimonySuccessionSerializer.Meta.fields
 
 
-class IndependencePatrimonySuccessionSerializer(serializers.ModelSerializer):
+class IndependencePatrimonySuccessionSerializer(PatrimonySuccessionSerializer):
 
     class Meta:
 
@@ -74,6 +74,7 @@ class IndependencePatrimonySuccessionSerializer(serializers.ModelSerializer):
 class PrivatePensionSerializer(serializers.ModelSerializer):
 
     protection_manager_id = serializers.IntegerField(write_only=True)
+    active_manager_id = serializers.IntegerField(write_only=True)
 
     class Meta:
 
@@ -82,10 +83,11 @@ class PrivatePensionSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
-            'value_annual',
-            'accumulated',
+            'annual_investment',
+            'value',
             'rate',
             'protection_manager_id',
+            'active_manager_id',
         ]
 
 
@@ -125,10 +127,10 @@ class ProtectionManagerSerializer(serializers.ModelSerializer):
         model = ProtectionManager
         fields = [
             'id',
-            'financial_planning_id',
             'reserve_in_lack',
             'actual_patrimony_succession',
             'future_patrimony_succession',
             'life_insurances',
             'private_pensions',
+            'financial_planning_id',
         ]
