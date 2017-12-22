@@ -2,6 +2,7 @@ from django.db import models
 from dr_auth.models import BaseUser
 from dreamrich import validators
 from dreamrich import models as base_models
+from simple_history.models import HistoricalRecords
 
 
 class Country(base_models.BaseModel):
@@ -13,6 +14,8 @@ class Country(base_models.BaseModel):
     abbreviation = models.CharField(
         max_length=3
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -33,6 +36,8 @@ class State(base_models.BaseModel):
         related_name='country_states',
         on_delete=models.CASCADE
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -90,6 +95,8 @@ class ActiveClient(BaseUser, ClientBase):
         blank=True
     )
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return "{0.name} {0.username}".format(self)
 
@@ -101,6 +108,8 @@ class ActiveClient(BaseUser, ClientBase):
 
 
 class Client(ClientBase):
+
+    history = HistoricalRecords()
 
     active_spouse = models.OneToOneField(
         ActiveClient,
@@ -131,6 +140,8 @@ class Dependent(base_models.BaseModel):
         on_delete=models.CASCADE
     )
 
+    history = HistoricalRecords()
+
 
 class BankAccount(base_models.BaseModel):
 
@@ -151,6 +162,8 @@ class BankAccount(base_models.BaseModel):
         max_length=13,
         validators=[validators.validate_account]
     )  # BR pattern: '[8alg]-[1dig]'
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.agency) + ' ' + str(self.account)
@@ -193,6 +206,8 @@ class Address(base_models.BaseModel):
         State,
         related_name='state_addresses'
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return "cep: {}, nº: {}".format(self.cep, self.number)

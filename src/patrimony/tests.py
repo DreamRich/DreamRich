@@ -3,7 +3,12 @@ from django.test import TestCase
 from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
-from patrimony.models import Active, Arrearage
+from patrimony.models import (
+    Patrimony, Income,
+    RealEstate, Active,
+    Arrearage, CompanyParticipation,
+    Equipment, MovableProperty
+)
 from patrimony.factories import (
     PatrimonyFactory,
     IncomeFactory,
@@ -13,6 +18,7 @@ from patrimony.factories import (
     ActiveTypeFactory,
     ArrearageFactory
 )
+from lib.tests import test_all_create_historic
 
 
 def _flatten(array):
@@ -212,6 +218,14 @@ class ActiveTest(TestCase):
         self.active.update_equivalent_rate(1000, 0.1201)
         new_rate = Active.objects.get(pk=self.active.pk).equivalent_rate
         self.assertAlmostEqual(new_rate, last_rate, 15)
+
+
+class HistoricalPatrimonyCreateTest(TestCase):
+
+    def test_all_models(self):
+        models = [Patrimony, Income, RealEstate, Active, Arrearage,
+                  CompanyParticipation, Equipment, MovableProperty]
+        test_all_create_historic(self, models, PatrimonyFactory)
 
 
 class ArrearageTest(TestCase):

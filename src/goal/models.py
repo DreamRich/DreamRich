@@ -2,6 +2,7 @@
 All attributes of this file have the annual order of magnitude
 """
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class GoalType(models.Model):
@@ -63,6 +64,7 @@ class Goal(models.Model):
     end_year = models.PositiveSmallIntegerField(null=True, blank=True)
     periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
     value = models.PositiveIntegerField()
+    history = HistoricalRecords()
     goal_manager = models.ForeignKey(
         GoalManager,
         on_delete=models.CASCADE,

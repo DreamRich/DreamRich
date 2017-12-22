@@ -8,6 +8,7 @@ from financial_planning.models import (
     FinancialPlanning,
 )
 from lib.profit.profit import actual_rate
+from simple_history.models import HistoricalRecords
 
 
 class EmergencyReserve(models.Model):
@@ -25,6 +26,8 @@ class EmergencyReserve(models.Model):
     )
 
     mounth_of_protection = models.PositiveSmallIntegerField()
+
+    history = HistoricalRecords()
 
     def necessery_value(self):
         regular_cost_mounthly = self.cost_manager.total()
@@ -96,6 +99,8 @@ class ReserveInLack(models.Model):
     value_60_to_120_mounth = models.PositiveSmallIntegerField()
 
     value_120_to_240_mounth = models.PositiveSmallIntegerField()
+
+    history = HistoricalRecords()
 
     def patrimony_necessery_in_period(self, mounth_quantities, value):
         rate = self.protection_manager.financial_planning.real_gain()
@@ -204,6 +209,8 @@ class ActualPatrimonySuccession(SuccessionTemplate):
         related_name='actual_patrimony_succession'
     )
 
+    history = HistoricalRecords()
+
     def private_pension_total(self):
         total = self.protection_manager.private_pensions.aggregate(models.Sum(
             'value'))
@@ -230,6 +237,8 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
         related_name='future_patrimony_succession'
     )
 
+    history = HistoricalRecords()
+
     def private_pension_total(self):
         private_pensions = self.protection_manager.private_pensions.all()
         total = 0
@@ -252,6 +261,7 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
 
 class PrivatePension(Active):
     annual_investment = models.FloatField(default=0)
+    history = HistoricalRecords()
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
@@ -289,6 +299,7 @@ class LifeInsurance(models.Model):
     redeemable = models.BooleanField()
     actual = models.BooleanField()
     has_year_end = models.BooleanField()
+    history = HistoricalRecords()
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
