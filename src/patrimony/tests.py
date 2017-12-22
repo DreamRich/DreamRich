@@ -226,3 +226,132 @@ class HistoricalPatrimonyCreateTest(TestCase):
         models = [Patrimony, Income, RealEstate, Active, Arrearage,
                   CompanyParticipation, Equipment, MovableProperty]
         test_all_create_historic(self, models, PatrimonyFactory)
+
+
+class ArrearageTest(TestCase):
+
+    def setUp(self):
+        self.arrearage = [
+            Arrearage(
+                value=120000, period=3, rate=1, amortization_system="SAC"),
+            Arrearage(
+                value=120000, period=3, rate=1, amortization_system="PRICE"),
+            Arrearage(
+                value=120000, period=3, amortization_system="COMUM")
+        ]
+
+    def test_calculate_arrearage_sac(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 41200.0,
+                'interest': 1200.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 80000.0
+            },
+            {
+                'period': 2,
+                'provision': 40800.0,
+                'interest': 800.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 40000.0
+            },
+            {
+                'period': 3,
+                'provision': 40400.0,
+                'interest': 400.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 122400.0,
+                'interest': 2400.0,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
+            }
+        ]
+        data_test = self.arrearage[0].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_calculate_arrearage_price(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 40802.65,
+                'interest': 1200.0,
+                'amortization': 39602.65,
+                'outstanding_balance': 80397.35
+            },
+            {
+                'period': 2,
+                'provision': 40802.65,
+                'interest': 803.97,
+                'amortization': 39998.68,
+                'outstanding_balance': 40398.67
+            },
+            {
+                'period': 3,
+                'provision': 40802.65,
+                'interest': 403.99,
+                'amortization': 40398.67,
+                'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 122407.96,
+                'interest': 2407.96,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
+            }
+        ]
+        data_test = self.arrearage[1].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_calculate_arrearage_common(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 80000.0
+            },
+            {
+                'period': 2,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 40000.0
+            },
+            {
+                'period': 3,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 120000.0,
+                'interest': 0,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
+            }
+        ]
+        data_test = self.arrearage[2].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_sac_price_commom_equals_rate_zero(self):
+        self.arrearage[0].rate = 0
+        self.arrearage[1].rate = 0
+        self.arrearage[2].rate = 0
+        self.assertEqual(
+            self.arrearage[0].calculate_arrearage(),
+            self.arrearage[1].calculate_arrearage())
+        self.assertEqual(
+            self.arrearage[0].calculate_arrearage(),
+            self.arrearage[2].calculate_arrearage())
+        self.assertEqual(
+            self.arrearage[1].calculate_arrearage(),
+            self.arrearage[2].calculate_arrearage())

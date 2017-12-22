@@ -200,7 +200,7 @@ class FinancialPlanning(models.Model):
 
     ipca = models.FloatField()
 
-    target_profitability = models.PositiveSmallIntegerField()
+    target_profitability = models.FloatField()
 
     history = HistoricalRecords()
 
@@ -282,8 +282,9 @@ class FinancialPlanning(models.Model):
 
         return data
 
-    def real_gain_related_cdi(self):
-        return actual_rate(self.target_profitability / 100 * self.cdi,
+    def real_gain_related_cdi(self, target=None):
+        target_profitability = target or self.target_profitability
+        return actual_rate(target_profitability * self.cdi,
                            self.ipca)
 
     def resource_monetization(self, flow, rate):
@@ -328,7 +329,8 @@ class FinancialPlanning(models.Model):
     @property
     def actual_flow_patrimony(self):
         annual_leftovers = self.annual_leftovers()
-        real_gain = self.patrimony.activemanager.real_profit_cdi()
+        target = self.patrimony.activemanager.real_profit_cdi()
+        real_gain = self.real_gain_related_cdi(target) + 1
         flow = self.resource_monetization(annual_leftovers, real_gain)
 
         return {'flow': flow, 'rate': real_gain}
