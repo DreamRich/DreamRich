@@ -365,11 +365,14 @@ class FlowUnitChangeTest(TestCase):
 
 class HistoricalFinancialPlanningCreateTest(TestCase):
 
+    def flow_change_case(self, model):
+        self.assertEqual(model.history.count(), 0)
+        model.objects.create(year=2020, annual_value=1233,
+                             cost_manager=CostManagerFactory())
+        self.assertTrue(model.history.count() > 0)
+
     def test_flow_change(self):
-        self.assertEqual(FlowUnitChange.history.count(), 0)
-        FlowUnitChange.objects.create(year=2020, annual_value=1233,
-                cost_manager=CostManagerFactory())
-        self.assertTrue(FlowUnitChange.history.count() > 0)
+        self.flow_change_case(FlowUnitChange)
 
     def test_all_models(self):
         models = [FinancialIndependence, FinancialPlanning, RegularCost]

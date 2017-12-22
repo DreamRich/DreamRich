@@ -99,5 +99,5 @@ class HistoricalClientCreateTest(TestCase):
 
     def test_all_models(self):
         models = [Address, ActiveClient, Country, BankAccount, State, Client,
-                Dependent]
+                  Dependent]
         test_all_create_historic(self, models, ActiveClientFactory)

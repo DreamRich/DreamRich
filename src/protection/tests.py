@@ -11,7 +11,13 @@ from protection.factories import (
     LifeInsuranceFactory,
     EmergencyReserveFactory,
 )
+from protection.models import (
+    PrivatePension, ReserveInLack,
+    LifeInsurance, EmergencyReserve,
+    ActualPatrimonySuccession, IndependencePatrimonySuccession,
+)
 from client.factories import ActiveClientFactory
+from lib.tests import test_all_create_historic
 
 
 def _create_reserve_in_lack():
@@ -426,3 +432,23 @@ class PrivatePensionTest(TestCase):
         self.private_pension.active_type.name = 'Other name'
         self.private_pension.save()
         self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+
+class HistoricalProtectionCreateTest(TestCase):
+
+    def test_all_models(self):
+        models = [ReserveInLack, LifeInsurance, PrivatePension,
+                  ActualPatrimonySuccession, IndependencePatrimonySuccession]
+        test_all_create_historic(self, models, ProtectionManagerFactory)
+
+    # This method is to correct pylint error
+    def emergency_reserve_case(self, model):
+        financial_planning = FinancialPlanningFactory()
+        patrimony = financial_planning.patrimony
+        self.assertEqual(0, model.history.count())
+        EmergencyReserveFactory(patrimony=patrimony,
+                                cost_manager=financial_planning.cost_manager)
+        self.assertEqual(1, model.history.count())
+
+    def test_emergency_reserve(self):
+        self.emergency_reserve_case(EmergencyReserve)

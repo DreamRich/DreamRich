@@ -13,4 +13,4 @@ class HistoricalEmployeeCreateTest(TestCase):
 
     def test_financial_adviser(self):
         test_create_historic(self, FinancialAdviser,
-            FinancialAdviserMainFactory)
+                             FinancialAdviserMainFactory)
