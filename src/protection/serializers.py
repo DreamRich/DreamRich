@@ -19,6 +19,8 @@ class EmergencyReserveSerializer(serializers.ModelSerializer):
             'mounth_of_protection',
             'cost_manager_id',
             'patrimony_id',
+            'risk_gap',
+            'necessery_value',
         ]
 
 
@@ -37,6 +39,7 @@ class ReserveInLackSerializer(serializers.ModelSerializer):
             'value_60_to_120_mounth',
             'value_120_to_240_mounth',
             'protection_manager_id',
+            'patrimony_necessery_total',
         ]
 
 
@@ -52,6 +55,13 @@ class PatrimonySuccessionSerializer(serializers.ModelSerializer):
             'oab_tax',
             'other_taxes',
             'protection_manager_id',
+            'patrimony_necessery_to_itcmd',
+            'patrimony_necessery_to_oab',
+            'patrimony_to_other_taxes',
+            'patrimony_total_to_sucession',
+            'patrimony_free_of_taxes',
+            'leftover_after_sucession',
+            'need_for_vialicia',
         ]
 
 
