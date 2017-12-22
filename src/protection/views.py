@@ -36,6 +36,7 @@ class EmergencyReserveViewSet(viewsets.ModelViewSet):
 
     queryset = EmergencyReserve.objects.all()
     serializer_class = EmergencyReserveSerializer
+    filter_fields = ('cost_manager_id', 'patrimony_id')
 
 
 class ProtectionManagerViewSet(viewsets.ModelViewSet):

@@ -81,6 +81,7 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
     patrimony_id = serializers.IntegerField(required=False, allow_null=True)
     goal_manager_id = serializers.IntegerField(required=False, allow_null=True)
     cost_manager_id = serializers.IntegerField(required=False, allow_null=True)
+    protection_manager = serializers.PrimaryKeyRelatedField(read_only=True)
     financial_independence_id = serializers.IntegerField(
         required=False,
         allow_null=True
@@ -95,6 +96,7 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
             'financial_independence_id',
             'goal_manager_id',
             'cost_manager_id',
+            'protection_manager',
             'cdi',
             'ipca',
             'target_profitability',
