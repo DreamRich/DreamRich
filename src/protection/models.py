@@ -157,45 +157,52 @@ class SuccessionTemplate(models.Model):
 
         return total
 
+    @property
     def patrimony_necessery_to_itcmd(self):
         total = self.patrimony_total() * self.itcmd_tax
         total = self.real_succession(total)
 
         return total
 
+    @property
     def patrimony_necessery_to_oab(self):
         total = self.patrimony_total() * self.oab_tax
         total = self.real_succession(total)
 
         return total
 
+    @property
     def patrimony_necessery_to_other_taxes(self):
         total = self.patrimony_total() * self.other_taxes
         total = self.real_succession(total)
 
         return total
 
+    @property
     def patrimony_necessery_total_to_sucession(self):
-        total = self.patrimony_necessery_to_itcmd() +\
-            self.patrimony_necessery_to_oab() +\
-            self.patrimony_necessery_to_other_taxes()
+        total = self.patrimony_necessery_to_itcmd +\
+            self.patrimony_necessery_to_oab +\
+            self.patrimony_necessery_to_other_taxes
 
         return total
 
+    @property
     def total_to_recive_after_death_without_taxes(self):
         total = self.private_pension_total() +\
             self.life_insurance_to_recive_total()
 
         return total
 
+    @property
     def leftover_after_sucession(self):
-        total = self.total_to_recive_after_death_without_taxes() -\
-            self.patrimony_necessery_total_to_sucession()
+        total = self.total_to_recive_after_death_without_taxes -\
+            self.patrimony_necessery_total_to_sucession
 
         return total
 
+    @property
     def need_for_vialicia(self):
-        total = self.leftover_after_sucession() +\
+        total = self.leftover_after_sucession +\
             self.patrimony_total() -\
             self.protection_manager.reserve_in_lack.\
             patrimony_necessery_total
