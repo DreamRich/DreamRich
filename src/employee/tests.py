@@ -3,18 +3,14 @@ from employee.factories import (
     EmployeeMainFactory, FinancialAdviserMainFactory
 )
 from employee.models import Employee, FinancialAdviser
+from lib.tests import test_create_historic
 
 
 class HistoricalEmployeeCreateTest(TestCase):
 
-    def _test_create_historic(self, model, factory):
-        self.assertEqual(model.history.count(), 0)
-        factory()
-        self.assertEqual(model.history.count(), 2)
-
     def test_commum(self):
-        self._test_create_historic(Employee, EmployeeMainFactory)
+        test_create_historic(self, Employee, EmployeeMainFactory)
 
     def test_financial_adviser(self):
-        self._test_create_historic(FinancialAdviser,
+        test_create_historic(self, FinancialAdviser,
             FinancialAdviserMainFactory)

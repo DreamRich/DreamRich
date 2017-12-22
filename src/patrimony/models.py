@@ -10,10 +10,13 @@ from lib.financial_planning.flow import (
 )
 import patrimony.validators as patrimony_validators
 from patrimony.choices import AMORTIZATION_CHOICES
+from simple_history.models import HistoricalRecords
 
 
 class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
+
+    history = HistoricalRecords()
 
     def current_net_investment(self):
         total_active = self.activemanager.total()
@@ -145,7 +148,7 @@ class Active(models.Model):
     value = models.FloatField(default=0)
     rate = models.FloatField(default=0)
     equivalent_rate = models.FloatField(default=0, blank=True, null=True)
-
+    history = HistoricalRecords()
     active_type = models.ForeignKey(ActiveType,
                                     on_delete=models.CASCADE,
                                     related_name='actives')
@@ -277,6 +280,7 @@ class Arrearage(models.Model):
         max_length=5,
         choices=AMORTIZATION_CHOICES,
     )
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony, on_delete=models.CASCADE,
         related_name='arrearages'
@@ -295,6 +299,7 @@ class RealEstate(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     salable = models.BooleanField()
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -307,6 +312,7 @@ class RealEstate(models.Model):
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -320,6 +326,7 @@ class CompanyParticipation(models.Model):
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -332,6 +339,7 @@ class Equipment(models.Model):
 class MovableProperty(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -346,6 +354,7 @@ class Income(models.Model):
     value_monthly = models.FloatField(default=0)
     thirteenth = models.BooleanField(default=False)
     fourteenth = models.BooleanField(default=False)
+    history = HistoricalRecords()
     vacation = models.BooleanField(default=False)
     patrimony = models.ForeignKey(
         Patrimony,

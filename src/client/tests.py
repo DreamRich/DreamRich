@@ -10,6 +10,7 @@ from client.factories import (
     ActiveClientFactory,
     ClientFactory,
 )
+from lib.tests import test_all_create_historic
 
 
 class ClientModelTest(TestCase):
@@ -96,28 +97,7 @@ class ClientModelTest(TestCase):
 
 class HistoricalClientCreateTest(TestCase):
 
-    def _test_create_historic(self, model, count_final):
-        self.assertEqual(model.history.count(), 0)
-        ActiveClientFactory()
-        self.assertEqual(model.history.count(), count_final)
-
-    def test_address(self):
-        self._test_create_historic(Address, 1)
-
-    def test_active_client(self):
-        self._test_create_historic(ActiveClient, 2)
-
-    def test_country(self):
-        self._test_create_historic(Country, 1)
-
-    def test_bank_account(self):
-        self._test_create_historic(BankAccount, 1)
-
-    def test_state(self):
-        self._test_create_historic(State, 1)
-
-    def test_client(self):
-        self._test_create_historic(Client, 1)
-
-    def test_dependent(self):
-        self._test_create_historic(Dependent, 1)
+    def test_all_models(self):
+        models = [Address, ActiveClient, Country, BankAccount, State, Client,
+                Dependent]
+        test_all_create_historic(self, models, ActiveClientFactory)
