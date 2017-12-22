@@ -68,6 +68,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
     'rolepermissions',
 ]
 
@@ -110,7 +111,11 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
@@ -173,6 +178,7 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("financial_planning.factories", ("*")),
     ("financial_planning.serializers", ("*")),
     ("protection.factories", ("*")),
+    ("protection.serializers", ("*")),
     ("dr_auth.serializers", ("*")),
 ]
 
@@ -199,3 +205,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public')
 STATIC_URL = '/static/'
 
 ROLEPERMISSIONS_MODULE = 'dr_auth.roles'
+
+SWAGGER_SETTINGS = {
+    'APIS_SORTER': 'alpha',
+    'DOC_EXPANSION': None,
+    'JSON_EDITOR': True,
+    'OPERATIONS_SORTER': 'method',
+}

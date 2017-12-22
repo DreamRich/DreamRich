@@ -1,23 +1,23 @@
 import datetime
 from django.test import TestCase, Client
-from client.factories import ActiveClientMainFactory
+from django.core.exceptions import ValidationError
+from client.factories import ActiveClientFactory
 from goal.factories import (
-    GoalManagerFactory,
-    GoalFactory,
+    GoalManagerFactory, GoalFactory,
     GoalTypeFactory,
 )
 from patrimony.factories import (
-    PatrimonyMainFactory,
-    ActiveFactory,
+    PatrimonyFactory, ActiveFactory,
     ArrearageFactory,
 )
 from lib.financial_planning.flow import create_array_change_annual
-from lib.profit.profit import actual_rate
+from protection.factories import (
+    ProtectionManagerFactory, LifeInsuranceFactory
+)
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
-    CostManagerFactory,
-    FinancialIndependenceFactory,
-    FinancialPlanningFactory
+    CostManagerFactory, FinancialIndependenceFactory,
+    FinancialPlanningFactory,
 )
 from rest_framework.test import APIClient
 from dreamrich.utils import get_token
@@ -30,7 +30,7 @@ class FinancialIndependencePlanningTest(TestCase):
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -58,7 +58,7 @@ class FinancialIndependencePlanningTest(TestCase):
 
 class FinancialIndependencePatrimonyTest(TestCase):
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         financial_planning = FinancialPlanningFactory(
             active_client=active_client)
@@ -107,7 +107,7 @@ class FinancialIndependencePatrimonyTest(TestCase):
 class RegularCostTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
@@ -135,11 +135,11 @@ class RegularCostTest(TestCase):
 
 class FinancialPlanningModelTest(TestCase):
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
-            target_profitability=110,
+            target_profitability=1.10,
             cdi=0.1213,
             ipca=0.075
         )
@@ -149,13 +149,12 @@ class FinancialPlanningModelTest(TestCase):
             self.financial_planning.duration(), 10)
 
     def test_real_gain_related_cdi(self):
-        data = actual_rate(
-            self.financial_planning.target_profitability /
-            100 *
-            self.financial_planning.cdi,
-            self.financial_planning.ipca)
         self.assertAlmostEqual(self.financial_planning.
-                               real_gain_related_cdi(), data)
+                               real_gain_related_cdi(), 0.054353488372093084)
+
+    def test_real_gain(self):
+        self.assertAlmostEqual(self.financial_planning.real_gain(),
+                               0.04306976744186053)
 
     def test_save_financial_planning(self):
         financial_planning = FinancialPlanningFactory(init_year=None)
@@ -169,16 +168,24 @@ class FinancialPlanningModelTest(TestCase):
 class FinancialPlanningFlowTest(TestCase):
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyMainFactory()
+        self.patrimony = PatrimonyFactory()
         self.patrimony.incomes.all().update(value_monthly=55000,
                                             thirteenth=False,
                                             vacation=False)
-        ActiveFactory(value=30000.00,
-                      active_manager=self.patrimony.activemanager)
-        ActiveFactory(value=321200.00,
-                      active_manager=self.patrimony.activemanager)
+
+        for active in self.patrimony.activemanager.actives.all():
+            active.delete()
+
+        data = [{'value': 30000.00, 'rate': 1.1879},
+                {'value': 321200.00, 'rate': 0.7500},
+                {'value': 351200.00, 'rate': 0.7500}]
+
+        for active in data:
+            ActiveFactory(**active,
+                          active_manager=self.patrimony.activemanager)
+
         ArrearageFactory(patrimony=self.patrimony, value=351200.00)
         self.goal_manager = GoalManagerFactory()
         GoalFactory.create_batch(4,
@@ -197,7 +204,19 @@ class FinancialPlanningFlowTest(TestCase):
             patrimony=self.patrimony,
             financial_independence=self.financial_independence,
             goal_manager=self.goal_manager,
+            cdi=0.1213,
         )
+        protection_manager = ProtectionManagerFactory(
+            financial_planning=self.financial_planning)
+
+        for private_pension in protection_manager.private_pensions.all():
+            private_pension.delete()
+
+        for life_insurance in protection_manager.life_insurances.all():
+            life_insurance.delete()
+
+        LifeInsuranceFactory(protection_manager=protection_manager,
+                             value_to_pay_annual=2000, has_year_end=False)
 
     def test_annual_leftovers_for_goal_without_change(self):
         array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
@@ -248,13 +267,23 @@ class FinancialPlanningFlowTest(TestCase):
         self.assertEqual(self.financial_planning.
                          total_resource_for_annual_goals, array)
 
-    def test_flow_patrimony(self):
+    def test_suggested_flow_patrimony(self):
         array = [647364.8, 1319372.6002455815, 2027906.368647767,
                  2774951.418992036, 3562600.973793622, 4393062.0295134,
                  5268661.54056872, 6191852.939466794, 7165223.011330091,
                  8191499.142076154]
 
-        self.assertEqual(self.financial_planning.flow_patrimony, array)
+        self.assertEqual(self.financial_planning
+                         .suggested_flow_patrimony['flow'], array)
+
+    def test_actual_flow_patrimony(self):
+        array = [647364.8, 1295546.2297445768, 1954727.8567590017,
+                 2625096.3638675935, 3306841.6020630263, 4000156.644272876,
+                 4705237.840038632, 5422284.871122657, 6151500.808058847,
+                 6893092.167663001]
+
+        self.assertEqual(self.financial_planning.actual_flow_patrimony['flow'],
+                         array)
 
 
 class RegularCostViewTest(TestCase):
@@ -303,3 +332,34 @@ class FlowTest(TestCase):
         array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
         self.assertEqual(array_compare, create_array_change_annual(
             self.changes, 10, 2017))
+
+
+class FlowUnitChangeTest(TestCase):
+
+    def setUp(self):
+        self.cost_manager = CostManagerFactory()
+        self.incomes = PatrimonyFactory()
+
+    def test_validation_cost_manager_and_incomes_null_together(self):
+        change = FlowUnitChange(annual_value=123.40, year=2021)
+        with self.assertRaises(ValidationError):
+            change.save()
+
+    def test_validation_cost_manager_and_incomes_instanciate(self):
+        change = FlowUnitChange(
+            annual_value=123.40,
+            year=2021,
+            cost_manager=self.cost_manager,
+            incomes=self.incomes)
+        with self.assertRaises(ValidationError):
+            change.save()
+
+    def test_validation_cost_manager_instaciate_only(self):
+        change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                               cost_manager=self.cost_manager)
+        self.assertTrue(change.cost_manager is not None)
+
+    def test_validation_incomes_instaciate_only(self):
+        change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                               incomes=self.incomes)
+        self.assertTrue(change.incomes is not None)

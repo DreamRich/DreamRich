@@ -31,12 +31,6 @@ class ActiveManagerFactory(factory.DjangoModelFactory):
     active = factory.RelatedFactory(ActiveFactory, 'active_manager')
 
 
-class ArrearageCalculatorFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.ArrearageCalculator
-
-
 class ArrearageFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -47,7 +41,6 @@ class ArrearageFactory(factory.DjangoModelFactory):
     period = 2
     rate = factory.fuzzy.FuzzyDecimal(100)
     amortization_system = factory.fuzzy.FuzzyChoice(AMORTIZATION_CHOICES_LIST)
-    arrearage_calculator = factory.SubFactory(ArrearageCalculatorFactory)
 
 
 class RealEstateFactory(factory.DjangoModelFactory):
@@ -98,7 +91,7 @@ class IncomeFactory(factory.DjangoModelFactory):
     vacation = True
 
 
-class PatrimonyMainFactory(factory.DjangoModelFactory):
+class PatrimonyFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.Patrimony
@@ -112,3 +105,17 @@ class PatrimonyMainFactory(factory.DjangoModelFactory):
     incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')
     movable_property = factory.RelatedFactory(MovablePropertyFactory,
                                               'patrimony')
+
+
+class PatrimonyBaseFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.Patrimony
+
+
+class ActiveManagerBaseFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.ActiveManager
+
+    patrimony = factory.SubFactory(PatrimonyBaseFactory)

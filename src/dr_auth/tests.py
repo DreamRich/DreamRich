@@ -145,7 +145,7 @@ class PasswordChange(TestCase):
 class ClientUserTest(TestCase):
 
     def setUp(self):
-        self.active_client = ActiveClientMainFactory()
+        self.active_client = ActiveClientFactory()
         self.user = User.objects.last()
 
     def test_username_client(self):

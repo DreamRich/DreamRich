@@ -1,11 +1,11 @@
 import datetime
 from django.test import TestCase
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
-from patrimony.models import Active
+from patrimony.models import Active, Arrearage
 from patrimony.factories import (
-    PatrimonyMainFactory,
+    PatrimonyFactory,
     IncomeFactory,
     RealEstateFactory,
     ActiveManagerFactory,
@@ -30,9 +30,9 @@ def _flatten(array):
 class PatrimonyTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientMainFactory(
+        active_client = ActiveClientFactory(
             birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyMainFactory()
+        self.patrimony = PatrimonyFactory()
         self.patrimony.incomes.all().update(value_monthly=1212.2)
         FinancialPlanningFactory(
             active_client=active_client,
@@ -97,9 +97,8 @@ class PatrimonyTest(TestCase):
 
 class ActiveManagerTest(TestCase):
     def setUp(self):
-        self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyMainFactory(activemanager=None)
-        )
+        financial_planning = FinancialPlanningFactory(cdi=0.1)
+        self.active_manager = financial_planning.patrimony.activemanager
 
         for active in self.active_manager.actives.all():
             active.delete()
@@ -111,6 +110,7 @@ class ActiveManagerTest(TestCase):
         for active in data:
             ActiveFactory(**active, active_manager=self.active_manager)
 
+        # Update all equivalent_rates of that manager
         self.active_manager.real_profit_cdi()
 
     def test_total_manager(self):
@@ -120,7 +120,7 @@ class ActiveManagerTest(TestCase):
     def test_update_equivalent_rates(self):
         equivalents = self.active_manager.actives.values_list(
             'equivalent_rate')
-        self.active_manager.cdi = 0.12
+        self.active_manager.patrimony.financial_planning.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new_equivalents = self.active_manager.actives.values_list(
             'equivalent_rate'
@@ -130,7 +130,7 @@ class ActiveManagerTest(TestCase):
 
     def test_update_rates_values(self):
         equivalents = [(0.0156,), (0.0455,), (0.0415, )]
-        self.active_manager.cdi = 0.12
+        self.active_manager.patrimony.financial_planning.cdi = 0.12
         self.active_manager.real_profit_cdi()
         new = self.active_manager.actives.values_list('equivalent_rate')
 
@@ -142,14 +142,14 @@ class ActiveManagerTest(TestCase):
             self.active_manager.real_profit_cdi(), 0.8556, 4)
 
     def test_real_profit_cdi_zero(self):
-        self.active_manager.cdi = 0
+        self.active_manager.patrimony.financial_planning.cdi = 0
         self.assertAlmostEqual(self.active_manager.real_profit_cdi(), 0, 4)
 
 
 class ActiveChartTest(TestCase):
     def setUp(self):
         self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyMainFactory(activemanager=None)
+            patrimony=PatrimonyFactory(activemanager=None)
         )
         fundos = ActiveTypeFactory(name='Fundo')
         previdencia = ActiveTypeFactory(name='Previdencia')
@@ -195,7 +195,7 @@ class ActiveChartTest(TestCase):
 class ActiveTest(TestCase):
 
     def setUp(self):
-        self.active = PatrimonyMainFactory().activemanager.actives.first()
+        self.active = PatrimonyFactory().activemanager.actives.first()
         self.active.value = 100
         self.active.rate = 1.10
         self.active.save()
@@ -212,3 +212,132 @@ class ActiveTest(TestCase):
         self.active.update_equivalent_rate(1000, 0.1201)
         new_rate = Active.objects.get(pk=self.active.pk).equivalent_rate
         self.assertAlmostEqual(new_rate, last_rate, 15)
+
+
+class ArrearageTest(TestCase):
+
+    def setUp(self):
+        self.arrearage = [
+            Arrearage(
+                value=120000, period=3, rate=1, amortization_system="SAC"),
+            Arrearage(
+                value=120000, period=3, rate=1, amortization_system="PRICE"),
+            Arrearage(
+                value=120000, period=3, amortization_system="COMUM")
+        ]
+
+    def test_calculate_arrearage_sac(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 41200.0,
+                'interest': 1200.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 80000.0
+            },
+            {
+                'period': 2,
+                'provision': 40800.0,
+                'interest': 800.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 40000.0
+            },
+            {
+                'period': 3,
+                'provision': 40400.0,
+                'interest': 400.0,
+                'amortization': 40000.0,
+                'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 122400.0,
+                'interest': 2400.0,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
+            }
+        ]
+        data_test = self.arrearage[0].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_calculate_arrearage_price(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 40802.65,
+                'interest': 1200.0,
+                'amortization': 39602.65,
+                'outstanding_balance': 80397.35
+            },
+            {
+                'period': 2,
+                'provision': 40802.65,
+                'interest': 803.97,
+                'amortization': 39998.68,
+                'outstanding_balance': 40398.67
+            },
+            {
+                'period': 3,
+                'provision': 40802.65,
+                'interest': 403.99,
+                'amortization': 40398.67,
+                'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 122407.96,
+                'interest': 2407.96,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
+            }
+        ]
+        data_test = self.arrearage[1].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_calculate_arrearage_common(self):
+        data = [
+            {
+                'period': 1,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 80000.0
+            },
+            {
+                'period': 2,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 40000.0
+            },
+            {
+                'period': 3,
+                'provision': 40000.0,
+                'interest': 0,
+                'amortization': 40000.0,
+                'outstanding_balance': 0.0
+            },
+            {
+                'period': '>>',
+                'provision': 120000.0,
+                'interest': 0,
+                'amortization': 120000.0,
+                'outstanding_balance': '<< TOTAIS'
+            }
+        ]
+        data_test = self.arrearage[2].calculate_arrearage()
+        self.assertEqual(data, data_test)
+
+    def test_sac_price_commom_equals_rate_zero(self):
+        self.arrearage[0].rate = 0
+        self.arrearage[1].rate = 0
+        self.arrearage[2].rate = 0
+        self.assertEqual(
+            self.arrearage[0].calculate_arrearage(),
+            self.arrearage[1].calculate_arrearage())
+        self.assertEqual(
+            self.arrearage[0].calculate_arrearage(),
+            self.arrearage[2].calculate_arrearage())
+        self.assertEqual(
+            self.arrearage[1].calculate_arrearage(),
+            self.arrearage[2].calculate_arrearage())

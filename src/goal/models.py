@@ -22,15 +22,13 @@ class GoalManager(models.Model):
 
     @property
     def year_init_to_year_end(self):
-        array = []
-        init_year = \
-            self.financial_planning.init_year  # pylint: disable=no-member
-        duration_goals = \
-            self.financial_planning.duration()  # pylint: disable=no-member
-        for index in range(duration_goals):
-            array.append(init_year + index)
+        # array = []
+        # init_year = self.financial_planning.init_year
+        # duration_goals = self.financial_planning.duration()
+        # for index in range(duration_goals):
+        #     array.append(init_year + index)
 
-        return array
+        return self.financial_planning.year_init_to_end
 
     @property
     def goals_flow_dic(self):
@@ -58,8 +56,10 @@ class GoalManager(models.Model):
 
     def value_total_by_year(self):
         matrix = self.matrix_flow_goals()
-
         array = [sum(index) for index in zip(*matrix)]
+        if not array:
+            duration_goals = self.financial_planning.duration()
+            array = [0] * duration_goals
 
         return array
 

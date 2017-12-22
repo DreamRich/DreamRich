@@ -1,12 +1,40 @@
 from rest_framework import serializers
 from financial_planning.models import (
-    RegularCost,
-    CostManager,
-    CostType,
-    FinancialPlanning
+    RegularCost, CostManager,
+    CostType, FinancialPlanning,
+    FlowUnitChange, FinancialIndependence,
 )
 from patrimony.serializers import PatrimonySerializer
 from goal.serializers import GoalManagerSerializer
+
+
+class FinancialIndependenceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialIndependence
+        fields = [
+            'id',
+            'age',
+            'duration_of_usufruct',
+            'rate',
+            'remain_patrimony',
+        ]
+
+
+class FlowUnitChangeSerializer(serializers.ModelSerializer):
+
+    cost_manager_id = serializers.IntegerField(required=False, write_only=True)
+    incomes_id = serializers.IntegerField(required=False, write_only=True)
+
+    class Meta:
+        model = FlowUnitChange
+        fields = [
+            'id',
+            'annual_value',
+            'year',
+            'cost_manager_id',
+            'incomes_id',
+        ]
 
 
 class CostTypeSerializer(serializers.ModelSerializer):
@@ -69,3 +97,16 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
             'ipca',
             'target_profitability',
         ]
+
+
+class FinancialPlanningFlowSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FinancialPlanning
+        fields = [
+            'pk',
+            'actual_flow_patrimony',
+            'suggested_flow_patrimony',
+            'year_init_to_end',
+        ]
+        read_only_fields = fields
