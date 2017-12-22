@@ -80,11 +80,20 @@ class PatrimonyTest(TestCase):
     def test_annual_income_with_thirteen(self):
         self.assertEqual(self.income_with_thirteenth.annual(), 15600.00)
 
+    def test_annual_income_with_fourteenth(self):
+        income_with_fourteenth = IncomeFactory(value_monthly=1200.00,
+                                               thirteenth=True,
+                                               fourteenth=True,
+                                               patrimony=self.patrimony,
+                                               vacation=False)
+        self.assertEqual(income_with_fourteenth.annual(), 16800.00)
+
     def test_annual_income_with_vacation(self):
         self.assertEqual(self.income_with_vacation.annual(), 14800.00)
 
     def test_current_monthly_income(self):
-        self.assertEqual(60962.66666666667, self.patrimony.total_annual_income())
+        self.assertEqual(60962.66666666667, self.patrimony.\
+                total_annual_income())
 
     def test_income_flow(self):
         FlowUnitChange.objects.create(annual_value=500.00, year=2021,
