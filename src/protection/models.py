@@ -29,17 +29,18 @@ class EmergencyReserve(models.Model):
 
     history = HistoricalRecords()
 
+    @property
     def necessery_value(self):
         regular_cost_mounthly = self.cost_manager.total()
         total = self.mounth_of_protection * regular_cost_mounthly
 
         return total
 
+    @property
     def risk_gap(self):
         current_patrimony = self.patrimony.current_net_investment()
-        necessery_value = self.necessery_value()
-        if current_patrimony < necessery_value:
-            total = necessery_value - current_patrimony
+        if current_patrimony < self.necessery_value:
+            total = self.necessery_value - current_patrimony
         else:
             total = 0
 
@@ -106,6 +107,7 @@ class ReserveInLack(models.Model):
         rate = self.protection_manager.financial_planning.real_gain()
         return numpy.pv(rate, mounth_quantities, -value)
 
+    @property
     def patrimony_necessery_total(self):
         portion_0_to_24_mounth = self.patrimony_necessery_in_period(
             24, self.value_0_to_24_mounth)
@@ -196,7 +198,7 @@ class SuccessionTemplate(models.Model):
         total = self.leftover_after_sucession() +\
             self.patrimony_total() -\
             self.protection_manager.reserve_in_lack.\
-            patrimony_necessery_total()
+            patrimony_necessery_total
 
         return total
 

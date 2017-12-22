@@ -61,19 +61,19 @@ class EmergencyReserveTest(TestCase):
             RegularCostFactory(**regular_cost, cost_manager=cost_manager)
 
     def test_necessery_value(self):
-        self.assertEqual(self.emergency_reserve.necessery_value(), 54000)
+        self.assertEqual(self.emergency_reserve.necessery_value, 54000)
 
     def test_risk_gap_on_limit(self):
         ActiveFactory(value=54000, active_manager=self.active_manager)
-        self.assertEqual(self.emergency_reserve.risk_gap(), 0)
+        self.assertEqual(self.emergency_reserve.risk_gap, 0)
 
     def test_risk_gap_bigger_limit(self):
         ActiveFactory(value=59000, active_manager=self.active_manager)
-        self.assertEqual(self.emergency_reserve.risk_gap(), 0)
+        self.assertEqual(self.emergency_reserve.risk_gap, 0)
 
     def test_risk_gap_less_limit(self):
         ActiveFactory(value=51000, active_manager=self.active_manager)
-        self.assertEqual(self.emergency_reserve.risk_gap(), 3000)
+        self.assertEqual(self.emergency_reserve.risk_gap, 3000)
 
 
 class ReserveInLackTest(TestCase):
@@ -87,7 +87,7 @@ class ReserveInLackTest(TestCase):
 
     def test_patrimony_necessery_total(self):
         self.assertAlmostEqual(self.reserve_in_lack.
-                               patrimony_necessery_total(), 595624.31498015427)
+                               patrimony_necessery_total, 595624.31498015427)
 
 
 class ProtectionManagerTest(TestCase):
