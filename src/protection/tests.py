@@ -239,10 +239,10 @@ class ActualPatrimonySuccessionTest(TestCase):
             patrimony_to_other_taxes,
             3227.8803000000003)
 
-    def test_patrimony_necessery_total_to_sucession(self):
+    def test_patrimony_total_to_sucession(self):
         self.assertAlmostEqual(
             self.actual_patrimony_succession.
-            patrimony_necessery_total_to_sucession,
+            patrimony_total_to_sucession,
             41962.443900000006)
 
     def test_patrimony_necessery_to_sucession_joint_account(self):
@@ -250,12 +250,12 @@ class ActualPatrimonySuccessionTest(TestCase):
             financial_planning.active_client.bank_account.joint_account = True
         self.assertAlmostEqual(
             self.actual_patrimony_succession.
-            patrimony_necessery_total_to_sucession,
+            patrimony_total_to_sucession,
             20981.221950000003)
 
-    def test_total_to_recive_after_death_without_taxes(self):
+    def test_patrimony_free_of_taxes(self):
         self.assertEqual(self.actual_patrimony_succession.
-                         total_to_recive_after_death_without_taxes, 824000)
+                         patrimony_free_of_taxes, 824000)
 
     def test_leftover_after_sucession(self):
         self.assertAlmostEqual(self.actual_patrimony_succession.
@@ -380,10 +380,10 @@ class IndependencePatrimonySuccessionTest(TestCase):
             patrimony_to_other_taxes,
             90540.63617092195)
 
-    def test_patrimony_necessery_total_to_sucession(self):
+    def test_patrimony_total_to_sucession(self):
         self.assertAlmostEqual(
             self.future_patrimony_succession.
-            patrimony_necessery_total_to_sucession,
+            patrimony_total_to_sucession,
             1177028.2702219852)
 
     def test_patrimony_necessery_to_sucession_joint_account(self):
@@ -391,13 +391,13 @@ class IndependencePatrimonySuccessionTest(TestCase):
             financial_planning.active_client.bank_account.joint_account = True
         self.assertAlmostEqual(
             self.future_patrimony_succession.
-            patrimony_necessery_total_to_sucession,
+            patrimony_total_to_sucession,
             588514.1351109926)
 
-    def test_total_to_recive_after_death_without_taxes(self):
+    def test_patrimony_free_of_taxes(self):
         self.assertAlmostEqual(
             self.future_patrimony_succession.
-            total_to_recive_after_death_without_taxes,
+            patrimony_free_of_taxes,
             1368297.0501640132)
 
     def test_leftover_after_sucession(self):
