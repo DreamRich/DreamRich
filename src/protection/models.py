@@ -29,17 +29,18 @@ class EmergencyReserve(models.Model):
 
     history = HistoricalRecords()
 
+    @property
     def necessery_value(self):
         regular_cost_mounthly = self.cost_manager.total()
         total = self.mounth_of_protection * regular_cost_mounthly
 
         return total
 
+    @property
     def risk_gap(self):
         current_patrimony = self.patrimony.current_net_investment()
-        necessery_value = self.necessery_value()
-        if current_patrimony < necessery_value:
-            total = necessery_value - current_patrimony
+        if current_patrimony < self.necessery_value:
+            total = self.necessery_value - current_patrimony
         else:
             total = 0
 
@@ -106,6 +107,7 @@ class ReserveInLack(models.Model):
         rate = self.protection_manager.financial_planning.real_gain()
         return numpy.pv(rate, mounth_quantities, -value)
 
+    @property
     def patrimony_necessery_total(self):
         portion_0_to_24_mounth = self.patrimony_necessery_in_period(
             24, self.value_0_to_24_mounth)
@@ -155,48 +157,55 @@ class SuccessionTemplate(models.Model):
 
         return total
 
+    @property
     def patrimony_necessery_to_itcmd(self):
         total = self.patrimony_total() * self.itcmd_tax
         total = self.real_succession(total)
 
         return total
 
+    @property
     def patrimony_necessery_to_oab(self):
         total = self.patrimony_total() * self.oab_tax
         total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_to_other_taxes(self):
+    @property
+    def patrimony_to_other_taxes(self):
         total = self.patrimony_total() * self.other_taxes
         total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_total_to_sucession(self):
-        total = self.patrimony_necessery_to_itcmd() +\
-            self.patrimony_necessery_to_oab() +\
-            self.patrimony_necessery_to_other_taxes()
+    @property
+    def patrimony_total_to_sucession(self):
+        total = self.patrimony_necessery_to_itcmd +\
+            self.patrimony_necessery_to_oab +\
+            self.patrimony_to_other_taxes
 
         return total
 
-    def total_to_recive_after_death_without_taxes(self):
+    @property
+    def patrimony_free_of_taxes(self):
         total = self.private_pension_total() +\
             self.life_insurance_to_recive_total()
 
         return total
 
+    @property
     def leftover_after_sucession(self):
-        total = self.total_to_recive_after_death_without_taxes() -\
-            self.patrimony_necessery_total_to_sucession()
+        total = self.patrimony_free_of_taxes -\
+            self.patrimony_total_to_sucession
 
         return total
 
+    @property
     def need_for_vialicia(self):
-        total = self.leftover_after_sucession() +\
+        total = self.leftover_after_sucession +\
             self.patrimony_total() -\
             self.protection_manager.reserve_in_lack.\
-            patrimony_necessery_total()
+            patrimony_necessery_total
 
         return total
 
