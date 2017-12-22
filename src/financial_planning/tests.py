@@ -11,13 +11,17 @@ from patrimony.factories import (
     ArrearageFactory,
 )
 from lib.financial_planning.flow import create_array_change_annual
+from lib.tests import test_all_create_historic
 from protection.factories import (
     ProtectionManagerFactory, LifeInsuranceFactory
 )
-from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
     CostManagerFactory, FinancialIndependenceFactory,
     FinancialPlanningFactory,
+)
+from financial_planning.models import (
+    RegularCost, FinancialIndependence,
+    FinancialPlanning, FlowUnitChange
 )
 
 
@@ -98,7 +102,7 @@ class FinancialIndependencePatrimonyTest(TestCase):
 
     def test_patrimony_at_end(self):
         self.assertAlmostEqual(self.financial_independence.patrimony_at_end(),
-                               6377329.7596444273)
+                               6377329.802432582)
 
 
 class RegularCostTest(TestCase):
@@ -357,3 +361,19 @@ class FlowUnitChangeTest(TestCase):
         change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
                                                incomes=self.incomes)
         self.assertTrue(change.incomes is not None)
+
+
+class HistoricalFinancialPlanningCreateTest(TestCase):
+
+    def flow_change_case(self, model):
+        self.assertEqual(model.history.count(), 0)
+        model.objects.create(year=2020, annual_value=1233,
+                             cost_manager=CostManagerFactory())
+        self.assertTrue(model.history.count() > 0)
+
+    def test_flow_change(self):
+        self.flow_change_case(FlowUnitChange)
+
+    def test_all_models(self):
+        models = [FinancialIndependence, FinancialPlanning, RegularCost]
+        test_all_create_historic(self, models, FinancialPlanningFactory)

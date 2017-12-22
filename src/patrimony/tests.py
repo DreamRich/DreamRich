@@ -3,7 +3,12 @@ from django.test import TestCase
 from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import FinancialPlanningFactory
-from patrimony.models import Active, Arrearage
+from patrimony.models import (
+    Patrimony, Income,
+    RealEstate, Active,
+    Arrearage, CompanyParticipation,
+    Equipment, MovableProperty
+)
 from patrimony.factories import (
     PatrimonyFactory,
     IncomeFactory,
@@ -13,6 +18,7 @@ from patrimony.factories import (
     ActiveTypeFactory,
     ArrearageFactory
 )
+from lib.tests import test_all_create_historic
 
 
 def _flatten(array):
@@ -37,7 +43,7 @@ class PatrimonyTest(TestCase):
         FinancialPlanningFactory(
             active_client=active_client,
             patrimony=self.patrimony)
-        self.common_income = IncomeFactory(value_monthly=round(1200, 2),
+        self.common_income = IncomeFactory(value_monthly=1200,
                                            thirteenth=False,
                                            patrimony=self.patrimony,
                                            vacation=False)
@@ -45,7 +51,7 @@ class PatrimonyTest(TestCase):
                                                     thirteenth=True,
                                                     patrimony=self.patrimony,
                                                     vacation=False)
-        self.income_with_vacation = IncomeFactory(value_monthly=round(1200, 2),
+        self.income_with_vacation = IncomeFactory(value_monthly=1200,
                                                   thirteenth=False,
                                                   patrimony=self.patrimony,
                                                   vacation=True)
@@ -74,11 +80,20 @@ class PatrimonyTest(TestCase):
     def test_annual_income_with_thirteen(self):
         self.assertEqual(self.income_with_thirteenth.annual(), 15600.00)
 
+    def test_annual_income_with_fourteenth(self):
+        income_with_fourteenth = IncomeFactory(value_monthly=1200.00,
+                                               thirteenth=True,
+                                               fourteenth=True,
+                                               patrimony=self.patrimony,
+                                               vacation=False)
+        self.assertEqual(income_with_fourteenth.annual(), 16800.00)
+
     def test_annual_income_with_vacation(self):
         self.assertEqual(self.income_with_vacation.annual(), 14800.00)
 
     def test_current_monthly_income(self):
-        self.assertEqual(60962.67, self.patrimony.total_annual_income())
+        self.assertEqual(60962.66666666667, self.patrimony.
+                         total_annual_income())
 
     def test_income_flow(self):
         FlowUnitChange.objects.create(annual_value=500.00, year=2021,
@@ -86,10 +101,11 @@ class PatrimonyTest(TestCase):
         FlowUnitChange.objects.create(annual_value=-500.00, year=2022,
                                       incomes=self.patrimony)
 
-        flow_regular_cost_with_change = [60962.67, 60962.67, 60962.67,
-                                         60962.67, 61462.67, 60962.67,
-                                         60962.67, 60962.67, 60962.67,
-                                         60962.67]
+        flow_regular_cost_with_change = [60962.66666666667, 60962.66666666667,
+                                         60962.66666666667, 60962.66666666667,
+                                         61462.66666666667, 60962.66666666667,
+                                         60962.66666666667, 60962.66666666667,
+                                         60962.66666666667, 60962.66666666667]
 
         self.assertEqual(flow_regular_cost_with_change,
                          self.patrimony.income_flow())
@@ -212,6 +228,14 @@ class ActiveTest(TestCase):
         self.active.update_equivalent_rate(1000, 0.1201)
         new_rate = Active.objects.get(pk=self.active.pk).equivalent_rate
         self.assertAlmostEqual(new_rate, last_rate, 15)
+
+
+class HistoricalPatrimonyCreateTest(TestCase):
+
+    def test_all_models(self):
+        models = [Patrimony, Income, RealEstate, Active, Arrearage,
+                  CompanyParticipation, Equipment, MovableProperty]
+        test_all_create_historic(self, models, PatrimonyFactory)
 
 
 class ArrearageTest(TestCase):
