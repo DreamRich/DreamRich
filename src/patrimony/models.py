@@ -15,6 +15,13 @@ from patrimony.choices import AMORTIZATION_CHOICES
 class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
 
+    financial_planning = models.OneToOneField(
+        'financial_planning.FinancialPlanning',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='patrimony'
+    )
+
     def current_net_investment(self):
         total_active = self.activemanager.total()
         total_arrearage = self.arrearages.filter(period__lte=2).aggregate(
@@ -41,9 +48,9 @@ class Patrimony(models.Model):
         return total
 
     def total_annual_income(self):
-        total = 0
         incomes = list(self.incomes.all())
 
+        total = 0
         for income in incomes:
             total += income.annual()
 
@@ -88,6 +95,13 @@ class ActiveType(models.Model):
 
 class ActiveManager(models.Model):
 
+    patrimony = models.OneToOneField(
+        Patrimony,
+        on_delete=models.CASCADE,
+        primary_key=True
+    )
+
+    cdi = 0.10
     patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
 
     def total(self):
@@ -111,6 +125,15 @@ class ActiveManager(models.Model):
         if cdi != 0:
             return total_rate / cdi
         return 0
+
+    def sum_active_same_type(self):
+        data = {}
+        actives_type = ActiveType.objects.all()
+        for active_type in actives_type:
+            actives = active_type.actives.filter(active_manager=self)
+            if actives:
+                data[active_type.name] = actives.aggregate(Sum('value')).\
+                    pop('value__sum', 0)
 
     @staticmethod
     def transform_querryset_in_two_list(str_key, str_value, data):

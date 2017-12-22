@@ -33,6 +33,7 @@ class EmergencyReserveTest(TestCase):
         financial_planning = FinancialPlanningFactory()
         self.active_manager = financial_planning.patrimony.activemanager
         patrimony = financial_planning.patrimony
+
         self.emergency_reserve = EmergencyReserveFactory(
             mounth_of_protection=12,
             patrimony=patrimony,

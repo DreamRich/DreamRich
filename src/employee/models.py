@@ -13,4 +13,7 @@ class Employee(BaseUser):
 
 
 class FinancialAdviser(Employee):
-    clients = models.ManyToManyField(ActiveClient)
+    clients = models.ManyToManyField(
+        ActiveClient,
+        related_name='financial_advisers'
+    )

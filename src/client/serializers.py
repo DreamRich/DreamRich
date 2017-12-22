@@ -15,7 +15,7 @@ class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = [
-            'id',
+            'pk',
             'name',
             'abbreviation',
             'country_id'
@@ -28,7 +28,7 @@ class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = [
-            'id',
+            'pk',
             'name',
             'abbreviation',
             'country_states'
@@ -44,7 +44,7 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = [
-            'id',
+            'pk',
             'city',
             'type_of_address',
             'neighborhood',
@@ -65,7 +65,7 @@ class DependentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dependent
         fields = [
-            'id',
+            'pk',
             'active_client_id',
             'birthday',
             'name',
@@ -80,7 +80,7 @@ class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccount
         fields = [
-            'id',
+            'pk',
             'agency',
             'joint_account',
             'account',
@@ -95,7 +95,7 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = [
-            'id',
+            'pk',
             'name',
             'surname',
             'birthday',
@@ -119,8 +119,9 @@ class ActiveClientSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = ActiveClient
+        
         fields = [
-            'id',
+            'pk',
             'name',
             'surname',
             'birthday',

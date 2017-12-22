@@ -3,17 +3,13 @@ import abc
 import numpy
 from django.db import models
 from patrimony.models import Patrimony, Active, ActiveType
-from financial_planning.models import (
-    CostManager,
-    FinancialPlanning,
-)
 from lib.profit.profit import actual_rate
 
 
 class EmergencyReserve(models.Model):
 
     cost_manager = models.OneToOneField(
-        CostManager,
+        'financial_planning.CostManager',
         on_delete=models.CASCADE,
         related_name='emergency_reserve',
     )
@@ -46,7 +42,7 @@ class EmergencyReserve(models.Model):
 class ProtectionManager(models.Model):
 
     financial_planning = models.OneToOneField(
-        FinancialPlanning,
+        'financial_planning.FinancialPlanning',
         on_delete=models.CASCADE,
         related_name='protection_manager',
     )
@@ -89,35 +85,39 @@ class ReserveInLack(models.Model):
         related_name='reserve_in_lack',
     )
 
-    value_0_to_24_mounth = models.PositiveSmallIntegerField()
+    value_0_to_24_month = models.PositiveSmallIntegerField()
 
-    value_24_to_60_mounth = models.PositiveSmallIntegerField()
+    value_24_to_60_month = models.PositiveSmallIntegerField()
 
-    value_60_to_120_mounth = models.PositiveSmallIntegerField()
+    value_60_to_120_month = models.PositiveSmallIntegerField()
 
-    value_120_to_240_mounth = models.PositiveSmallIntegerField()
+    value_120_to_240_month = models.PositiveSmallIntegerField()
 
-    def patrimony_necessery_in_period(self, mounth_quantities, value):
+    def patrimony_necessery_in_period(self, month_quantities, value):
         rate = self.protection_manager.financial_planning.real_gain()
-        return numpy.pv(rate, mounth_quantities, -value)
+        return numpy.pv(rate, month_quantities, -value)
 
     def patrimony_necessery_total(self):
-        portion_0_to_24_mounth = self.patrimony_necessery_in_period(
-            24, self.value_0_to_24_mounth)
-        portion_24_to_60_mounth = self.patrimony_necessery_in_period(
-            36, self.value_24_to_60_mounth)
-        portion_60_to_120_mounth = self.patrimony_necessery_in_period(
-            60, self.value_60_to_120_mounth)
-        portion_120_to_240_mounth = self.patrimony_necessery_in_period(
-            120, self.value_120_to_240_mounth)
+        portion_0_to_24_month = self.patrimony_necessery_in_period(
+            24, self.value_0_to_24_month)
+        portion_24_to_60_month = self.patrimony_necessery_in_period(
+            36, self.value_24_to_60_month)
+        portion_60_to_120_month = self.patrimony_necessery_in_period(
+            60, self.value_60_to_120_month)
+        portion_120_to_240_month = self.patrimony_necessery_in_period(
+            120, self.value_120_to_240_month)
 
-        total = portion_0_to_24_mounth + portion_24_to_60_mounth +\
-            portion_60_to_120_mounth + portion_120_to_240_mounth
+        total = portion_0_to_24_month + portion_24_to_60_month +\
+            portion_60_to_120_month + portion_120_to_240_month
 
         return total
 
 
 class SuccessionTemplate(models.Model):
+
+    reserve_in_lack = models.OneToOneField(
+        ReserveInLack,
+    )
 
     class Meta:
         abstract = True
@@ -251,11 +251,13 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
 
 
 class PrivatePension(Active):
-    annual_investment = models.FloatField(default=0)
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
-        related_name='private_pensions')
+        related_name='private_pensions'
+    )
+
+    annual_investment = models.FloatField(default=0)
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         active_type = ActiveType.objects.get_or_create(name='PREVIDÊNCIA')
@@ -282,6 +284,12 @@ class PrivatePension(Active):
 
 
 class LifeInsurance(models.Model):
+    protection_manager = models.ForeignKey(
+        ProtectionManager,
+        on_delete=models.CASCADE,
+        related_name='life_insurances'
+    )
+
     name = models.CharField(max_length=100)
     value_to_recive = models.FloatField(default=0)
     value_to_pay_annual = models.FloatField(default=0)
@@ -289,10 +297,6 @@ class LifeInsurance(models.Model):
     redeemable = models.BooleanField()
     actual = models.BooleanField()
     has_year_end = models.BooleanField()
-    protection_manager = models.ForeignKey(
-        ProtectionManager,
-        on_delete=models.CASCADE,
-        related_name='life_insurances')
 
     def index_end(self):
         if self.has_year_end:

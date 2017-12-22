@@ -120,6 +120,7 @@ class AddressViewSet(viewsets.ModelViewSet):
                            'GET': 'see_own_client_data'}
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
+    permission_classes = (ClientsPermission,)
 
     @list_route(methods=['get'])
     def type_of_address(self, unused_request):
@@ -128,8 +129,8 @@ class AddressViewSet(viewsets.ModelViewSet):
             Permissions: see_own_client_data
         """
         addresses = self.queryset.values('type_of_address').distinct()
-        mapped = map(lambda x: x['type_of_address'], addresses)
-        return Response(list(mapped), 200)
+        distinct_types = map(lambda x: x['type_of_address'], addresses)
+        return Response(list(distinct_types), 200)
 
 
 class StateViewSet(viewsets.ModelViewSet):
@@ -164,6 +165,11 @@ class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
     filter_fields = ('country_id', )
 
+    def list(self, request):
+        country_id = request.query_params.get('country_id', None)
+
+        states = State.objects.filter(country_id=country_id) if country_id \
+            else self.queryset
 
 class CountryViewSet(viewsets.ModelViewSet):
     """

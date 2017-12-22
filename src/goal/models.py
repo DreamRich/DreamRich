@@ -13,6 +13,13 @@ class GoalType(models.Model):
 
 class GoalManager(models.Model):
 
+    financial_planning = models.OneToOneField(
+        'financial_planning.FinancialPlanning',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='goal_manager'
+    )
+
     @property
     def year_init_to_year_end(self):
         # array = []
