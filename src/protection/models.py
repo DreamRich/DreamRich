@@ -172,8 +172,8 @@ class SuccessionTemplate(models.Model):
         return total
 
     @property
-    def patrimony_necessery_to_other_taxes(self):
-        total = self.patrimony_total() * self.other_taxes
+    def patrimony_to_other_taxes(self):
+        total = self.patrimony_total()* self.other_taxes
         total = self.real_succession(total)
 
         return total
@@ -182,7 +182,7 @@ class SuccessionTemplate(models.Model):
     def patrimony_necessery_total_to_sucession(self):
         total = self.patrimony_necessery_to_itcmd +\
             self.patrimony_necessery_to_oab +\
-            self.patrimony_necessery_to_other_taxes
+            self.patrimony_to_other_taxes
 
         return total
 
