@@ -173,13 +173,13 @@ class SuccessionTemplate(models.Model):
 
     @property
     def patrimony_to_other_taxes(self):
-        total = self.patrimony_total()* self.other_taxes
+        total = self.patrimony_total() * self.other_taxes
         total = self.real_succession(total)
 
         return total
 
     @property
-    def patrimony_necessery_total_to_sucession(self):
+    def patrimony_total_to_sucession(self):
         total = self.patrimony_necessery_to_itcmd +\
             self.patrimony_necessery_to_oab +\
             self.patrimony_to_other_taxes
@@ -187,7 +187,7 @@ class SuccessionTemplate(models.Model):
         return total
 
     @property
-    def total_to_recive_after_death_without_taxes(self):
+    def patrimony_free_of_taxes(self):
         total = self.private_pension_total() +\
             self.life_insurance_to_recive_total()
 
@@ -195,8 +195,8 @@ class SuccessionTemplate(models.Model):
 
     @property
     def leftover_after_sucession(self):
-        total = self.total_to_recive_after_death_without_taxes -\
-            self.patrimony_necessery_total_to_sucession
+        total = self.patrimony_free_of_taxes -\
+            self.patrimony_total_to_sucession
 
         return total
 
