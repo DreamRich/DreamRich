@@ -92,8 +92,8 @@ class PatrimonyTest(TestCase):
         self.assertEqual(self.income_with_vacation.annual(), 14800.00)
 
     def test_current_monthly_income(self):
-        self.assertEqual(60962.66666666667, self.patrimony.\
-                total_annual_income())
+        self.assertEqual(60962.66666666667, self.patrimony.
+                         total_annual_income())
 
     def test_income_flow(self):
         FlowUnitChange.objects.create(annual_value=500.00, year=2021,

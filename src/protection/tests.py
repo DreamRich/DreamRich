@@ -340,7 +340,7 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
     def test_patrimony_total(self):
         self.assertEqual(self.future_patrimony_succession.patrimony_total(),
-                9054063.617092194)
+                         9054063.617092194)
 
     def test_patrimony_necessery_to_itcmd(self):
         self.assertAlmostEqual(
