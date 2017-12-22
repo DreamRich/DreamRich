@@ -4,8 +4,9 @@ from dreamrich.permissions_tests import (
     UserToEmployee,
     UserToFinancialAdviser,
     UserToGeneral,
-    NotAuthenticatedToItselfTests,
-    NotAuthenticatedToOtherObjectTests
+    PermissionsTests,
+    NotAuthenticatedTests,
+    NotAuthenticatedToItselfTests
 )
 from dreamrich.utils import Relationship
 from dreamrich.requests import RequestTypes
@@ -16,7 +17,9 @@ from .factories import (
 )
 
 
-class EmployeeToItself(UserToEmployee, NotAuthenticatedToItselfTests):
+class EmployeeToItself(UserToEmployee,
+                       PermissionsTests,
+                       NotAuthenticatedToItselfTests):
 
     factory_user = EmployeeMainFactory
 
@@ -34,7 +37,8 @@ class EmployeeToItself(UserToEmployee, NotAuthenticatedToItselfTests):
 
 
 class EmployeeToEmployee(UserToEmployee,
-                         NotAuthenticatedToOtherObjectTests):
+                         PermissionsTests,
+                         NotAuthenticatedTests):
 
     factory_user = EmployeeMainFactory
 
@@ -61,7 +65,9 @@ class EmployeeToEmployee(UserToEmployee,
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToClient(UserToClient, NotAuthenticatedToOtherObjectTests):
+class EmployeeToClient(UserToClient,
+                       PermissionsTests,
+                       NotAuthenticatedTests):
 
     factory_user = EmployeeMainFactory
 
@@ -85,7 +91,8 @@ class EmployeeToClient(UserToClient, NotAuthenticatedToOtherObjectTests):
 
 
 class EmployeeToFinancialAdviser(UserToFinancialAdviser,
-                                 NotAuthenticatedToOtherObjectTests):
+                                 PermissionsTests,
+                                 NotAuthenticatedTests):
 
     factory_user = EmployeeMainFactory
 
@@ -108,7 +115,9 @@ class EmployeeToFinancialAdviser(UserToFinancialAdviser,
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToGeneral(UserToGeneral, NotAuthenticatedToOtherObjectTests):
+class EmployeeToGeneral(UserToGeneral,
+                        PermissionsTests,
+                        NotAuthenticatedTests):
 
     factory_user = EmployeeMainFactory
 
@@ -129,6 +138,7 @@ class EmployeeToGeneral(UserToGeneral, NotAuthenticatedToOtherObjectTests):
 
 
 class FinanicalAdviserToItself(UserToFinancialAdviser,
+                               PermissionsTests,
                                NotAuthenticatedToItselfTests):
 
     factory_user = FinancialAdviserMainFactory
@@ -147,7 +157,8 @@ class FinanicalAdviserToItself(UserToFinancialAdviser,
 
 
 class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
-                                         NotAuthenticatedToOtherObjectTests):
+                                         PermissionsTests,
+                                         NotAuthenticatedTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -175,7 +186,8 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
 
 
 class FinancialAdviserToRelatedClient(UserToClient,
-                                      NotAuthenticatedToOtherObjectTests):
+                                      PermissionsTests,
+                                      NotAuthenticatedTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -204,7 +216,8 @@ class FinancialAdviserToRelatedClient(UserToClient,
 
 
 class FinancialAdviserToClient(UserToClient,
-                               NotAuthenticatedToOtherObjectTests):
+                               PermissionsTests,
+                               NotAuthenticatedTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -228,7 +241,8 @@ class FinancialAdviserToClient(UserToClient,
 
 
 class FinancialAdviserToEmployee(UserToEmployee,
-                                 NotAuthenticatedToOtherObjectTests):
+                                 PermissionsTests,
+                                 NotAuthenticatedTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -252,7 +266,8 @@ class FinancialAdviserToEmployee(UserToEmployee,
 
 
 class FinancialAdviserToRelatedGeneral(UserToGeneral,
-                                       NotAuthenticatedToOtherObjectTests):
+                                       PermissionsTests,
+                                       NotAuthenticatedTests):
 
     factory_user = FinancialAdviserMainFactory
 
@@ -291,7 +306,8 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
 
 
 class FinancialAdviserToGeneral(UserToGeneral,
-                                NotAuthenticatedToOtherObjectTests):
+                                PermissionsTests,
+                                NotAuthenticatedTests):
 
     factory_user = FinancialAdviserMainFactory
 
