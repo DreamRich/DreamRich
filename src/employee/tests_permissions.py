@@ -4,6 +4,7 @@ from dreamrich.permissions_tests import (
     UserToEmployee,
     UserToFinancialAdviser,
     UserToGeneral,
+    UserToItself,
     PermissionsTests,
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
@@ -18,10 +19,8 @@ from .factories import (
 
 
 class EmployeeToItself(UserToEmployee,
-                       PermissionsTests,
+                       UserToItself,
                        NotAuthenticatedToItselfTests):
-
-    factory_user = EmployeeMainFactory
 
     def test_employee_get_itself(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
@@ -39,12 +38,6 @@ class EmployeeToItself(UserToEmployee,
 class EmployeeToEmployee(UserToEmployee,
                          PermissionsTests,
                          NotAuthenticatedTests):
-
-    factory_user = EmployeeMainFactory
-
-    def setUp(self):
-        super(EmployeeToEmployee, self).setUp()
-        self.consulted = EmployeeMainFactory()
 
     def test_employee_get_employees_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -138,10 +131,8 @@ class EmployeeToGeneral(UserToGeneral,
 
 
 class FinanicalAdviserToItself(UserToFinancialAdviser,
-                               PermissionsTests,
+                               UserToItself,
                                NotAuthenticatedToItselfTests):
-
-    factory_user = FinancialAdviserMainFactory
 
     def test_financial_adviser_get_itself(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
@@ -159,12 +150,6 @@ class FinanicalAdviserToItself(UserToFinancialAdviser,
 class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
                                          PermissionsTests,
                                          NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserMainFactory
-
-    def setUp(self):
-        super(FinanicalAdviserToFinanicalAdviser, self).setUp()
-        self.consulted = FinancialAdviserMainFactory()
 
     def test_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)

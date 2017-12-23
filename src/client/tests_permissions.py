@@ -4,6 +4,7 @@ from dreamrich.permissions_tests import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,
+    UserToItself,
     PermissionsTests,
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
@@ -13,10 +14,8 @@ from client.factories import ActiveClientFactory
 
 
 class ClientToItself(UserToClient,
-                     PermissionsTests,
+                     UserToItself,
                      NotAuthenticatedToItselfTests):
-
-    factory_user = ActiveClientFactory
 
     def test_client_get_itself(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
@@ -36,11 +35,6 @@ class ClientToClient(UserToClient,
                      NotAuthenticatedTests):
 
     factory_user = ActiveClientFactory
-
-    def setUp(self):
-        super(ClientToClient, self).setUp()
-
-        self.consulted = ActiveClientFactory()
 
     def test_client_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)

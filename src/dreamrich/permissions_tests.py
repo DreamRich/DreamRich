@@ -209,3 +209,26 @@ class PermissionsTests(TestCase):
             http_method = request_method.value
 
         return http_method
+
+
+class UserToItself(PermissionsTests):
+
+    def setUp(self):
+        # pylint: disable=not-callable
+        self.consulted = self.factory_consulted()
+        self.user = self.consulted
+
+    def _check_attributes(self):
+        missing = ''
+
+        if not self.factory_consulted:
+            missing = 'factory_consulted'
+        elif not self.serializer_consulted:
+            missing = 'serializer_consulted'
+        elif not self.base_route:
+            missing = 'base_route'
+
+        if missing:
+            raise AttributeError('There are missing information in'
+                                 ' permissions tests hierarchy,'
+                                 ' {} is missing.'.format(missing))
