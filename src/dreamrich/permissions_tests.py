@@ -2,6 +2,7 @@ import json
 from http import HTTPStatus
 from rest_framework.test import APIClient
 from django.test import TestCase
+from django.contrib.auth.models import Permission
 from employee.serializers import (
     EmployeeSerializer,
     FinancialAdviserSerializer
@@ -135,6 +136,8 @@ class PermissionsTests(TestCase):
                                  RequestTypes.PATCH,
                                  RequestTypes.POST]
 
+        self._set_user_permissions()
+
         # Prepare data and make request
         if request_method in required_data_methods:
             response = self._make_required_data_request(request_method,
@@ -209,6 +212,15 @@ class PermissionsTests(TestCase):
             http_method = request_method.value
 
         return http_method
+
+    # Permissions not explicitly gotten from database inside these tests are
+    # not being seen. Probably because of database signals which are different
+    # at this environment. Fix when/if possible
+    def _set_user_permissions(self):
+        for permission in self.user.permissions:
+            fetched_permission = \
+                Permission.objects.get(codename=permission.codename)
+            self.user.user_permissions.add(fetched_permission)
 
 
 class UserToItself(PermissionsTests):
