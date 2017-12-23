@@ -90,6 +90,9 @@ class ActiveClient(BaseUser, ClientBase):
         blank=True
     )
 
+    # To facilitate getting default permissions in others places
+    default_permissions = []
+
     def __str__(self):
         return "{0.name} {0.username}".format(self)
 
@@ -153,7 +156,7 @@ class BankAccount(base_models.BaseModel):
     )  # BR pattern: '[8alg]-[1dig]'
 
     def __str__(self):
-        return str(self.agency) + ' ' + str(self.account)
+        return '{0.agency} {0.account}'.format(self)
 
 
 class Address(base_models.BaseModel):
