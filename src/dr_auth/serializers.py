@@ -9,5 +9,5 @@ class BaseUserSerializer(serializers.ModelSerializer):
         fields = [
             'username',
             'permissions',
-            'id',
+            'pk',
         ]

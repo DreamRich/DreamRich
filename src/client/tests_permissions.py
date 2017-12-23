@@ -9,14 +9,14 @@ from dreamrich.permissions_tests import (
     NotAuthenticatedToItselfTests
 )
 from dreamrich.requests import RequestTypes
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 
 
 class ClientToItself(UserToClient,
                      PermissionsTests,
                      NotAuthenticatedToItselfTests):
 
-    factory_user = ActiveClientMainFactory
+    factory_user = ActiveClientFactory
 
     def test_client_get_itself(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
@@ -35,12 +35,12 @@ class ClientToClient(UserToClient,
                      PermissionsTests,
                      NotAuthenticatedTests):
 
-    factory_user = ActiveClientMainFactory
+    factory_user = ActiveClientFactory
 
     def setUp(self):
         super(ClientToClient, self).setUp()
 
-        self.consulted = ActiveClientMainFactory()
+        self.consulted = ActiveClientFactory()
 
     def test_client_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -65,7 +65,7 @@ class ClientToEmployee(UserToEmployee,
                        PermissionsTests,
                        NotAuthenticatedTests):
 
-    factory_user = ActiveClientMainFactory
+    factory_user = ActiveClientFactory
 
     def test_clients_get_employees_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -90,7 +90,7 @@ class ClientToFinancialAdviser(UserToFinancialAdviser,
                                PermissionsTests,
                                NotAuthenticatedTests):
 
-    factory_user = ActiveClientMainFactory
+    factory_user = ActiveClientFactory
 
     def test_clients_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -115,7 +115,7 @@ class ClientToRelatedGeneral(UserToGeneral,
                              PermissionsTests,
                              NotAuthenticatedTests):
 
-    factory_user = ActiveClientMainFactory
+    factory_user = ActiveClientFactory
 
     def setUp(self):
         super(ClientToRelatedGeneral, self).setUp()
@@ -144,7 +144,7 @@ class ClientToRelatedGeneral(UserToGeneral,
 class ClientToGeneral(UserToGeneral,
                       PermissionsTests,
                       NotAuthenticatedTests):
-    factory_user = ActiveClientMainFactory
+    factory_user = ActiveClientFactory
 
     def test_client_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)

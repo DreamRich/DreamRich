@@ -10,7 +10,7 @@ from dreamrich.permissions_tests import (
 )
 from dreamrich.utils import Relationship
 from dreamrich.requests import RequestTypes
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from .factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
@@ -274,7 +274,7 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
     def setUp(self):
         super(FinancialAdviserToRelatedGeneral, self).setUp()
 
-        active_client = ActiveClientMainFactory()
+        active_client = ActiveClientFactory()
 
         # Financial adviser and active client
         # Active client and general representant

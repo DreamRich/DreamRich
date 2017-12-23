@@ -2,7 +2,7 @@ from json import dumps
 from django.test import TestCase, Client as DjangoClient
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from dreamrich.utils import get_token
 from employee.factories import (
     EmployeeMainFactory,
@@ -15,7 +15,7 @@ class AuthTest(TestCase):
     def setUp(self):
         self.employee = EmployeeMainFactory()
         self.financial_adviser = FinancialAdviserMainFactory()
-        self.active_client = ActiveClientMainFactory()
+        self.active_client = ActiveClientFactory()
         self.django_client = DjangoClient()
 
     def test_get_token(self):

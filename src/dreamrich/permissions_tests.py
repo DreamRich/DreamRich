@@ -10,7 +10,7 @@ from employee.factories import (
     EmployeeMainFactory,
     FinancialAdviserMainFactory
 )
-from client.factories import ActiveClientMainFactory
+from client.factories import ActiveClientFactory
 from client.serializers import ActiveClientSerializer
 from financial_planning.factories import FinancialPlanningFactory
 from financial_planning.serializers import FinancialPlanningSerializer
@@ -20,7 +20,7 @@ from .utils import authenticate_user, Relationship
 
 class UserToClient:
 
-    factory_consulted = ActiveClientMainFactory
+    factory_consulted = ActiveClientFactory
     serializer_consulted = ActiveClientSerializer
     base_route = '/api/client/active/'
 
