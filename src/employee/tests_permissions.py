@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from dreamrich.permissions_tests import (
+from dr_auth.permissions_tests import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,

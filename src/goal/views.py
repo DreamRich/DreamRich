@@ -10,10 +10,8 @@ from goal.models import (
     GoalType,
     GoalManager,
 )
-from dr_auth.permissions import (
-    GeneralModelPermissions,
-    GeneralCustomPermissions
-)
+from dr_auth.models_permissions import GeneralModelPermissions
+from dr_auth.custom_permissions import GeneralCustomPermissions
 
 
 class GoalViewSet(viewsets.ModelViewSet):

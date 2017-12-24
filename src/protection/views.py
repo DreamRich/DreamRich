@@ -1,8 +1,6 @@
 from rest_framework import viewsets
-from dr_auth.permissions import (
-    GeneralModelPermissions,
-    GeneralCustomPermissions
-)
+from dr_auth.models_permissions import GeneralModelPermissions
+from dr_auth.custom_permissions import GeneralCustomPermissions
 from .models import (
     EmergencyReserve, ProtectionManager, ReserveInLack,
     ActualPatrimonySuccession, IndependencePatrimonySuccession,

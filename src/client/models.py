@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import Permission
-from dr_auth.models import BaseUser
 from dreamrich import validators
 from dreamrich import models as base_models
+from dr_auth.models import BaseUser
+from dr_auth.models_permissions import (
+    CLIENT_MODEL_PERMISSIONS,
+    CLIENT_DEFAULT_CODENAMES_PERMISSIONS
+)
 
 
 class Country(base_models.BaseModel):
@@ -82,22 +86,7 @@ class ClientBase(base_models.BaseModel):
 class ActiveClient(BaseUser, ClientBase):
 
     class Meta:
-        permissions = (
-            ('see_client', 'Obrigatory for user can see any client'),
-            ('see_own_client', 'See own clients (or itself, if client)'),
-            ('see_other_client', 'See other clients (or not yours)'),
-            ('see_client_list', 'See list of clients itself'),
-
-            ('add_client', 'Create a client'),
-
-            ('change_client', 'Obrigatory for user can change any client'),
-            ('change_own_client', 'Change own clients (or itself)'),
-            ('change_other_client', 'See other clients (or not yours)'),
-
-            ('delete_client', 'Obrigatory for user can delete any client'),
-            ('delete_own_client', 'Delete own clients (or itself, if client)'),
-            ('delete_other_client', 'Delete other clients (or not yours)'),
-        )
+        permissions = CLIENT_MODEL_PERMISSIONS
 
     id_document = models.ImageField(
         null=True,
@@ -109,18 +98,13 @@ class ActiveClient(BaseUser, ClientBase):
         blank=True
     )
 
+    default_permissions_codenames = CLIENT_DEFAULT_CODENAMES_PERMISSIONS
+
     # To facilitate getting default permissions in others places
     @property
     def default_permissions(self):
-        permissions_codenames = [
-            'see_client', 'see_own_client',
-            'change_client', 'change_own_client',
-
-            'see_general', 'see_own_general'
-        ]
-
         permissions = []
-        for permission_codename in permissions_codenames:
+        for permission_codename in self.default_permissions_codenames:
             permissions += \
                 [Permission.objects.get(codename=permission_codename)]
 

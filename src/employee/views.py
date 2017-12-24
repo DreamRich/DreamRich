@@ -7,10 +7,12 @@ from employee.models import (
     Employee,
     FinancialAdviser,
 )
-from dr_auth.permissions import (
+from dr_auth.models_permissions import (
     EmployeesModelPermissions,
-    EmployeesCustomPermissions,
     FinancialAdvisersModelPermissions,
+)
+from dr_auth.custom_permissions import (
+    EmployeesCustomPermissions,
     FinancialAdvisersCustomPermissions
 )
 

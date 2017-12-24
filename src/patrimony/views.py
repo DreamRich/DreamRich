@@ -25,10 +25,8 @@ from patrimony.models import (
     Patrimony,
     RealEstate,
 )
-from dr_auth.permissions import (
-    GeneralModelPermissions,
-    GeneralCustomPermissions
-)
+from dr_auth.models_permissions import GeneralModelPermissions
+from dr_auth.custom_permissions import GeneralCustomPermissions
 
 
 class PatrimonyViewSet(viewsets.ModelViewSet):

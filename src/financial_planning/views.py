@@ -16,10 +16,8 @@ from financial_planning.models import (
     FlowUnitChange, FinancialIndependence,
 )
 from employee.models import FinancialAdviser
-from dr_auth.permissions import (
-    GeneralModelPermissions,
-    GeneralCustomPermissions
-)
+from dr_auth.models_permissions import GeneralModelPermissions
+from dr_auth.custom_permissions import GeneralCustomPermissions
 
 
 class CostTypeViewList(generics.ListAPIView):

@@ -15,8 +15,8 @@ from client.factories import ActiveClientFactory
 from client.serializers import ActiveClientSerializer
 from financial_planning.factories import FinancialPlanningFactory
 from financial_planning.serializers import FinancialPlanningSerializer
-from .requests import RequestTypes
-from .utils import authenticate_user, Relationship
+from dreamrich.requests import RequestTypes
+from dreamrich.utils import authenticate_user, Relationship
 
 
 class UserToClient:

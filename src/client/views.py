@@ -19,10 +19,8 @@ from client.models import (
     BankAccount,
     Dependent
 )
-from dr_auth.permissions import (
-    ClientsModelPermissions,
-    ClientsCustomPermissions
-)
+from dr_auth.models_permissions import ClientsModelPermissions
+from dr_auth.custom_permissions import ClientsCustomPermissions
 
 
 class ClientViewSet(viewsets.ModelViewSet):
