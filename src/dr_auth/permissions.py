@@ -33,6 +33,16 @@ class FinancialAdvisersModelPermissions(DjangoModelPermissions):
     }
 
 
+class GeneralModelPermissions(DjangoModelPermissions):
+    perms_map = {
+        'GET': ['general.see_general'],
+        'POST': ['general.add_general'],
+        'PUT': ['general.change_general'],
+        'PATCH': ['general.change_general'],
+        'DELETE': ['general.delete_general'],
+    }
+
+
 class ClientsCustomPermissions(BasePermission):
 
     def has_permission(self, request, view):
@@ -60,6 +70,12 @@ class EmployeesCustomPermissions(BasePermission):
 
 
 class FinancialAdvisersCustomPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        return False
+
+
+class GeneralCustomPermissions(BasePermission):
 
     def has_permission(self, request, view):
         return False

@@ -114,7 +114,9 @@ class ActiveClient(BaseUser, ClientBase):
     def default_permissions(self):
         permissions_codenames = [
             'see_client', 'see_own_client',
-            'change_client', 'change_own_client'
+            'change_client', 'change_own_client',
+
+            'see_general', 'see_own_general'
         ]
 
         permissions = []

@@ -13,6 +13,24 @@ from lib.profit.profit import actual_rate
 
 class FinancialPlanning(models.Model):
 
+    class Meta:
+        permissions = (
+            ('see_general', 'Obrigatory for user can see any general'),
+            ('see_own_general', 'See own generals)'),
+            ('see_other_general', 'See other generals)'),
+            ('see_general_list', 'See list of generals itself'),
+
+            ('add_general', 'Create a general'),
+
+            ('change_general', 'Obrigatory for user can change any general'),
+            ('change_own_general', 'Change own generals (or itself)'),
+            ('change_other_general', 'See other generals (or not yours)'),
+
+            ('delete_general', 'Obrigatory for user can delete any general'),
+            ('delete_own_general', 'Delete own generals)'),
+            ('delete_other_general', 'Delete other generals (or not yours)'),
+        )
+
     active_client = models.OneToOneField(
         'client.ActiveClient',
         on_delete=models.CASCADE,

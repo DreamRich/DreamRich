@@ -34,7 +34,7 @@ class Employee(BaseUser):
     def default_permissions(self):
         permissions_codenames = [
             'see_client', 'delete_client',
-            'see_other_client', 'add_client'
+            'see_other_client', 'add_client',
 
             'see_employee', 'change_employee',
             'see_own_employee', 'change_own_employee'
@@ -78,15 +78,19 @@ class FinancialAdviser(Employee):
     def default_permissions(self):
         permissions_codenames = [
             'see_client', 'delete_client', 'change_client',
-            'see_own_client', 'delete_own_client', 'change_own_client'
-            'see_other_client', 'add_client'
+            'see_own_client', 'delete_own_client', 'change_own_client',
+            'see_other_client', 'add_client',
 
             'see_employee', 'delete_employee', 'change_employee',
-            'see_other_employee', 'delete_other_employee', 'add_employee'
+            'see_other_employee', 'delete_other_employee', 'add_employee',
 
             'see_fa', 'delete_fa', 'change_fa',
-            'see_own_fa', 'delete_own_fa', 'change_own_fa'
-            'see_other_fa', 'delete_other_fa', 'add_fa'
+            'see_own_fa', 'delete_own_fa', 'change_own_fa',
+            'see_other_fa', 'delete_other_fa', 'add_fa',
+
+            'see_general', 'delete_general', 'change_general', 'add_general'
+            'see_own_general', 'delete_own_general', 'change_own_general',
+            'see_other_general'
         ]
 
         permissions = []
