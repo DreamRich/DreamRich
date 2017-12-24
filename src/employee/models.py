@@ -50,7 +50,48 @@ class Employee(BaseUser):
 
 class FinancialAdviser(Employee):
 
+    class Meta:
+        # fa = financial adviser
+        permissions = (
+            ('see_fa', 'Obrigatory for user can see any fa'),
+            ('see_own_fa', 'See own fas (or itself, if fa)'),
+            ('see_other_fa', 'See other fa (or not yours)'),
+            ('see_fa_list', 'See list of fa itself'),
+
+            ('add_fa', 'Create an fa'),
+
+            ('change_fa', 'Obrigatory for user can change any fa'),
+            ('change_own_fa', 'Change own fa (or itself)'),
+            ('change_other_fa', 'See other fa (or not yours)'),
+
+            ('delete_fa', 'Obrigatory for user can change any fa'),
+            ('delete_other_fa', 'Delete other fa (or not yours)'),
+        )
+
     clients = models.ManyToManyField(
         ActiveClient,
         related_name='financial_advisers'
     )
+
+    # To facilitate getting default permissions in others places
+    @property
+    def default_permissions(self):
+        permissions_codenames = [
+            'see_client', 'delete_client', 'change_client',
+            'see_own_client', 'delete_own_client', 'change_own_client'
+            'see_other_client', 'add_client'
+
+            'see_employee', 'delete_employee', 'change_employee',
+            'see_other_employee', 'delete_other_employee', 'add_employee'
+
+            'see_fa', 'delete_fa', 'change_fa',
+            'see_own_fa', 'delete_own_fa', 'change_own_fa'
+            'see_other_fa', 'delete_other_fa', 'add_fa'
+        ]
+
+        permissions = []
+        for permission_codename in permissions_codenames:
+            permissions += \
+                [Permission.objects.get(codename=permission_codename)]
+
+        return permissions

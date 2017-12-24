@@ -12,13 +12,24 @@ class ClientsModelPermissions(DjangoModelPermissions):
     }
 
 
-class EmployeeModelPermissions(DjangoModelPermissions):
+class EmployeesModelPermissions(DjangoModelPermissions):
     perms_map = {
         'GET': ['employee.see_employee'],
         'POST': ['employee.add_employee'],
         'PUT': ['employee.change_employee'],
         'PATCH': ['employee.change_employee'],
         'DELETE': ['employee.delete_employee'],
+    }
+
+
+class FinancialAdvisersModelPermissions(DjangoModelPermissions):
+    # fa = financial adviser
+    perms_map = {
+        'GET': ['fa.see_fa'],
+        'POST': ['fa.add_fa'],
+        'PUT': ['fa.change_fa'],
+        'PATCH': ['fa.change_fa'],
+        'DELETE': ['fa.delete_fa'],
     }
 
 
@@ -43,6 +54,12 @@ class ClientsCustomPermissions(BasePermission):
 
 
 class EmployeesCustomPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        return False
+
+
+class FinancialAdvisersCustomPermissions(BasePermission):
 
     def has_permission(self, request, view):
         return False

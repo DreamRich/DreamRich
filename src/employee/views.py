@@ -9,8 +9,10 @@ from employee.models import (
 )
 from dr_auth.permissions import (
     EmployeesModelPermissions,
-    EmployeesCustomPermissions
-) 
+    EmployeesCustomPermissions,
+    FinancialAdvisersModelPermissions,
+    FinancialAdvisersCustomPermissions
+)
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -25,3 +27,5 @@ class FinancialAdviserViewSet(viewsets.ModelViewSet):
 
     serializer_class = FinancialAdviserSerializer
     queryset = FinancialAdviser.objects.all()
+    permission_classes = (FinancialAdvisersModelPermissions,
+                          FinancialAdvisersCustomPermissions)
