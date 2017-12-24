@@ -12,6 +12,16 @@ class ClientsModelPermissions(DjangoModelPermissions):
     }
 
 
+class EmployeeModelPermissions(DjangoModelPermissions):
+    perms_map = {
+        'GET': ['employee.see_employee'],
+        'POST': ['employee.add_employee'],
+        'PUT': ['employee.change_employee'],
+        'PATCH': ['employee.change_employee'],
+        'DELETE': ['employee.delete_employee'],
+    }
+
+
 class ClientsCustomPermissions(BasePermission):
 
     def has_permission(self, request, view):
@@ -32,18 +42,7 @@ class ClientsCustomPermissions(BasePermission):
         return authorized
 
 
-class FinancialAdvisersPermission(BasePermission):
+class EmployeesCustomPermissions(BasePermission):
+
     def has_permission(self, request, view):
         return False
-
-
-class EmployeesPermission(BasePermission):
-    def has_permission(self, request, view):
-        return False
-
-
-class FinancialPlanningPermission(BasePermission):
-
-    @staticmethod
-    def has_permission_to_see_chart(request_user):
-        return True
