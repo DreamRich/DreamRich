@@ -1,4 +1,3 @@
-from dr_auth.permissions import ClientsPermission
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -19,6 +18,10 @@ from client.models import (
     Country,
     BankAccount,
     Dependent
+)
+from dr_auth.permissions import (
+    ClientsModelPermissions,
+    ClientsCustomPermissions
 )
 
 
@@ -48,11 +51,9 @@ class ClientViewSet(viewsets.ModelViewSet):
         Permissions: change_own_client_data
     """
 
-    required_permission = {'PUT': 'change_own_client_data',
-                           'GET': 'see_own_client_data'}
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
-    permission_classes = (ClientsPermission,)
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)
 
 
 class ActiveClientViewSet(viewsets.ModelViewSet):
@@ -81,11 +82,9 @@ class ActiveClientViewSet(viewsets.ModelViewSet):
         Permissions: change_own_client_data
     """
 
-    required_permission = {'PUT': 'change_own_client_data',
-                           'GET': 'see_own_client_data'}
     serializer_class = ActiveClientSerializer
     queryset = ActiveClient.objects.all()
-    permission_classes = (ClientsPermission,)
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)
 
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -120,7 +119,7 @@ class AddressViewSet(viewsets.ModelViewSet):
                            'GET': 'see_own_client_data'}
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
-    permission_classes = (ClientsPermission,)
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)
 
     @list_route(methods=['get'])
     def type_of_address(self, unused_request):
@@ -164,12 +163,14 @@ class StateViewSet(viewsets.ModelViewSet):
     serializer_class = StateSerializer
     queryset = State.objects.all()
     filter_fields = ('country_id', )
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)
 
     def list(self, request):
         country_id = request.query_params.get('country_id', None)
 
         states = State.objects.filter(country_id=country_id) if country_id \
             else self.queryset
+
 
 class CountryViewSet(viewsets.ModelViewSet):
     """
@@ -197,10 +198,9 @@ class CountryViewSet(viewsets.ModelViewSet):
         Permissions: change_own_client_data
     """
 
-    required_permission = {'PUT': 'change_own_client_data',
-                           'GET': 'see_own_client_data'}
     serializer_class = CountrySerializer
     queryset = Country.objects.all()
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):
@@ -229,10 +229,9 @@ class BankAccountViewSet(viewsets.ModelViewSet):
         Permissions: change_own_client_data
     """
 
-    required_permission = {'PUT': 'change_own_client_data',
-                           'GET': 'see_own_client_data'}
     serializer_class = BankAccountSerializer
     queryset = BankAccount.objects.all()
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)
 
 
 class DependentViewSet(viewsets.ModelViewSet):
@@ -261,7 +260,6 @@ class DependentViewSet(viewsets.ModelViewSet):
         Permissions: change_own_client_data
     """
 
-    required_permission = {'PUT': 'change_own_client_data',
-                           'GET': 'see_own_client_data'}
     serializer_class = DependentSerializer
     queryset = Dependent.objects.all()
+    permission_classes = (ClientsModelPermissions, ClientsCustomPermissions)

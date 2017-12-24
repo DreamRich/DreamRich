@@ -13,7 +13,7 @@ class FinancialIndependenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialIndependence
         fields = [
-            'id',
+            'pk',
             'age',
             'duration_of_usufruct',
             'rate',
@@ -29,7 +29,7 @@ class FlowUnitChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlowUnitChange
         fields = [
-            'id',
+            'pk',
             'annual_value',
             'year',
             'cost_manager_id',
@@ -96,6 +96,10 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
             'cdi',
             'ipca',
             'target_profitability',
+            'year_init_to_end',
+            'total_resource_for_annual_goals',
+            'suggested_flow_patrimony',
+            'actual_flow_patrimony'
         ]
 
 

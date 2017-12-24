@@ -179,7 +179,10 @@ class PermissionsTests(TestCase):
             # When there was no use of "primary_key=True" on class definition
             # If the consulted has own primary key (pk isn't necessary)
             if hasattr(self.consulted, 'id'):
-                data.pop('pk')
+                try:
+                    data.pop('pk')
+                except KeyError:
+                    pass
 
             self.consulted.delete()
             data['cpf'] = '75116625109'  # Arbitrary, generated online

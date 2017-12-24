@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import Permission
 from dr_auth.models import BaseUser
 from dreamrich import validators
 from dreamrich import models as base_models
@@ -80,6 +81,22 @@ class ClientBase(base_models.BaseModel):
 
 class ActiveClient(BaseUser, ClientBase):
 
+    class Meta:
+        permissions = (
+            ('see_client', 'Obrigatory for user can see any client'),
+            ('see_own_client', 'See own clients (or itself, if client)'),
+            ('see_other_client', 'See other clients (or not yours)'),
+            ('see_client_list', 'See list of clients itself'),
+
+            ('change_client', 'Obrigatory for user can change any client'),
+            ('change_own_client', 'Change own clients (or itself)'),
+            ('change_other_client', 'See other clients (or not yours)'),
+
+            ('delete_client', 'Obrigatory for user can change any client'),
+            ('delete_own_client', 'Delete own clients (or itself, if client)'),
+            ('delete_other_client', 'Delete other clients (or not yours)'),
+        )
+
     id_document = models.ImageField(
         null=True,
         blank=True
@@ -91,16 +108,28 @@ class ActiveClient(BaseUser, ClientBase):
     )
 
     # To facilitate getting default permissions in others places
-    default_permissions = []
+    @property
+    def default_permissions(self):
+        permissions_codenames = [
+            'see_client', 'see_own_client',
+            'change_client', 'change_own_client'
+        ]
 
-    def __str__(self):
-        return "{0.name} {0.username}".format(self)
+        permissions = []
+        for permission_codename in permissions_codenames:
+            permissions += \
+                [Permission.objects.get(codename=permission_codename)]
+
+        return permissions
 
     @property
     def is_complete(self):
         if hasattr(self, 'financial_planning'):
             return self.financial_planning.is_complete()
         return False
+
+    def __str__(self):
+        return "{0.name} {0.username}".format(self)
 
 
 class Client(ClientBase):

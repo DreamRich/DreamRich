@@ -3,7 +3,6 @@ import numpy
 from django.core.exceptions import ValidationError
 from django.db import models
 from dreamrich import models as base_models
-from client.models import ActiveClient
 from goal.models import GoalType
 from lib.financial_planning.flow import (
     generic_flow,
@@ -15,7 +14,7 @@ from lib.profit.profit import actual_rate
 class FinancialPlanning(models.Model):
 
     active_client = models.OneToOneField(
-        ActiveClient,
+        'client.ActiveClient',
         on_delete=models.CASCADE,
         primary_key=True,
         related_name='financial_planning'
@@ -28,12 +27,6 @@ class FinancialPlanning(models.Model):
     ipca = models.FloatField()
 
     target_profitability = models.FloatField()
-
-    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        if not self.init_year:
-            self.init_year = datetime.datetime.now().year
-
-        super(FinancialPlanning, self).save(*args, **kwargs)
 
     def is_complete(self):
         fields = ['cost_manager', 'goal_manager', 'financial_independence',
@@ -153,6 +146,12 @@ class FinancialPlanning(models.Model):
         flow = self.resource_monetization(annual_leftovers, real_gain)
 
         return {'flow': flow, 'rate': real_gain}
+
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        if not self.init_year:
+            self.init_year = datetime.datetime.now().year
+
+        super(FinancialPlanning, self).save(*args, **kwargs)
 
 
 class FinancialIndependence(models.Model):
