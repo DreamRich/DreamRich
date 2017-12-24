@@ -88,11 +88,13 @@ class ActiveClient(BaseUser, ClientBase):
             ('see_other_client', 'See other clients (or not yours)'),
             ('see_client_list', 'See list of clients itself'),
 
+            ('add_client', 'Create a client'),
+
             ('change_client', 'Obrigatory for user can change any client'),
             ('change_own_client', 'Change own clients (or itself)'),
             ('change_other_client', 'See other clients (or not yours)'),
 
-            ('delete_client', 'Obrigatory for user can change any client'),
+            ('delete_client', 'Obrigatory for user can delete any client'),
             ('delete_own_client', 'Delete own clients (or itself, if client)'),
             ('delete_other_client', 'Delete other clients (or not yours)'),
         )
