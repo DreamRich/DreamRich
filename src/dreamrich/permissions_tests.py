@@ -168,8 +168,8 @@ class PermissionsTests(TestCase):
     def _make_required_data_request(self, request_method,
                                     api_client_method, route):
         # pylint: disable=not-callable
-        data = self.serializer_consulted(self.consulted)
-        data = data.data
+        data_serialized = self.serializer_consulted(self.consulted)
+        data = self._remove_read_only_fields(data_serialized)
         # pylint: enable=not-callable
 
         if request_method == RequestTypes.PATCH:
@@ -213,11 +213,35 @@ class PermissionsTests(TestCase):
 
         return http_method
 
+    def _remove_read_only_fields(self, serialized_data):
+        read_only_fields = self._get_read_only_fields(serialized_data)
+
+        data = serialized_data.data
+        for field in read_only_fields:
+            data.pop(field)
+
+        return data
+
+    @staticmethod
+    def _get_read_only_fields(data):
+        all_fields = data.get_fields()
+        all_fields_names = list(all_fields.keys())
+
+        # Get all fields with read_only == True
+        read_only_fields = \
+            [name for name in all_fields_names if all_fields[name].read_only]
+
+        # Remove id fields
+        read_only_fields = \
+            [field for field in read_only_fields if field[-3:] != '_id']
+
+        return read_only_fields
+
     # Permissions not explicitly gotten from database inside these tests are
     # not being seen. Probably because of database signals which are different
     # at this environment. Fix when/if possible
     def _set_user_permissions(self):
-        for permission in self.user.permissions:
+        for permission in self.user.default_permissions:
             fetched_permission = \
                 Permission.objects.get(codename=permission.codename)
             self.user.user_permissions.add(fetched_permission)
