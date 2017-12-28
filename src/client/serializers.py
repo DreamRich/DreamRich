@@ -136,4 +136,6 @@ class ActiveClientSerializer(serializers.ModelSerializer):
             'spouse',
             'email',
             'birthday',
+            'is_complete',
+            'is_active',
         ]

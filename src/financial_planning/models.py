@@ -1,6 +1,8 @@
 import datetime
 import numpy
+from django.core.exceptions import ValidationError
 from django.db import models
+from dreamrich import models as base_models
 from client.models import ActiveClient
 from patrimony.models import Patrimony
 from goal.models import GoalManager, GoalType
@@ -9,6 +11,7 @@ from lib.financial_planning.flow import (
     create_array_change_annual,
 )
 from lib.profit.profit import actual_rate
+from simple_history.models import HistoricalRecords
 
 
 class FinancialIndependence(models.Model):
@@ -16,6 +19,7 @@ class FinancialIndependence(models.Model):
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
     rate = models.FloatField()
+    history = HistoricalRecords()
 
     def assets_required(self):
         rate = self.financial_planning.real_gain()
@@ -61,7 +65,7 @@ class FinancialIndependence(models.Model):
     def patrimony_at_end(self):
         actual_patrimony = self.financial_planning.patrimony.total()
         patrimony_in_independence = self.financial_planning.\
-            suggested_flow_patrimony[-1]
+            suggested_flow_patrimony['flow'][-1]
         goals_monetized = self.goals_monetized()
         total = actual_patrimony + patrimony_in_independence +\
             goals_monetized
@@ -114,6 +118,7 @@ class RegularCost(models.Model):
 
     value = models.FloatField(default=0)
     cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
+    history = HistoricalRecords()
     cost_manager = models.ForeignKey(
         CostManager,
         related_name='regular_costs',
@@ -126,17 +131,30 @@ class RegularCost(models.Model):
         return str(self.value)
 
 
-class FlowUnitChange(models.Model):
+class FlowUnitChange(base_models.BaseModel):
 
     annual_value = models.FloatField()
 
     year = models.PositiveSmallIntegerField()
 
+    history = HistoricalRecords()
+
     cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
-                                     null=True)
+                                     null=True, blank=True)
 
     incomes = models.ForeignKey(Patrimony, on_delete=models.CASCADE,
-                                null=True)
+                                null=True, blank=True)
+
+    def clean(self):
+        # Don't allow cost_manager and incomes id's null together
+        if self.cost_manager is None and self.incomes is None:
+            raise ValidationError("cost_manager_id and incomes_id can't be" +
+                                  " null together. Instaciate one")
+
+        # Don't allow cost_manager and incomes instaciate together
+        if self.cost_manager is not None and self.incomes is not None:
+            raise ValidationError("cost_manager_id and incomes_id can't be" +
+                                  " instanciate together. Instaciate just one")
 
 
 class FinancialPlanning(models.Model):
@@ -182,13 +200,33 @@ class FinancialPlanning(models.Model):
 
     ipca = models.FloatField()
 
-    target_profitability = models.PositiveSmallIntegerField()
+    target_profitability = models.FloatField()
+
+    history = HistoricalRecords()
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.init_year:
             self.init_year = datetime.datetime.now().year
 
         super(FinancialPlanning, self).save(*args, **kwargs)
+
+    def is_complete(self):
+        fields = ['cost_manager', 'goal_manager', 'financial_independence',
+                  'patrimony']
+
+        for field in fields:
+            if not hasattr(
+                self,
+                field) or (
+                hasattr(
+                    self,
+                    field) and getattr(
+                    self,
+                    field +
+                    '_id') is None):
+                return False
+
+        return True
 
     def end_year(self):
         age_of_independence = self.financial_independence.age
@@ -244,8 +282,9 @@ class FinancialPlanning(models.Model):
 
         return data
 
-    def real_gain_related_cdi(self):
-        return actual_rate(self.target_profitability / 100 * self.cdi,
+    def real_gain_related_cdi(self, target=None):
+        target_profitability = target or self.target_profitability
+        return actual_rate(target_profitability * self.cdi,
                            self.ipca)
 
     def resource_monetization(self, flow, rate):
@@ -263,6 +302,14 @@ class FinancialPlanning(models.Model):
         return resource
 
     @property
+    def year_init_to_end(self):
+        init_year = self.init_year
+        duration_goals = self.duration()
+        range_year = range(init_year, init_year + duration_goals)
+        array = list(range_year)
+        return array
+
+    @property
     def total_resource_for_annual_goals(self):
         annual_leftovers_for_goal = self.annual_leftovers_for_goal()
         rate = self.real_gain_related_cdi() + 1
@@ -277,12 +324,13 @@ class FinancialPlanning(models.Model):
         rate = self.real_gain_related_cdi() + 1
         flow = self.resource_monetization(annual_leftovers, rate)
 
-        return flow
+        return {'flow': flow, 'rate': rate}
 
     @property
     def actual_flow_patrimony(self):
         annual_leftovers = self.annual_leftovers()
-        real_gain = self.patrimony.activemanager.real_profit_cdi()
+        target = self.patrimony.activemanager.real_profit_cdi()
+        real_gain = self.real_gain_related_cdi(target) + 1
         flow = self.resource_monetization(annual_leftovers, real_gain)
 
-        return flow
+        return {'flow': flow, 'rate': real_gain}

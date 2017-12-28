@@ -10,10 +10,13 @@ from lib.financial_planning.flow import (
 )
 import patrimony.validators as patrimony_validators
 from patrimony.choices import AMORTIZATION_CHOICES
+from simple_history.models import HistoricalRecords
 
 
 class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
+
+    history = HistoricalRecords()
 
     def current_net_investment(self):
         total_active = self.activemanager.total()
@@ -145,7 +148,7 @@ class Active(models.Model):
     value = models.FloatField(default=0)
     rate = models.FloatField(default=0)
     equivalent_rate = models.FloatField(default=0, blank=True, null=True)
-
+    history = HistoricalRecords()
     active_type = models.ForeignKey(ActiveType,
                                     on_delete=models.CASCADE,
                                     related_name='actives')
@@ -178,22 +181,40 @@ class ArrearageCalculator:
 
     def __init__(self, arrearage):
         self.calculate = arrearage
+        self.outstanding_balance = self.calculate.value
+        self.total_provision = 0
+        self.total_interest = 0
+        self.total_amortization = 0
 
     def calculate_arrearage(self):
         data = []
-        outstanding_balance = self.calculate.value
         for period in range(1, self.calculate.period + 1):
-            outstanding_balance = outstanding_balance - \
-                self.calculate_amortization(period)
+            provision = self.calculate_provision(period)
+            self.total_provision += provision
+
+            interest = self.calculate_interest(period)
+            self.total_interest += interest
+
+            amortization = self.calculate_amortization(period)
+            self.total_amortization += amortization
+
+            self.outstanding_balance -= amortization
             parameter_list = {
                 'period': period,
-                'provision': round(self.calculate_provision(period), 2),
-                'interest': round(self.calculate_interest(period), 2),
-                'amortization': round(self.calculate_amortization(period), 2),
-                'outstanding_balance': round(outstanding_balance, 2)
+                'provision': round(provision, 2),
+                'interest': round(interest, 2),
+                'amortization': round(amortization, 2),
+                'outstanding_balance': round(self.outstanding_balance, 2)
             }
             data.append(parameter_list)
 
+        data.append({
+            'period': '>>',
+            'provision': round(self.total_provision, 2),
+            'interest': round(self.total_interest, 2),
+            'amortization': round(self.total_amortization, 2),
+            'outstanding_balance': '<< TOTAIS'
+        })
         return data
 
     def calculate_interest(self, period):
@@ -203,7 +224,8 @@ class ArrearageCalculator:
         calculated_period = self.calculate.period
         rate = self.calculate.rate
 
-        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+        if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
+                self.calculate.rate == 0):
             interest = ((
                 value - (
                     (period - 1) * value / calculated_period
@@ -220,7 +242,8 @@ class ArrearageCalculator:
 
     def calculate_amortization(self, period):
         amortization = 0
-        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+        if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
+                self.calculate.rate == 0):
             amortization = self.calculate.value / self.calculate.period
         elif self.calculate.amortization_system == AMORTIZATION_CHOICES[1][0]:
             first_amortization = (
@@ -241,7 +264,8 @@ class ArrearageCalculator:
         value = self.calculate.value
         calculated_period = self.calculate.period
 
-        if self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0]:
+        if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
+                self.calculate.rate == 0):
             amortization = self.calculate_amortization(period)
             interest = self.calculate_interest(period)
             provision = amortization + interest
@@ -277,6 +301,7 @@ class Arrearage(models.Model):
         max_length=5,
         choices=AMORTIZATION_CHOICES,
     )
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony, on_delete=models.CASCADE,
         related_name='arrearages'
@@ -295,6 +320,7 @@ class RealEstate(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     salable = models.BooleanField()
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -307,6 +333,7 @@ class RealEstate(models.Model):
 class CompanyParticipation(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -320,6 +347,7 @@ class CompanyParticipation(models.Model):
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -332,6 +360,7 @@ class Equipment(models.Model):
 class MovableProperty(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
+    history = HistoricalRecords()
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
@@ -346,6 +375,7 @@ class Income(models.Model):
     value_monthly = models.FloatField(default=0)
     thirteenth = models.BooleanField(default=False)
     fourteenth = models.BooleanField(default=False)
+    history = HistoricalRecords()
     vacation = models.BooleanField(default=False)
     patrimony = models.ForeignKey(
         Patrimony,
@@ -356,10 +386,12 @@ class Income(models.Model):
         total = self.value_monthly * 12
         if self.thirteenth:
             total += self.value_monthly
+        if self.fourteenth:
+            total += self.value_monthly
         if self.vacation:
             total += self.value_monthly / 3
 
-        return round(total, 2)
+        return total
 
     def __str__(self):
         return "Annual({}) {}".format(self.source, self.annual())

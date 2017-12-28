@@ -9,6 +9,7 @@ from financial_planning.serializers import (
     FinancialPlanningSerializer,
     FlowUnitChangeSerializer,
     FinancialIndependenceSerializer,
+    FinancialPlanningFlowSerializer,
 )
 from financial_planning.models import (
     RegularCost, CostManager,
@@ -126,6 +127,15 @@ class FinancialPlanningViewSet(viewsets.ModelViewSet):
         """
         return Response(FinancialPlanning.objects.filter(pk=pk).get()
                         .total_resource_for_annual_goals)
+
+    @detail_route(methods=['get'])
+    def patrimony_flow(self, request, pk=None):
+        """
+        Return the flow of actual patrimony and the suggested patrimony
+        """
+        financial_planning = self.queryset.filter(pk=pk).get()
+        data = FinancialPlanningFlowSerializer(financial_planning).data
+        return Response(data)
 
     @detail_route(methods=['get'])
     def respective_clients(self, request, pk=None):

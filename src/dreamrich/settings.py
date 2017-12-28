@@ -70,6 +70,7 @@ THIRD_PARTY_APPS = [
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'rolepermissions',
+    'simple_history',
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -83,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'dreamrich.urls'
@@ -178,6 +180,7 @@ SHELL_PLUS_PRE_IMPORTS = [
     ("financial_planning.factories", ("*")),
     ("financial_planning.serializers", ("*")),
     ("protection.factories", ("*")),
+    ("protection.serializers", ("*")),
     ("dr_auth.serializers", ("*")),
 ]
 
@@ -204,3 +207,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public')
 STATIC_URL = '/static/'
 
 ROLEPERMISSIONS_MODULE = 'dr_auth.roles'
+
+SWAGGER_SETTINGS = {
+    'APIS_SORTER': 'alpha',
+    'DOC_EXPANSION': None,
+    'JSON_EDITOR': True,
+    'OPERATIONS_SORTER': 'method',
+}

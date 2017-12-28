@@ -1,14 +1,16 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from client.models import (
-    ActiveClient,
-    Client,
-    BankAccount,
+    ActiveClient, Address,
+    Client, Country,
+    BankAccount, State,
+    Dependent,
 )
 from client.factories import (
     ActiveClientFactory,
     ClientFactory,
 )
+from lib.tests import test_all_create_historic
 
 
 class ClientModelTest(TestCase):
@@ -91,3 +93,11 @@ class ClientModelTest(TestCase):
 
         with self.assertRaises(ValidationError):
             active_client2.save()
+
+
+class HistoricalClientCreateTest(TestCase):
+
+    def test_all_models(self):
+        models = [Address, ActiveClient, Country, BankAccount, State, Client,
+                  Dependent]
+        test_all_create_historic(self, models, ActiveClientFactory)

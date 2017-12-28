@@ -1,5 +1,6 @@
 import datetime
 from django.test import TestCase, Client
+from django.core.exceptions import ValidationError
 from client.factories import ActiveClientFactory
 from goal.factories import (
     GoalManagerFactory, GoalFactory,
@@ -10,13 +11,17 @@ from patrimony.factories import (
     ArrearageFactory,
 )
 from lib.financial_planning.flow import create_array_change_annual
+from lib.tests import test_all_create_historic
 from protection.factories import (
     ProtectionManagerFactory, LifeInsuranceFactory
 )
-from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
     CostManagerFactory, FinancialIndependenceFactory,
-    FinancialPlanningFactory
+    FinancialPlanningFactory,
+)
+from financial_planning.models import (
+    RegularCost, FinancialIndependence,
+    FinancialPlanning, FlowUnitChange
 )
 
 
@@ -97,7 +102,7 @@ class FinancialIndependencePatrimonyTest(TestCase):
 
     def test_patrimony_at_end(self):
         self.assertAlmostEqual(self.financial_independence.patrimony_at_end(),
-                               6377329.7596444273)
+                               6377329.802432582)
 
 
 class RegularCostTest(TestCase):
@@ -135,7 +140,7 @@ class FinancialPlanningModelTest(TestCase):
             birthday=datetime.datetime(1967, 1, 1))
         self.financial_planning = FinancialPlanningFactory(
             active_client=active_client,
-            target_profitability=110,
+            target_profitability=1.10,
             cdi=0.1213,
             ipca=0.075
         )
@@ -269,16 +274,16 @@ class FinancialPlanningFlowTest(TestCase):
                  5268661.54056872, 6191852.939466794, 7165223.011330091,
                  8191499.142076154]
 
-        self.assertEqual(self.financial_planning.suggested_flow_patrimony,
-                         array)
+        self.assertEqual(self.financial_planning
+                         .suggested_flow_patrimony['flow'], array)
 
     def test_actual_flow_patrimony(self):
-        array = [647364.8, 1137309.0454692484, 1513930.665722565,
-                 1803440.8419394144, 2025988.188203647, 2197061.004974534,
-                 2328565.195562265, 2429652.8637760575, 2507359.259437149,
-                 2567092.4003170785]
+        array = [647364.8, 1295546.2297445768, 1954727.8567590017,
+                 2625096.3638675935, 3306841.6020630263, 4000156.644272876,
+                 4705237.840038632, 5422284.871122657, 6151500.808058847,
+                 6893092.167663001]
 
-        self.assertEqual(self.financial_planning.actual_flow_patrimony,
+        self.assertEqual(self.financial_planning.actual_flow_patrimony['flow'],
                          array)
 
 
@@ -325,3 +330,50 @@ class FlowTest(TestCase):
         array_compare = [0, 2000, 0, -5000, 0, 0, 0, 0, 0, 0]
         self.assertEqual(array_compare, create_array_change_annual(
             self.changes, 10, 2017))
+
+
+class FlowUnitChangeTest(TestCase):
+
+    def setUp(self):
+        self.cost_manager = CostManagerFactory()
+        self.incomes = PatrimonyFactory()
+
+    def test_validation_cost_manager_and_incomes_null_together(self):
+        change = FlowUnitChange(annual_value=123.40, year=2021)
+        with self.assertRaises(ValidationError):
+            change.save()
+
+    def test_validation_cost_manager_and_incomes_instanciate(self):
+        change = FlowUnitChange(
+            annual_value=123.40,
+            year=2021,
+            cost_manager=self.cost_manager,
+            incomes=self.incomes)
+        with self.assertRaises(ValidationError):
+            change.save()
+
+    def test_validation_cost_manager_instaciate_only(self):
+        change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                               cost_manager=self.cost_manager)
+        self.assertTrue(change.cost_manager is not None)
+
+    def test_validation_incomes_instaciate_only(self):
+        change = FlowUnitChange.objects.create(annual_value=123.40, year=2021,
+                                               incomes=self.incomes)
+        self.assertTrue(change.incomes is not None)
+
+
+class HistoricalFinancialPlanningCreateTest(TestCase):
+
+    def flow_change_case(self, model):
+        self.assertEqual(model.history.count(), 0)
+        model.objects.create(year=2020, annual_value=1233,
+                             cost_manager=CostManagerFactory())
+        self.assertTrue(model.history.count() > 0)
+
+    def test_flow_change(self):
+        self.flow_change_case(FlowUnitChange)
+
+    def test_all_models(self):
+        models = [FinancialIndependence, FinancialPlanning, RegularCost]
+        test_all_create_historic(self, models, FinancialPlanningFactory)

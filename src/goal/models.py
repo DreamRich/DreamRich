@@ -2,6 +2,7 @@
 All attributes of this file have the annual order of magnitude
 """
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class GoalType(models.Model):
@@ -15,13 +16,13 @@ class GoalManager(models.Model):
 
     @property
     def year_init_to_year_end(self):
-        array = []
-        init_year = self.financial_planning.init_year
-        duration_goals = self.financial_planning.duration()
-        for index in range(duration_goals):
-            array.append(init_year + index)
+        # array = []
+        # init_year = self.financial_planning.init_year
+        # duration_goals = self.financial_planning.duration()
+        # for index in range(duration_goals):
+        #     array.append(init_year + index)
 
-        return array
+        return self.financial_planning.year_init_to_end
 
     @property
     def goals_flow_dic(self):
@@ -63,6 +64,7 @@ class Goal(models.Model):
     end_year = models.PositiveSmallIntegerField(null=True, blank=True)
     periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
     value = models.PositiveIntegerField()
+    history = HistoricalRecords()
     goal_manager = models.ForeignKey(
         GoalManager,
         on_delete=models.CASCADE,

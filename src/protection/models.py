@@ -2,12 +2,13 @@ import datetime
 import abc
 import numpy
 from django.db import models
-from patrimony.models import Patrimony
+from patrimony.models import Patrimony, Active, ActiveType
 from financial_planning.models import (
     CostManager,
     FinancialPlanning,
 )
 from lib.profit.profit import actual_rate
+from simple_history.models import HistoricalRecords
 
 
 class EmergencyReserve(models.Model):
@@ -26,17 +27,20 @@ class EmergencyReserve(models.Model):
 
     mounth_of_protection = models.PositiveSmallIntegerField()
 
+    history = HistoricalRecords()
+
+    @property
     def necessery_value(self):
         regular_cost_mounthly = self.cost_manager.total()
         total = self.mounth_of_protection * regular_cost_mounthly
 
         return total
 
+    @property
     def risk_gap(self):
         current_patrimony = self.patrimony.current_net_investment()
-        necessery_value = self.necessery_value()
-        if current_patrimony < necessery_value:
-            total = necessery_value - current_patrimony
+        if current_patrimony < self.necessery_value:
+            total = self.necessery_value - current_patrimony
         else:
             total = 0
 
@@ -65,8 +69,9 @@ class ProtectionManager(models.Model):
 
     def private_pensions_total(self):
 
-        total = self.private_pensions.aggregate(models.Sum('value_annual'))
-        total = (total['value_annual__sum'] or 0)
+        total = self.private_pensions.aggregate(models.Sum(
+            'annual_investment'))
+        total = (total['annual_investment__sum'] or 0)
 
         return total
 
@@ -96,10 +101,13 @@ class ReserveInLack(models.Model):
 
     value_120_to_240_mounth = models.PositiveSmallIntegerField()
 
+    history = HistoricalRecords()
+
     def patrimony_necessery_in_period(self, mounth_quantities, value):
         rate = self.protection_manager.financial_planning.real_gain()
         return numpy.pv(rate, mounth_quantities, -value)
 
+    @property
     def patrimony_necessery_total(self):
         portion_0_to_24_mounth = self.patrimony_necessery_in_period(
             24, self.value_0_to_24_mounth)
@@ -141,45 +149,63 @@ class SuccessionTemplate(models.Model):
         """Recover the total patrimony in respective period"""
         pass
 
+    def real_succession(self, total):
+        has_joint_account = self.protection_manager.financial_planning.\
+            active_client.bank_account.joint_account
+        if has_joint_account:
+            total *= 0.5
+
+        return total
+
+    @property
     def patrimony_necessery_to_itcmd(self):
         total = self.patrimony_total() * self.itcmd_tax
+        total = self.real_succession(total)
 
         return total
 
+    @property
     def patrimony_necessery_to_oab(self):
         total = self.patrimony_total() * self.oab_tax
+        total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_to_other_taxes(self):
+    @property
+    def patrimony_to_other_taxes(self):
         total = self.patrimony_total() * self.other_taxes
+        total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_total_to_sucession(self):
-        total = self.patrimony_necessery_to_itcmd() +\
-            self.patrimony_necessery_to_oab() +\
-            self.patrimony_necessery_to_other_taxes()
+    @property
+    def patrimony_total_to_sucession(self):
+        total = self.patrimony_necessery_to_itcmd +\
+            self.patrimony_necessery_to_oab +\
+            self.patrimony_to_other_taxes
 
         return total
 
-    def total_to_recive_after_death_without_taxes(self):
+    @property
+    def patrimony_free_of_taxes(self):
         total = self.private_pension_total() +\
             self.life_insurance_to_recive_total()
 
         return total
 
+    @property
     def leftover_after_sucession(self):
-        total = self.total_to_recive_after_death_without_taxes() -\
-            self.patrimony_necessery_total_to_sucession()
+        total = self.patrimony_free_of_taxes -\
+            self.patrimony_total_to_sucession
 
         return total
 
+    @property
     def need_for_vialicia(self):
-        total = self.leftover_after_sucession() +\
+        total = self.leftover_after_sucession +\
             self.patrimony_total() -\
             self.protection_manager.reserve_in_lack.\
-            patrimony_necessery_total()
+            patrimony_necessery_total
 
         return total
 
@@ -192,10 +218,12 @@ class ActualPatrimonySuccession(SuccessionTemplate):
         related_name='actual_patrimony_succession'
     )
 
+    history = HistoricalRecords()
+
     def private_pension_total(self):
         total = self.protection_manager.private_pensions.aggregate(models.Sum(
-            'accumulated'))
-        total = (total['accumulated__sum'] or 0)
+            'value'))
+        total = (total['value__sum'] or 0)
 
         return total
 
@@ -218,11 +246,13 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
         related_name='future_patrimony_succession'
     )
 
+    history = HistoricalRecords()
+
     def private_pension_total(self):
         private_pensions = self.protection_manager.private_pensions.all()
         total = 0
         for private_pension in private_pensions:
-            total += private_pension.accumulated_moniterized()
+            total += private_pension.value_moniterized()
 
         return total
 
@@ -238,30 +268,34 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
             financial_independence.patrimony_at_end()
 
 
-class PrivatePension(models.Model):
-    name = models.CharField(max_length=100)
-    value_annual = models.FloatField(default=0)
-    accumulated = models.FloatField(default=0)
-    rate = models.FloatField(default=0)
+class PrivatePension(Active):
+    annual_investment = models.FloatField(default=0)
+    history = HistoricalRecords()
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,
         related_name='private_pensions')
 
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        active_type = ActiveType.objects.get_or_create(name='PREVIDÊNCIA')
+        self.active_type = active_type[0]
+
+        super(PrivatePension, self).save(*args, **kwargs)
+
     def __str__(self):
-        return "{name} {value_annual} {accumulated}".format(**self.__dict__)
+        return "{name} {annual_investment} {value}".format(**self.__dict__)
 
     def real_gain(self):
         return actual_rate(self.rate, self.protection_manager.
                            financial_planning.ipca)
 
-    def accumulated_moniterized(self):
+    def value_moniterized(self):
         rate = self.real_gain()
         duration = self.protection_manager.financial_planning.duration()
-        value_annual = self.value_annual * -1
-        accumulated = self.accumulated * -1
-        total_value_moniterized = numpy.fv(rate, duration, value_annual,
-                                           accumulated)
+        annual_investment = self.annual_investment * -1
+        value = self.value * -1
+        total_value_moniterized = numpy.fv(rate, duration, annual_investment,
+                                           value)
 
         return total_value_moniterized
 
@@ -274,6 +308,7 @@ class LifeInsurance(models.Model):
     redeemable = models.BooleanField()
     actual = models.BooleanField()
     has_year_end = models.BooleanField()
+    history = HistoricalRecords()
     protection_manager = models.ForeignKey(
         ProtectionManager,
         on_delete=models.CASCADE,

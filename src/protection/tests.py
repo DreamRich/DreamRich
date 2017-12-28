@@ -11,7 +11,13 @@ from protection.factories import (
     LifeInsuranceFactory,
     EmergencyReserveFactory,
 )
+from protection.models import (
+    PrivatePension, ReserveInLack,
+    LifeInsurance, EmergencyReserve,
+    ActualPatrimonySuccession, IndependencePatrimonySuccession,
+)
 from client.factories import ActiveClientFactory
+from lib.tests import test_all_create_historic
 
 
 def _create_reserve_in_lack():
@@ -55,19 +61,19 @@ class EmergencyReserveTest(TestCase):
             RegularCostFactory(**regular_cost, cost_manager=cost_manager)
 
     def test_necessery_value(self):
-        self.assertEqual(self.emergency_reserve.necessery_value(), 54000)
+        self.assertEqual(self.emergency_reserve.necessery_value, 54000)
 
     def test_risk_gap_on_limit(self):
         ActiveFactory(value=54000, active_manager=self.active_manager)
-        self.assertEqual(self.emergency_reserve.risk_gap(), 0)
+        self.assertEqual(self.emergency_reserve.risk_gap, 0)
 
     def test_risk_gap_bigger_limit(self):
         ActiveFactory(value=59000, active_manager=self.active_manager)
-        self.assertEqual(self.emergency_reserve.risk_gap(), 0)
+        self.assertEqual(self.emergency_reserve.risk_gap, 0)
 
     def test_risk_gap_less_limit(self):
         ActiveFactory(value=51000, active_manager=self.active_manager)
-        self.assertEqual(self.emergency_reserve.risk_gap(), 3000)
+        self.assertEqual(self.emergency_reserve.risk_gap, 3000)
 
 
 class ReserveInLackTest(TestCase):
@@ -81,7 +87,7 @@ class ReserveInLackTest(TestCase):
 
     def test_patrimony_necessery_total(self):
         self.assertAlmostEqual(self.reserve_in_lack.
-                               patrimony_necessery_total(), 595624.31498015427)
+                               patrimony_necessery_total, 595624.31498015427)
 
 
 class ProtectionManagerTest(TestCase):
@@ -94,7 +100,7 @@ class ProtectionManagerTest(TestCase):
         self.protection_manager = ProtectionManagerFactory(
             financial_planning=financial_planning)
         self.protection_manager.private_pensions.all().update(
-            accumulated=20000, value_annual=2000)
+            value=20000, annual_investment=2000)
         for life_insurance in self.protection_manager.life_insurances.all():
             life_insurance.delete()
 
@@ -113,8 +119,8 @@ class ProtectionManagerTest(TestCase):
                                  protection_manager=self.protection_manager)
 
         private_pensions = [
-            {'value_annual': 5000}, {'value_annual': 3000},
-            {'value_annual': 2000}, {'value_annual': 8000},
+            {'annual_investment': 5000}, {'annual_investment': 3000},
+            {'annual_investment': 2000}, {'annual_investment': 8000},
         ]
 
         for private_pension in private_pensions:
@@ -149,8 +155,8 @@ class ActualPatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'accumulated': 20000, 'value_annual': 2000},
-            {'accumulated': 4000, 'value_annual': 200},
+            {'value': 20000, 'annual_investment': 2000},
+            {'value': 4000, 'annual_investment': 200},
         ]
 
         for private_pension in private_pensions:
@@ -197,37 +203,67 @@ class ActualPatrimonySuccessionTest(TestCase):
 
     def test_patrimony_necessery_to_itcmd(self):
         self.assertAlmostEqual(self.actual_patrimony_succession.
-                               patrimony_necessery_to_itcmd(), 19367.2818)
+                               patrimony_necessery_to_itcmd, 19367.2818)
+
+    def test_patrimony_necessery_to_itcmd_with_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(self.actual_patrimony_succession.
+                               patrimony_necessery_to_itcmd, 9683.6409)
 
     def test_patrimony_necessery_to_oab(self):
         self.assertAlmostEqual(
             self.actual_patrimony_succession.
-            patrimony_necessery_to_oab(),
+            patrimony_necessery_to_oab,
             16139.401500000002)
 
-    def test_patrimony_necessery_to_other_taxes(self):
+    def test_patrimony_necessery_to_oab_with_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
         self.assertAlmostEqual(
             self.actual_patrimony_succession.
-            patrimony_necessery_to_other_taxes(),
+            patrimony_necessery_to_oab,
+            8069.700750000001)
+
+    def test_patrimony_to_other_taxes(self):
+        self.assertAlmostEqual(
+            self.actual_patrimony_succession.
+            patrimony_to_other_taxes,
             6455.7606000000005)
 
-    def test_patrimony_necessery_total_to_sucession(self):
+    def test_patrimony_to_other_taxes_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
         self.assertAlmostEqual(
             self.actual_patrimony_succession.
-            patrimony_necessery_total_to_sucession(),
+            patrimony_to_other_taxes,
+            3227.8803000000003)
+
+    def test_patrimony_total_to_sucession(self):
+        self.assertAlmostEqual(
+            self.actual_patrimony_succession.
+            patrimony_total_to_sucession,
             41962.443900000006)
 
-    def test_total_to_recive_after_death_without_taxes(self):
+    def test_patrimony_necessery_to_sucession_joint_account(self):
+        self.actual_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(
+            self.actual_patrimony_succession.
+            patrimony_total_to_sucession,
+            20981.221950000003)
+
+    def test_patrimony_free_of_taxes(self):
         self.assertEqual(self.actual_patrimony_succession.
-                         total_to_recive_after_death_without_taxes(), 824000)
+                         patrimony_free_of_taxes, 824000)
 
     def test_leftover_after_sucession(self):
         self.assertAlmostEqual(self.actual_patrimony_succession.
-                               leftover_after_sucession(), 782037.5561)
+                               leftover_after_sucession, 782037.5561)
 
     def test_need_for_vialicia(self):
         self.assertAlmostEqual(self.actual_patrimony_succession.
-                               need_for_vialicia(), 509201.2711198457)
+                               need_for_vialicia, 509201.2711198457)
 
 
 class IndependencePatrimonySuccessionTest(TestCase):
@@ -250,9 +286,9 @@ class IndependencePatrimonySuccessionTest(TestCase):
             life_insurance.delete()
 
         private_pensions = [
-            {'accumulated': 20000, 'value_annual': 2000, 'rate': 0.1213},
-            {'accumulated': 4000, 'value_annual': 200, 'rate': 0.09},
-            {'accumulated': 4000, 'value_annual': 200, 'rate': 0.09},
+            {'value': 20000, 'annual_investment': 2000, 'rate': 0.1213},
+            {'value': 4000, 'annual_investment': 200, 'rate': 0.09},
+            {'value': 4000, 'annual_investment': 200, 'rate': 0.09},
         ]
 
         self.private_pensions_array = []
@@ -290,7 +326,7 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
     def test_private_pension_individual(self):
         self.assertAlmostEqual(self.private_pensions_array[0].
-                               accumulated_moniterized(), 54847.2658609)
+                               value_moniterized(), 54847.2658609)
 
     def test_dont_have_life_insurance(self):
         for life_insurance in self.protection_manager.life_insurances.all():
@@ -304,40 +340,115 @@ class IndependencePatrimonySuccessionTest(TestCase):
 
     def test_patrimony_total(self):
         self.assertEqual(self.future_patrimony_succession.patrimony_total(),
-                         9054063.57430404)
+                         9054063.617092194)
 
     def test_patrimony_necessery_to_itcmd(self):
         self.assertAlmostEqual(
-            self.future_patrimony_succession.patrimony_necessery_to_itcmd(),
-            543243.8144582424)
+            self.future_patrimony_succession.patrimony_necessery_to_itcmd,
+            543243.8170255317)
+
+    def test_patrimony_necessery_to_itcmd_with_joint_account(self):
+        self.future_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(self.future_patrimony_succession.
+                               patrimony_necessery_to_itcmd,
+                               271621.90851276583)
 
     def test_patrimony_necessery_to_oab(self):
         self.assertAlmostEqual(self.future_patrimony_succession.
-                               patrimony_necessery_to_oab(), 452703.178715202)
+                               patrimony_necessery_to_oab, 452703.1808546097)
 
-    def test_patrimony_necessery_to_other_taxes(self):
+    def test_patrimony_necessery_to_oab_with_joint_account(self):
+        self.future_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
         self.assertAlmostEqual(
             self.future_patrimony_succession.
-            patrimony_necessery_to_other_taxes(),
-            181081.2714860808)
+            patrimony_necessery_to_oab,
+            226351.59042730485)
 
-    def test_patrimony_necessery_total_to_sucession(self):
+    def test_patrimony_to_other_taxes(self):
         self.assertAlmostEqual(
             self.future_patrimony_succession.
-            patrimony_necessery_total_to_sucession(),
-            1177028.2646595251)
+            patrimony_to_other_taxes,
+            181081.2723418439)
 
-    def test_total_to_recive_after_death_without_taxes(self):
+    def test_patrimony_to_other_taxes_joint_account(self):
+        self.future_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
         self.assertAlmostEqual(
             self.future_patrimony_succession.
-            total_to_recive_after_death_without_taxes(),
+            patrimony_to_other_taxes,
+            90540.63617092195)
+
+    def test_patrimony_total_to_sucession(self):
+        self.assertAlmostEqual(
+            self.future_patrimony_succession.
+            patrimony_total_to_sucession,
+            1177028.2702219852)
+
+    def test_patrimony_necessery_to_sucession_joint_account(self):
+        self.future_patrimony_succession.protection_manager.\
+            financial_planning.active_client.bank_account.joint_account = True
+        self.assertAlmostEqual(
+            self.future_patrimony_succession.
+            patrimony_total_to_sucession,
+            588514.1351109926)
+
+    def test_patrimony_free_of_taxes(self):
+        self.assertAlmostEqual(
+            self.future_patrimony_succession.
+            patrimony_free_of_taxes,
             1368297.0501640132)
 
     def test_leftover_after_sucession(self):
         self.assertAlmostEqual(self.future_patrimony_succession.
-                               leftover_after_sucession(), 191268.78550448804)
+                               leftover_after_sucession, 191268.77994202799)
 
     def test_need_for_vialicia(self):
         self.assertAlmostEqual(
-            self.future_patrimony_succession.need_for_vialicia(),
-            8649708.0448283739)
+            self.future_patrimony_succession.need_for_vialicia,
+            8649708.0820540674)
+
+
+class PrivatePensionTest(TestCase):
+
+    def setUp(self):
+        protection_manager = ProtectionManagerFactory()
+        self.private_pension = protection_manager.private_pensions.first()
+
+    def test_active_type_when_create(self):
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+    def test_active_type_if_deleted(self):
+        self.private_pension.active_type.delete()
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+    def test_active_type_if_deleted_and_save(self):
+        self.private_pension.active_type.delete()
+        self.private_pension.active_type.save()
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+    def test_active_type_if_changed_name(self):
+        self.private_pension.active_type.name = 'Other name'
+        self.private_pension.save()
+        self.assertEqual(self.private_pension.active_type.name, 'PREVIDÊNCIA')
+
+
+class HistoricalProtectionCreateTest(TestCase):
+
+    def test_all_models(self):
+        models = [ReserveInLack, LifeInsurance, PrivatePension,
+                  ActualPatrimonySuccession, IndependencePatrimonySuccession]
+        test_all_create_historic(self, models, ProtectionManagerFactory)
+
+    # This method is to correct pylint error
+    def emergency_reserve_case(self, model):
+        financial_planning = FinancialPlanningFactory()
+        patrimony = financial_planning.patrimony
+        self.assertEqual(0, model.history.count())
+        EmergencyReserveFactory(patrimony=patrimony,
+                                cost_manager=financial_planning.cost_manager)
+        self.assertEqual(1, model.history.count())
+
+    def test_emergency_reserve(self):
+        self.emergency_reserve_case(EmergencyReserve)
