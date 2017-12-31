@@ -1,7 +1,31 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission
 
 
 class BaseUser(User):
+
+    # To facilitate getting default permissions in others places
+    @property
+    def default_permissions(self):
+        permissions = []
+        for permission_codename in self.default_permissions_codenames:
+            try:
+                permissions += \
+                    [Permission.objects.get(codename=permission_codename)]
+            except Permission.DoesNotExist:
+                raise Permission.DoesNotExist("Couldn't find permission"
+                                              " with codename {}"
+                                              .format(permission_codename))
+            except Permission.MultipleObjectsReturned:
+                raise Permission.MultipleObjectsReturned(
+                    "Found multiple permissions with same code_name."
+                    " Permissions gotten until moment for this object: {}"
+                    .format(', '.join(
+                        [permission.codename for permission in permissions]
+                    ))
+                )
+
+        return permissions
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         if not self.pk:  # not registered

@@ -17,6 +17,7 @@ class FinancialIndependenceFactory(factory.DjangoModelFactory):
 
 
 class CostTypeFactory(factory.DjangoModelFactory):
+
     class Meta:
         model = models.CostType
 

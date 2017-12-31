@@ -13,14 +13,14 @@ from dr_auth.models_permissions import (
 class Employee(BaseUser):
 
     class Meta:
-        permissions = EMPLOYEE_DEFAULT_CODENAMES_PERMISSIONS
+        permissions = EMPLOYEE_MODEL_PERMISSIONS
 
     cpf = models.CharField(
         max_length=14,
         validators=[validators.validate_cpf]
     )
 
-    default_permissions_codenames = EMPLOYEE_MODEL_PERMISSIONS
+    default_permissions_codenames = EMPLOYEE_DEFAULT_CODENAMES_PERMISSIONS
 
 
 class FinancialAdviser(Employee):

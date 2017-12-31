@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import Permission
 from dreamrich import validators
 from dreamrich import models as base_models
 from dr_auth.models import BaseUser
@@ -99,16 +98,6 @@ class ActiveClient(BaseUser, ClientBase):
     )
 
     default_permissions_codenames = CLIENT_DEFAULT_CODENAMES_PERMISSIONS
-
-    # To facilitate getting default permissions in others places
-    @property
-    def default_permissions(self):
-        permissions = []
-        for permission_codename in self.default_permissions_codenames:
-            permissions += \
-                [Permission.objects.get(codename=permission_codename)]
-
-        return permissions
 
     @property
     def is_complete(self):

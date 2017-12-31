@@ -2,34 +2,16 @@ import datetime
 import numpy
 from django.core.exceptions import ValidationError
 from django.db import models
-from dreamrich import models as base_models
 from goal.models import GoalType
 from lib.financial_planning.flow import (
     generic_flow,
     create_array_change_annual,
 )
 from lib.profit.profit import actual_rate
+from dreamrich.models import GeneralModel
 
 
-class FinancialPlanning(models.Model):
-
-    class Meta:
-        permissions = (
-            ('see_general', 'Obrigatory for user can see any general'),
-            ('see_own_general', 'See own generals)'),
-            ('see_other_general', 'See other generals)'),
-            ('see_general_list', 'See list of generals itself'),
-
-            ('add_general', 'Create a general'),
-
-            ('change_general', 'Obrigatory for user can change any general'),
-            ('change_own_general', 'Change own generals (or itself)'),
-            ('change_other_general', 'See other generals (or not yours)'),
-
-            ('delete_general', 'Obrigatory for user can delete any general'),
-            ('delete_own_general', 'Delete own generals)'),
-            ('delete_other_general', 'Delete other generals (or not yours)'),
-        )
+class FinancialPlanning(GeneralModel):
 
     active_client = models.OneToOneField(
         'client.ActiveClient',
@@ -172,7 +154,8 @@ class FinancialPlanning(models.Model):
         super(FinancialPlanning, self).save(*args, **kwargs)
 
 
-class FinancialIndependence(models.Model):
+class FinancialIndependence(GeneralModel):
+
     age = models.PositiveSmallIntegerField()
     duration_of_usufruct = models.PositiveSmallIntegerField()
     remain_patrimony = models.PositiveIntegerField()
@@ -247,14 +230,15 @@ class FinancialIndependence(models.Model):
         return total
 
 
-class CostType(models.Model):
+class CostType(GeneralModel):
+
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
 
-class CostManager(models.Model):
+class CostManager(GeneralModel):
 
     financial_planning = models.OneToOneField(
         FinancialPlanning,
@@ -284,7 +268,7 @@ class CostManager(models.Model):
         return data
 
 
-class RegularCost(models.Model):
+class RegularCost(GeneralModel):
 
     value = models.FloatField(default=0)
     cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
@@ -300,7 +284,7 @@ class RegularCost(models.Model):
         return str(self.value)
 
 
-class FlowUnitChange(base_models.BaseModel):
+class FlowUnitChange(GeneralModel):
 
     annual_value = models.FloatField()
 
