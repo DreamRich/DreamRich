@@ -1,6 +1,17 @@
 import factory
+from financial_planning.factories import FinancialPlanningFactory
 from . import models
 from .choices import AMORTIZATION_CHOICES_LIST
+
+
+class PatrimonyFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.Patrimony
+
+    financial_planning = factory.SubFactory(FinancialPlanningFactory)
+
+    fgts = round(2.2, 2)
 
 
 class ActiveTypeFactory(factory.DjangoModelFactory):
@@ -11,30 +22,34 @@ class ActiveTypeFactory(factory.DjangoModelFactory):
     name = factory.Sequence(lambda n: "ActiveType %03d" % n)
 
 
-class ActiveFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.Active
-
-    name = factory.Sequence(lambda n: "Active %03d" % n)
-    value = round(351200.00, 2)
-    active_type = factory.SubFactory(ActiveTypeFactory)
-    rate = factory.Faker('pyfloat')
-    equivalent_rate = factory.Faker('pyfloat')
-
-
 class ActiveManagerFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.ActiveManager
 
-    active = factory.RelatedFactory(ActiveFactory, 'active_manager')
+    patrimony = factory.SubFactory(PatrimonyFactory)
+
+
+class ActiveFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.Active
+
+    active_type = factory.SubFactory(ActiveTypeFactory)
+    active_manager = factory.SubFactory(ActiveManagerFactory)
+
+    name = factory.Sequence(lambda n: "Active %03d" % n)
+    value = round(351200.00, 2)
+    rate = factory.Faker('pyfloat')
+    equivalent_rate = factory.Faker('pyfloat')
 
 
 class ArrearageFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.Arrearage
+
+    patrimony = factory.SubFactory(PatrimonyFactory)
 
     name = factory.Faker('word')
     value = round(30000, 2)
@@ -48,18 +63,11 @@ class RealEstateFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.RealEstate
 
+    patrimony = factory.SubFactory(PatrimonyFactory)
+
     name = factory.Faker('word')
     value = round(121.21, 2)
     salable = False
-
-
-class MovablePropertyFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.MovableProperty
-
-    name = factory.Faker('word')
-    value = round(121.21, 2)
 
 
 class CompanyParticipationFactory(factory.DjangoModelFactory):
@@ -67,14 +75,29 @@ class CompanyParticipationFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.CompanyParticipation
 
+    patrimony = factory.SubFactory(PatrimonyFactory)
+
     name = factory.Faker('word')
     value = round(1221.21, 2)
+
+
+class MovablePropertyFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = models.MovableProperty
+
+    patrimony = factory.SubFactory(PatrimonyFactory)
+
+    name = factory.Faker('word')
+    value = round(121.21, 2)
 
 
 class EquipmentFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.Equipment
+
+    patrimony = factory.SubFactory(PatrimonyFactory)
 
     name = factory.Faker('word')
     value = round(122.2, 2)
@@ -85,26 +108,12 @@ class IncomeFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Income
 
+    patrimony = factory.SubFactory(PatrimonyFactory)
+
     source = factory.Faker('word')
     value_monthly = round(51212.2, 2)
     thirteenth = True
     vacation = True
-
-
-class PatrimonyFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.Patrimony
-
-    fgts = round(2.2, 2)
-    activemanager = factory.RelatedFactory(ActiveManagerFactory, 'patrimony')
-    arrearage = factory.RelatedFactory(ArrearageFactory, 'patrimony')
-    real_estate = factory.RelatedFactory(RealEstateFactory, 'patrimony')
-    company = factory.RelatedFactory(CompanyParticipationFactory, 'patrimony')
-    equipment = factory.RelatedFactory(EquipmentFactory, 'patrimony')
-    incomes = factory.RelatedFactory(IncomeFactory, 'patrimony')
-    movable_property = factory.RelatedFactory(MovablePropertyFactory,
-                                              'patrimony')
 
 
 class PatrimonyBaseFactory(factory.DjangoModelFactory):

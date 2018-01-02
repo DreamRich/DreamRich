@@ -1,29 +1,34 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
+from dreamrich.models import BaseModel
 
 
-class BaseUser(User):
+class BaseUser(User, BaseModel):
 
-    # To facilitate getting default permissions in others places
+    # Children can set this attribute for setting user permissions
+    default_permissions_codenames = []
+
+    # To facilitate getting default permissions in others places, permissions,
+    # not codenames
     @property
     def default_permissions(self):
-        permissions = []
-        for permission_codename in self.default_permissions_codenames:
-            try:
+        try:
+            permissions = []
+            for permission_codename in self.default_permissions_codenames:
                 permissions += \
                     [Permission.objects.get(codename=permission_codename)]
-            except Permission.DoesNotExist:
-                raise Permission.DoesNotExist("Couldn't find permission"
-                                              " with codename {}"
-                                              .format(permission_codename))
-            except Permission.MultipleObjectsReturned:
-                raise Permission.MultipleObjectsReturned(
-                    "Found multiple permissions with same code_name."
-                    " Permissions gotten until moment for this object: {}"
-                    .format(', '.join(
-                        [permission.codename for permission in permissions]
-                    ))
-                )
+        except Permission.DoesNotExist:
+            raise Permission.DoesNotExist("Couldn't find permission"
+                                          " with codename {}"
+                                          .format(permission_codename))
+        except Permission.MultipleObjectsReturned:
+            raise Permission.MultipleObjectsReturned(
+                "Found multiple permissions with same code_name."
+                " Permissions gotten until moment for this object: {}"
+                .format(', '.join(
+                    [permission.codename for permission in permissions]
+                ))
+            )
 
         return permissions
 
@@ -35,7 +40,6 @@ class BaseUser(User):
                 self.password  # must generate random, not ok yet
             self.set_password(self.password)
 
-        self.full_clean()
         super(BaseUser, self).save(*args, **kwargs)
 
         # pylint: disable=no-member

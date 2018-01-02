@@ -156,17 +156,17 @@ class FinancialPlanning(GeneralModel):
 
 class FinancialIndependence(GeneralModel):
 
-    age = models.PositiveSmallIntegerField()
-    duration_of_usufruct = models.PositiveSmallIntegerField()
-    remain_patrimony = models.PositiveIntegerField()
-    rate = models.FloatField()
-
     financial_planning = models.OneToOneField(
         FinancialPlanning,
         on_delete=models.CASCADE,
         null=True,
         related_name='financial_independence'
     )
+
+    age = models.PositiveSmallIntegerField()
+    duration_of_usufruct = models.PositiveSmallIntegerField()
+    remain_patrimony = models.PositiveIntegerField()
+    rate = models.FloatField()
 
     def assets_required(self):
         rate = self.financial_planning.real_gain()
@@ -270,13 +270,14 @@ class CostManager(GeneralModel):
 
 class RegularCost(GeneralModel):
 
-    value = models.FloatField(default=0)
-    cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
     cost_manager = models.ForeignKey(
         CostManager,
         related_name='regular_costs',
         on_delete=models.CASCADE
     )
+
+    value = models.FloatField(default=0)
+    cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.cost_type_id is not None:
@@ -286,12 +287,16 @@ class RegularCost(GeneralModel):
 
 class FlowUnitChange(GeneralModel):
 
+    cost_manager = models.ForeignKey(
+        CostManager,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
     annual_value = models.FloatField()
 
     year = models.PositiveSmallIntegerField()
-
-    cost_manager = models.ForeignKey(CostManager, on_delete=models.CASCADE,
-                                     null=True, blank=True)
 
     incomes = models.ForeignKey(
         'patrimony.Patrimony',

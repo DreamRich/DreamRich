@@ -8,40 +8,6 @@ from dr_auth.models_permissions import (
 )
 
 
-class Country(base_models.BaseModel):
-
-    name = models.CharField(
-        max_length=55
-    )
-
-    abbreviation = models.CharField(
-        max_length=3
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class State(base_models.BaseModel):
-
-    name = models.CharField(
-        max_length=55
-    )
-
-    abbreviation = models.CharField(
-        max_length=2
-    )
-
-    country = models.ForeignKey(
-        Country,
-        related_name='country_states',
-        on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return self.name
-
-
 class ClientBase(base_models.BaseModel):
 
     class Meta:
@@ -112,7 +78,7 @@ class ActiveClient(BaseUser, ClientBase):
 class Client(ClientBase):
 
     active_spouse = models.OneToOneField(
-        ActiveClient,
+        'ActiveClient',
         on_delete=models.CASCADE,
         related_name='spouse',
         null=True,
@@ -121,6 +87,12 @@ class Client(ClientBase):
 
 
 class Dependent(base_models.BaseModel):
+
+    active_client = models.ForeignKey(
+        ActiveClient,
+        related_name='dependents',
+        on_delete=models.CASCADE
+    )
 
     name = models.CharField(
         max_length=30
@@ -132,12 +104,6 @@ class Dependent(base_models.BaseModel):
 
     birthday = models.DateField(
         'Data de nascimento',
-    )
-
-    active_client = models.ForeignKey(
-        ActiveClient,
-        related_name='dependents',
-        on_delete=models.CASCADE
     )
 
 
@@ -167,6 +133,16 @@ class BankAccount(base_models.BaseModel):
 
 class Address(base_models.BaseModel):
 
+    active_client = models.ForeignKey(
+        ActiveClient,
+        related_name='addresses'
+    )
+
+    state = models.ForeignKey(
+        'State',
+        related_name='state_addresses'
+    )
+
     type_of_address = models.CharField(
         max_length=20
     )  # work or residential
@@ -189,19 +165,43 @@ class Address(base_models.BaseModel):
         max_length=20
     )
 
-    active_client = models.ForeignKey(
-        ActiveClient,
-        related_name='addresses'
-    )
-
     city = models.CharField(
         max_length=50
     )
 
-    state = models.ForeignKey(
-        State,
-        related_name='state_addresses'
+    def __str__(self):
+        return "cep: {}, nº: {}".format(self.cep, self.number)
+
+
+class Country(base_models.BaseModel):
+
+    name = models.CharField(
+        max_length=55
+    )
+
+    abbreviation = models.CharField(
+        max_length=3
     )
 
     def __str__(self):
-        return "cep: {}, nº: {}".format(self.cep, self.number)
+        return self.name
+
+
+class State(base_models.BaseModel):
+
+    country = models.ForeignKey(
+        Country,
+        related_name='country_states',
+        on_delete=models.CASCADE
+    )
+
+    name = models.CharField(
+        max_length=55
+    )
+
+    abbreviation = models.CharField(
+        max_length=2
+    )
+
+    def __str__(self):
+        return self.name

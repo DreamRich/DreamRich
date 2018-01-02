@@ -13,7 +13,6 @@ from patrimony.choices import AMORTIZATION_CHOICES
 
 
 class Patrimony(models.Model):
-    fgts = models.FloatField(default=0)
 
     financial_planning = models.OneToOneField(
         'financial_planning.FinancialPlanning',
@@ -21,6 +20,8 @@ class Patrimony(models.Model):
         null=True,
         related_name='patrimony'
     )
+
+    fgts = models.FloatField(default=0)
 
     def current_net_investment(self):
         total_active = self.activemanager.total()
@@ -87,6 +88,7 @@ class Patrimony(models.Model):
 
 
 class ActiveType(models.Model):
+
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
@@ -102,7 +104,6 @@ class ActiveManager(models.Model):
     )
 
     cdi = 0.10
-    patrimony = models.OneToOneField(Patrimony, on_delete=models.CASCADE)
 
     def total(self):
         return self.actives.aggregate(Sum('value')).pop('value__sum', 0)
@@ -164,20 +165,26 @@ class ActiveManager(models.Model):
 
 
 class Active(models.Model):
+
+    class Meta:
+        unique_together = ('name', 'active_manager', 'active_type',)
+
+    active_type = models.ForeignKey(
+        ActiveType,
+        on_delete=models.CASCADE,
+        related_name='actives'
+    )
+
+    active_manager = models.ForeignKey(
+        ActiveManager,
+        on_delete=models.CASCADE,
+        related_name='actives'
+    )
+
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     rate = models.FloatField(default=0)
     equivalent_rate = models.FloatField(default=0, blank=True, null=True)
-
-    active_type = models.ForeignKey(ActiveType,
-                                    on_delete=models.CASCADE,
-                                    related_name='actives')
-    active_manager = models.ForeignKey(ActiveManager,
-                                       on_delete=models.CASCADE,
-                                       related_name='actives')
-
-    class Meta:
-        unique_together = ('name', 'active_manager', 'active_type',)
 
     def _equivalent_rate_calculate(self, total, cdi):
         equivalent_rate = 0
@@ -301,6 +308,12 @@ class ArrearageCalculator:
 
 
 class Arrearage(models.Model):
+
+    patrimony = models.ForeignKey(
+        Patrimony, on_delete=models.CASCADE,
+        related_name='arrearages'
+    )
+
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
     actual_period = models.PositiveIntegerField(default=0)
@@ -321,10 +334,6 @@ class Arrearage(models.Model):
         max_length=5,
         choices=AMORTIZATION_CHOICES,
     )
-    patrimony = models.ForeignKey(
-        Patrimony, on_delete=models.CASCADE,
-        related_name='arrearages'
-    )
 
     @property
     def calculate_arrearage(self):
@@ -336,65 +345,79 @@ class Arrearage(models.Model):
 
 
 class RealEstate(models.Model):
-    name = models.CharField(max_length=100)
-    value = models.FloatField(default=0)
-    salable = models.BooleanField()
+
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
-        related_name='realestates')
+        related_name='realestates'
+    )
+
+    name = models.CharField(max_length=100)
+    value = models.FloatField(default=0)
+    salable = models.BooleanField()
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
 
 class CompanyParticipation(models.Model):
-    name = models.CharField(max_length=100)
-    value = models.FloatField(default=0)
+
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
         related_name='companyparticipations'
     )
 
-    def __str__(self):
-        return "{name} {value}".format(**self.__dict__)
-
-
-class Equipment(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField(default=0)
-    patrimony = models.ForeignKey(
-        Patrimony,
-        on_delete=models.CASCADE,
-        related_name='equipments')
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
 
 class MovableProperty(models.Model):
-    name = models.CharField(max_length=100)
-    value = models.FloatField(default=0)
+
     patrimony = models.ForeignKey(
         Patrimony,
         on_delete=models.CASCADE,
-        related_name='movable_property')
+        related_name='movable_property'
+    )
+
+    name = models.CharField(max_length=100)
+    value = models.FloatField(default=0)
+
+    def __str__(self):
+        return "{name} {value}".format(**self.__dict__)
+
+
+class Equipment(models.Model):
+
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='equipments'
+    )
+
+    name = models.CharField(max_length=100)
+    value = models.FloatField(default=0)
 
     def __str__(self):
         return "{name} {value}".format(**self.__dict__)
 
 
 class Income(models.Model):
+
+    patrimony = models.ForeignKey(
+        Patrimony,
+        on_delete=models.CASCADE,
+        related_name='incomes'
+    )
+
     source = models.CharField(max_length=100)
     value_monthly = models.FloatField(default=0)
     thirteenth = models.BooleanField(default=False)
     fourteenth = models.BooleanField(default=False)
     vacation = models.BooleanField(default=False)
-    patrimony = models.ForeignKey(
-        Patrimony,
-        on_delete=models.CASCADE,
-        related_name='incomes')
 
     def annual(self):
         total = self.value_monthly * 12

@@ -1,13 +1,20 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from dr_auth.models_permissions import GENERAL_MODEL_PERMISSIONS
 
 
 class BaseModel(models.Model):
+
     class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        self.full_clean()
+        try:
+            self.full_clean()
+        except ValidationError:
+            raise ValidationError('Error while saving model "{}"'
+                                  .format(self.__class__.__name__))
+
         super(BaseModel, self).save(*args, **kwargs)
 
 
@@ -20,7 +27,10 @@ class GeneralModel(BaseModel):
         permissions = GENERAL_MODEL_PERMISSIONS
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        if str(self.__class__()) == 'GeneralModel object':
+        this_class_name = 'GeneralModel'
+
+        # Prevent this class from being instantiated
+        if self.__class__.__name__ == this_class_name:
             raise Exception("Can't save object of class GeneralModel"
                             " it's an abstract model.")
 

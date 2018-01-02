@@ -22,12 +22,6 @@ class GoalManager(models.Model):
 
     @property
     def year_init_to_year_end(self):
-        # array = []
-        # init_year = self.financial_planning.init_year
-        # duration_goals = self.financial_planning.duration()
-        # for index in range(duration_goals):
-        #     array.append(init_year + index)
-
         return self.financial_planning.year_init_to_end
 
     @property
@@ -57,6 +51,7 @@ class GoalManager(models.Model):
     def value_total_by_year(self):
         matrix = self.matrix_flow_goals()
         array = [sum(index) for index in zip(*matrix)]
+
         if not array:
             duration_goals = self.financial_planning.duration()
             array = [0] * duration_goals
@@ -65,17 +60,23 @@ class GoalManager(models.Model):
 
 
 class Goal(models.Model):
-    has_end_date = models.BooleanField()
-    init_year = models.PositiveSmallIntegerField()
-    end_year = models.PositiveSmallIntegerField(null=True, blank=True)
-    periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
-    value = models.PositiveIntegerField()
+
+    goal_type = models.ForeignKey(
+        GoalType,
+        on_delete=models.CASCADE
+    )
+
     goal_manager = models.ForeignKey(
         GoalManager,
         on_delete=models.CASCADE,
         related_name='goals'
     )
-    goal_type = models.ForeignKey(GoalType, on_delete=models.CASCADE)
+
+    has_end_date = models.BooleanField()
+    init_year = models.PositiveSmallIntegerField()
+    end_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    periodicity = models.PositiveSmallIntegerField(null=True, blank=True)
+    value = models.PositiveIntegerField()
 
     def generic_flow_goal(self, index_goal_end):
 
