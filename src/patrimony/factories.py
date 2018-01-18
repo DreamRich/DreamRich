@@ -9,7 +9,9 @@ class PatrimonyFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Patrimony
 
-    financial_planning = factory.SubFactory(FinancialPlanningFactory)
+    financial_planning = factory.SubFactory(
+        FinancialPlanningFactory
+    )
 
     fgts = round(2.2, 2)
 
@@ -116,15 +118,9 @@ class IncomeFactory(factory.DjangoModelFactory):
     vacation = True
 
 
-class PatrimonyBaseFactory(factory.DjangoModelFactory):
-
-    class Meta:
-        model = models.Patrimony
-
-
 class ActiveManagerBaseFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = models.ActiveManager
 
-    patrimony = factory.SubFactory(PatrimonyBaseFactory)
+    patrimony = factory.SubFactory(PatrimonyFactory)

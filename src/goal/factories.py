@@ -2,13 +2,17 @@ import datetime
 import factory
 from factory.fuzzy import FuzzyInteger
 from financial_planning.factories import FinancialPlanningFactory
-from . import models
+from .models import (
+    GoalType,
+    GoalManager,
+    Goal
+)
 
 
 class GoalTypeFactory(factory.DjangoModelFactory):
 
     class Meta:
-        model = models.GoalType
+        model = GoalType
 
     name = factory.Sequence(lambda n: "GoalType %03d" % n)
 
@@ -18,13 +22,13 @@ class GoalManagerFactory(factory.DjangoModelFactory):
     financial_planning = factory.SubFactory(FinancialPlanningFactory)
 
     class Meta:
-        model = models.GoalManager
+        model = GoalManager
 
 
 class GoalFactory(factory.DjangoModelFactory):
 
     class Meta:
-        model = models.Goal
+        model = Goal
         exclude = ('actual_year',)
 
     goal_type = factory.SubFactory(GoalTypeFactory)

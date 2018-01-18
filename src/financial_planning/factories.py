@@ -3,7 +3,7 @@ from client.factories import ActiveClientFactory
 from . import models
 
 
-class FinancialPlanningFactory(factory.DjangoModelFactory):
+class FinancialPlanningFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.FinancialPlanning
@@ -45,12 +45,16 @@ class CostManagerFactory(factory.DjangoModelFactory):
 
     @factory.post_generation
     def _regular_cost(self, create, *unused_args, **unused_kwargs):
+        predicted_regular_types = 18
+
         if create:
-            return RegularCostFactory.create_batch(18,
+            return RegularCostFactory.create_batch(predicted_regular_types,
                                                    cost_manager=self,
                                                    value=round(12.2, 2))
 
-        return RegularCostFactory.build_batch(18, value=round(12.2, 2))
+        return RegularCostFactory.build_batch(predicted_regular_types,
+                                              cost_manager=self,
+                                              value=round(12.2, 2))
 
 
 class RegularCostFactory(factory.DjangoModelFactory):
@@ -59,14 +63,6 @@ class RegularCostFactory(factory.DjangoModelFactory):
         model = models.RegularCost
 
     cost_manager = factory.SubFactory(CostManagerFactory)
-    value = factory.Faker('pyint')
     cost_type = factory.SubFactory(CostTypeFactory)
 
-
-class GoalMainFactory():
-
-    @staticmethod
-    def create():
-        financial_planning = FinancialPlanningFactory()
-        goal_manager = financial_planning.goal_manager
-        GoalFactory.create_batch(8, goal_manager=goal_manager)
+    value = factory.Faker('pyint')
