@@ -2,16 +2,17 @@ import datetime
 from django.test import TestCase
 from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
-from financial_planning.factories import FinancialPlanningFactory
+from dreamrich.complete_factories import FinancialPlanningCompleteFactory
+from dreamrich.complete_factories import PatrimonyCompleteFactory
 from patrimony.models import Active, Arrearage
 from patrimony.factories import (
-    PatrimonyFactory,
-    IncomeFactory,
-    RealEstateFactory,
-    ActiveManagerFactory,
     ActiveFactory,
+    ActiveManagerFactory,
     ActiveTypeFactory,
-    ArrearageFactory
+    ArrearageFactory,
+    IncomeFactory,
+    PatrimonyFactory,
+    RealEstateFactory
 )
 
 
@@ -31,26 +32,44 @@ class PatrimonyTest(TestCase):
 
     def setUp(self):
         active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyFactory()
+            birthday=datetime.datetime(1967, 1, 1)
+        )
+
+        self.patrimony = PatrimonyFactory.build()
         self.patrimony.incomes.all().update(value_monthly=1212.2)
-        FinancialPlanningFactory(
+
+        FinancialPlanningCompleteFactory(
             active_client=active_client,
-            patrimony=self.patrimony)
-        self.common_income = IncomeFactory(value_monthly=round(1200, 2),
-                                           thirteenth=False,
-                                           patrimony=self.patrimony,
-                                           vacation=False)
-        self.income_with_thirteenth = IncomeFactory(value_monthly=1200.00,
-                                                    thirteenth=True,
-                                                    patrimony=self.patrimony,
-                                                    vacation=False)
-        self.income_with_vacation = IncomeFactory(value_monthly=round(1200, 2),
-                                                  thirteenth=False,
-                                                  patrimony=self.patrimony,
-                                                  vacation=True)
-        ArrearageFactory(patrimony=self.patrimony, value=351200.00, period=3)
-        RealEstateFactory(patrimony=self.patrimony, salable=True)
+            patrimony=self.patrimony
+        )
+
+        self.common_income = IncomeFactory(
+            value_monthly=round(1200, 2),
+            thirteenth=False,
+            patrimony=self.patrimony,
+            vacation=False
+        )
+        self.income_with_thirteenth = IncomeFactory(
+            value_monthly=1200.00,
+            thirteenth=True,
+            patrimony=self.patrimony,
+            vacation=False
+        )
+        self.income_with_vacation = IncomeFactory(
+            value_monthly=round(1200, 2),
+            thirteenth=False,
+            patrimony=self.patrimony,
+            vacation=True
+        )
+        ArrearageFactory(
+            patrimony=self.patrimony,
+            value=351200.00,
+            period=3
+        )
+        RealEstateFactory(
+            patrimony=self.patrimony,
+            salable=True
+        )
 
     def test_current_net_investment(self):
         self.assertEqual(321200.00, self.patrimony.current_net_investment())
@@ -97,8 +116,8 @@ class PatrimonyTest(TestCase):
 
 class ActiveManagerTest(TestCase):
     def setUp(self):
-        financial_planning = FinancialPlanningFactory(cdi=0.1)
-        self.active_manager = financial_planning.patrimony.activemanager
+        financial_planning = FinancialPlanningCompleteFactory(cdi=0.1)
+        self.active_manager = financial_planning.patrimony.active_manager
 
         for active in self.active_manager.actives.all():
             active.delete()
@@ -148,9 +167,7 @@ class ActiveManagerTest(TestCase):
 
 class ActiveChartTest(TestCase):
     def setUp(self):
-        self.active_manager = ActiveManagerFactory(
-            patrimony=PatrimonyFactory(activemanager=None)
-        )
+        self.active_manager = ActiveManagerFactory()
         fundos = ActiveTypeFactory(name='Fundo')
         previdencia = ActiveTypeFactory(name='Previdencia')
 
@@ -195,7 +212,7 @@ class ActiveChartTest(TestCase):
 class ActiveTest(TestCase):
 
     def setUp(self):
-        self.active = PatrimonyFactory().activemanager.actives.first()
+        self.active = PatrimonyCompleteFactory().active_manager.actives.first()
         self.active.value = 100
         self.active.rate = 1.10
         self.active.save()
@@ -332,12 +349,16 @@ class ArrearageTest(TestCase):
         self.arrearage[0].rate = 0
         self.arrearage[1].rate = 0
         self.arrearage[2].rate = 0
+
         self.assertEqual(
             self.arrearage[0].calculate_arrearage(),
-            self.arrearage[1].calculate_arrearage())
+            self.arrearage[1].calculate_arrearage()
+        )
         self.assertEqual(
             self.arrearage[0].calculate_arrearage(),
-            self.arrearage[2].calculate_arrearage())
+            self.arrearage[2].calculate_arrearage()
+        )
         self.assertEqual(
             self.arrearage[1].calculate_arrearage(),
-            self.arrearage[2].calculate_arrearage())
+            self.arrearage[2].calculate_arrearage()
+        )

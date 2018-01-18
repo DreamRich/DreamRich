@@ -1,39 +1,43 @@
 import datetime
 from django.test import TestCase
-from financial_planning.factories import FinancialPlanningFactory
-from client.factories import ActiveClientFactory
 from goal.factories import GoalFactory, GoalTypeFactory
+from dreamrich.complete_factories import ActiveClientCompleteFactory
 
 
 class GoalTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1977, 1, 1))
-        financial_planning = FinancialPlanningFactory(
-            active_client=active_client)
+        active_client = ActiveClientCompleteFactory(
+            birthday=datetime.datetime(1977, 1, 1)
+        )
+        financial_planning = active_client.financial_planning
         self.goal_manager = financial_planning.goal_manager
+
         goal_type1 = GoalTypeFactory(name='Imóvel')
         goal_type2 = GoalTypeFactory(name='Vestuário')
-        self.goal_hasnt_end_date = GoalFactory(has_end_date=False,
-                                               goal_type=goal_type1,
-                                               init_year=2021,
-                                               periodicity=3,
-                                               value=50000,
-                                               goal_manager=self.goal_manager)
-        self.goal_has_end_date = GoalFactory(has_end_date=True,
-                                             goal_type=goal_type2,
-                                             init_year=2021,
-                                             periodicity=3,
-                                             value=50000,
-                                             end_year=2031,
-                                             goal_manager=self.goal_manager)
+
+        self.goal_hasnt_end_date = GoalFactory(
+            has_end_date=False,
+            goal_type=goal_type1,
+            init_year=2021,
+            periodicity=3,
+            value=50000,
+            goal_manager=self.goal_manager
+        )
+        self.goal_has_end_date = GoalFactory(
+             has_end_date=True,
+             goal_type=goal_type2,
+             init_year=2021,
+             periodicity=3,
+             value=50000,
+             end_year=2031,
+             goal_manager=self.goal_manager
+        )
         self.array_flow_without_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
                                         50000, 0, 0, 50000, 0, 0, 50000, 0, 0,
                                         50000]
         self.array_flow_with_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
-                                     50000, 0, 0,
-                                     50000, 0, 0, 0, 0, 0, 0]
+                                     50000, 0, 0, 50000, 0, 0, 0, 0, 0, 0]
 
     def test_flow_hasnt_end_date(self):
         self.assertEqual(self.array_flow_without_date,

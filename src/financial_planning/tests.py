@@ -1,40 +1,51 @@
 import datetime
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.core.exceptions import ValidationError
-from client.factories import ActiveClientFactory
 from goal.factories import (
-    GoalManagerFactory, GoalFactory,
+    GoalManagerFactory,
+    GoalFactory,
     GoalTypeFactory,
 )
 from patrimony.factories import (
-    PatrimonyFactory, ActiveFactory,
+    PatrimonyFactory,
+    ActiveFactory,
     ArrearageFactory,
 )
-from lib.financial_planning.flow import create_array_change_annual
 from protection.factories import (
-    ProtectionManagerFactory, LifeInsuranceFactory
+    ProtectionManagerFactory,
+    LifeInsuranceFactory
 )
 from financial_planning.models import FlowUnitChange
 from financial_planning.factories import (
-    CostManagerFactory, FinancialIndependenceFactory,
+    CostManagerFactory,
+    FinancialIndependenceFactory,
     FinancialPlanningFactory,
 )
+from lib.financial_planning.flow import create_array_change_annual
 from rest_framework.test import APIClient
-from dreamrich.utils import get_token
-from employee.factories import FinancialAdviserMainFactory
+from dr_auth.utils import get_token
+from employee.factories import FinancialAdviserFactory
+from client.factories import ActiveClientFactory
+from dreamrich.complete_factories import (
+    ActiveClientCompleteFactory,
+    FinancialPlanningCompleteFactory,
+    PatrimonyCompleteFactory
+)
 
 
 class FinancialIndependencePlanningTest(TestCase):
+
     def setUp(self):
-        self.financial_independence = FinancialIndependenceFactory(
+        self.financial_independence = FinancialIndependenceFactory.build(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
-        active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1))
-        self.financial_planning = FinancialPlanningFactory(
-            active_client=active_client,
+        self.financial_planning = FinancialPlanningCompleteFactory.build(
             financial_independence=self.financial_independence,
+        )
+        ActiveClientFactory(
+            birthday=datetime.datetime(1967, 1, 1),
+            financial_planning=self.financial_planning
         )
 
     def test_assets_required(self):
@@ -43,7 +54,7 @@ class FinancialIndependencePlanningTest(TestCase):
                                4)
 
     def test_remain_necessary_for_retirement_with_high_patrimony(self):
-        active_manager = self.financial_planning.patrimony.activemanager
+        active_manager = self.financial_planning.patrimony.active_manager
         active_manager.actives.update(value=30021200.00)
         self.assertEqual(self.financial_independence.
                          remain_necessary_for_retirement(), 0)
@@ -57,11 +68,13 @@ class FinancialIndependencePlanningTest(TestCase):
 
 
 class FinancialIndependencePatrimonyTest(TestCase):
+
     def setUp(self):
-        active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1))
-        financial_planning = FinancialPlanningFactory(
-            active_client=active_client)
+        active_client = ActiveClientCompleteFactory(
+            birthday=datetime.datetime(1967, 1, 1)
+        )
+        financial_planning = active_client.financial_planning
+
         goal_manager = financial_planning.goal_manager
         self.financial_independence = financial_planning.financial_independence
         self.financial_independence.rate = 0.02
@@ -105,14 +118,16 @@ class FinancialIndependencePatrimonyTest(TestCase):
 
 
 class RegularCostTest(TestCase):
+
     def setUp(self):
-        self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1))
-        self.financial_planning = FinancialPlanningFactory(
-            active_client=active_client,
-            cost_manager=self.cost_manager,
+        self.financial_planning = FinancialPlanningCompleteFactory.build()
+
+        ActiveClientCompleteFactory(
+            birthday=datetime.datetime(1967, 1, 1),
+            financial_planning=self.financial_planning
         )
+
+        self.cost_manager = self.financial_planning.cost_manager
 
     def test_cost_manager_total(self):
         total = 219.5999999999994
@@ -134,19 +149,20 @@ class RegularCostTest(TestCase):
 
 
 class FinancialPlanningModelTest(TestCase):
+
     def setUp(self):
-        active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1))
-        self.financial_planning = FinancialPlanningFactory(
-            active_client=active_client,
+        self.financial_planning = FinancialPlanningCompleteFactory.build(
             target_profitability=1.10,
             cdi=0.1213,
             ipca=0.075
         )
+        ActiveClientCompleteFactory(
+            birthday=datetime.datetime(1967, 1, 1),
+            financial_planning=self.financial_planning
+        )
 
     def test_duration_financial_planning(self):
-        self.assertEqual(
-            self.financial_planning.duration(), 10)
+        self.assertEqual(self.financial_planning.duration(), 10)
 
     def test_real_gain_related_cdi(self):
         self.assertAlmostEqual(self.financial_planning.
@@ -166,16 +182,15 @@ class FinancialPlanningModelTest(TestCase):
 
 
 class FinancialPlanningFlowTest(TestCase):
+
     def setUp(self):
         self.cost_manager = CostManagerFactory()
-        active_client = ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1))
-        self.patrimony = PatrimonyFactory()
+        self.patrimony = PatrimonyCompleteFactory()
         self.patrimony.incomes.all().update(value_monthly=55000,
                                             thirteenth=False,
                                             vacation=False)
 
-        for active in self.patrimony.activemanager.actives.all():
+        for active in self.patrimony.active_manager.actives.all():
             active.delete()
 
         data = [{'value': 30000.00, 'rate': 1.1879},
@@ -183,31 +198,41 @@ class FinancialPlanningFlowTest(TestCase):
                 {'value': 351200.00, 'rate': 0.7500}]
 
         for active in data:
-            ActiveFactory(**active,
-                          active_manager=self.patrimony.activemanager)
+            ActiveFactory(
+                **active,
+                active_manager=self.patrimony.active_manager
+            )
 
         ArrearageFactory(patrimony=self.patrimony, value=351200.00)
         self.goal_manager = GoalManagerFactory()
-        GoalFactory.create_batch(4,
-                                 goal_manager=self.goal_manager,
-                                 init_year=2017,
-                                 end_year=2027,
-                                 value=2500,
-                                 periodicity=1)
+        GoalFactory.create_batch(
+            4,
+            goal_manager=self.goal_manager,
+            init_year=2017,
+            end_year=2027,
+            value=2500,
+            periodicity=1
+        )
+
         self.financial_independence = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
-        self.financial_planning = FinancialPlanningFactory(
-            active_client=active_client,
+
+        protection_manager = ProtectionManagerFactory()
+
+        self.financial_planning = FinancialPlanningFactory.build(
             cost_manager=self.cost_manager,
             patrimony=self.patrimony,
             financial_independence=self.financial_independence,
             goal_manager=self.goal_manager,
-            cdi=0.1213,
+            protection_manager=protection_manager,
+            cdi=0.1213
         )
-        protection_manager = ProtectionManagerFactory(
-            financial_planning=self.financial_planning)
+        ActiveClientFactory(
+            birthday=datetime.datetime(1967, 1, 1),
+            financial_planning=self.financial_planning
+        )
 
         for private_pension in protection_manager.private_pensions.all():
             private_pension.delete()
@@ -215,8 +240,11 @@ class FinancialPlanningFlowTest(TestCase):
         for life_insurance in protection_manager.life_insurances.all():
             life_insurance.delete()
 
-        LifeInsuranceFactory(protection_manager=protection_manager,
-                             value_to_pay_annual=2000, has_year_end=False)
+        LifeInsuranceFactory(
+            protection_manager=protection_manager,
+            value_to_pay_annual=2000,
+            has_year_end=False
+        )
 
     def test_annual_leftovers_for_goal_without_change(self):
         array = [607045.13144555257, 607045.13144555257, 607045.13144555257,
@@ -291,7 +319,7 @@ class RegularCostViewTest(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.manager = CostManagerFactory()
-        financial_adviser = FinancialAdviserMainFactory()
+        financial_adviser = FinancialAdviserFactory()
         self.client.credentials(HTTP_AUTHORIZATION='JWT '
                                 '{}'.format(get_token(financial_adviser)))
 
@@ -322,6 +350,7 @@ class RegularCostViewTest(TestCase):
 
 
 class FlowTest(TestCase):
+
     changes = []
     change1 = FlowUnitChange(year=2018, annual_value=2000)
     changes.append(change1)
