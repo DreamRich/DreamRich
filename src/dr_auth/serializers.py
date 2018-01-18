@@ -7,7 +7,7 @@ class BaseUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
         fields = [
+            'pk',
             'username',
             'permissions',
-            'pk',
         ]

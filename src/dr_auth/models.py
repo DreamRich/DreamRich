@@ -8,12 +8,17 @@ class BaseUser(User, BaseModel):
     # Children can set this attribute for setting user permissions
     default_permissions_codenames = []
 
+    @property
+    def permissions(self):
+        return self.get_all_permissions()
+
     # To facilitate getting default permissions in others places, permissions,
     # not codenames
     @property
     def default_permissions(self):
+        permissions = []
+
         try:
-            permissions = []
             for permission_codename in self.default_permissions_codenames:
                 permissions += \
                     [Permission.objects.get(codename=permission_codename)]
@@ -22,19 +27,19 @@ class BaseUser(User, BaseModel):
                                           " with codename {}"
                                           .format(permission_codename))
         except Permission.MultipleObjectsReturned:
+            permissions_codenames = \
+                ', '.join([permission.codename for permission in permissions])
             raise Permission.MultipleObjectsReturned(
                 "Found multiple permissions with same code_name."
                 " Permissions gotten until moment for this object: {}"
-                .format(', '.join(
-                    [permission.codename for permission in permissions]
-                ))
+                .format(permissions_codenames)
             )
 
         return permissions
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        if not self.pk:  # not registered
-            self.username = self.cpf  # user can't change password
+        if self.pk is None:  # not registered
+            self.username = self.cpf
 
             self.password = 'default123' if not self.password else \
                 self.password  # must generate random, not ok yet

@@ -168,6 +168,7 @@ AUTH_PASSWORD_VALIDATORS = [
 SHELL_PLUS_PRE_IMPORTS = [
     ("client.factories", ("*")),
     ("client.serializers", ("*")),
+    ("dreamrich.complete_factories", ("*")),
     ("employee.factories", ("*")),
     ("employee.serializers", ("*")),
     ("patrimony.factories", ("*")),

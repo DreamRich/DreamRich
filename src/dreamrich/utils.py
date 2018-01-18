@@ -1,24 +1,3 @@
-from rest_framework_jwt.settings import api_settings
-from rest_framework.test import APIClient
-
-
-def get_token(user):
-    payload = api_settings.JWT_PAYLOAD_HANDLER(user)
-    token = api_settings.JWT_ENCODE_HANDLER(payload)
-    return token
-
-
-def authenticate_user(user):
-    django_client = APIClient()
-
-    user_token = get_token(user)
-    token = 'JWT {}'.format(user_token)
-
-    django_client.credentials(HTTP_AUTHORIZATION=token)
-
-    return django_client
-
-
 class Relationship:
     def __init__(self, primary, secondary, many=None, relationship_attr=None):
         self.many, self.relationship_attr = many, relationship_attr
@@ -50,7 +29,16 @@ class Relationship:
         else:
             secondary.delete()  # Avoid unique constraint problems
             setattr(secondary, attr, primary)  # Making relationship 1 to 1
-            secondary.save()
+
+            try:
+                secondary.save()
+            except ValueError:
+                primary_name = primary.__class__.__name__
+                secondary_name = secondary.__class__.__name__
+
+                raise ValueError("Wasn't possible to create relashionship"
+                                 " between {} and {} models"
+                                 .format(primary_name, secondary_name))
 
     def get_info(self):
         return (self.many, self.relationship_attr,
@@ -59,7 +47,7 @@ class Relationship:
     def _has_relationship(self):
 
         # Primary will have primary key and secondary the foreign key
-        # hasattr called twice to tests A to B and B to A relationships
+        # hasattr called twice to test A to B and B to A relationships
         if not hasattr(self.secondary, self.relationship_attr):
             self.primary, self.secondary = self.secondary, self.primary
 
@@ -76,5 +64,3 @@ class Relationship:
 
     def __str__(self):
         return str(self.get_info())
-
-

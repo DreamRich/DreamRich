@@ -8,15 +8,16 @@ from employee.serializers import (
     FinancialAdviserSerializer
 )
 from employee.factories import (
-    EmployeeMainFactory,
-    FinancialAdviserMainFactory
+    EmployeeFactory,
+    FinancialAdviserFactory
 )
 from client.factories import ActiveClientFactory
 from client.serializers import ActiveClientSerializer
 from financial_planning.factories import FinancialPlanningFactory
 from financial_planning.serializers import FinancialPlanningSerializer
 from dreamrich.requests import RequestTypes
-from dreamrich.utils import authenticate_user, Relationship
+from dreamrich.utils import Relationship
+from .utils import authenticate_user
 
 
 class UserToClient:
@@ -28,14 +29,14 @@ class UserToClient:
 
 class UserToEmployee:
 
-    factory_consulted = EmployeeMainFactory
+    factory_consulted = EmployeeFactory
     serializer_consulted = EmployeeSerializer
     base_route = '/api/employee/employee/'
 
 
 class UserToFinancialAdviser:
 
-    factory_consulted = FinancialAdviserMainFactory
+    factory_consulted = FinancialAdviserFactory
     serializer_consulted = FinancialAdviserSerializer
     base_route = '/api/employee/financial/'
 
