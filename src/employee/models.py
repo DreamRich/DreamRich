@@ -1,6 +1,5 @@
 from django.db import models
 from dreamrich import validators
-from client.models import ActiveClient
 from dr_auth.models import BaseUser
 from dr_auth.models_permissions import (
     EMPLOYEE_MODEL_PERMISSIONS,
@@ -29,7 +28,7 @@ class FinancialAdviser(Employee):
         permissions = FINANCIAL_ADVISER_MODEL_PERMISSIONS
 
     clients = models.ManyToManyField(
-        ActiveClient,
+        'client.ActiveClient',
         related_name='financial_advisers'
     )
 

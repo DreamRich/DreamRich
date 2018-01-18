@@ -62,12 +62,12 @@ class GoalManager(models.Model):
 class Goal(models.Model):
 
     goal_type = models.ForeignKey(
-        GoalType,
+        'GoalType',
         on_delete=models.CASCADE
     )
 
     goal_manager = models.ForeignKey(
-        GoalManager,
+        'GoalManager',
         on_delete=models.CASCADE,
         related_name='goals'
     )

@@ -2,29 +2,30 @@ import datetime
 import abc
 import numpy
 from django.db import models
-from patrimony.models import Patrimony, Active, ActiveType
 from lib.profit.profit import actual_rate
+from patrimony.models import ActiveType, Active
+from dreamrich.models import BaseModel
 
 
-class EmergencyReserve(models.Model):
+class EmergencyReserve(BaseModel):
+
+    patrimony = models.OneToOneField(
+        'patrimony.Patrimony',
+        on_delete=models.CASCADE,
+        related_name='emergency_reserve'
+    )
 
     cost_manager = models.OneToOneField(
         'financial_planning.CostManager',
         on_delete=models.CASCADE,
-        related_name='emergency_reserve',
+        related_name='emergency_reserve'
     )
 
-    patrimony = models.OneToOneField(
-        Patrimony,
-        on_delete=models.CASCADE,
-        related_name='emergency_reserve',
-    )
-
-    mounth_of_protection = models.PositiveSmallIntegerField()
+    month_of_protection = models.PositiveSmallIntegerField()
 
     def necessery_value(self):
-        regular_cost_mounthly = self.cost_manager.total()
-        total = self.mounth_of_protection * regular_cost_mounthly
+        regular_cost_monthly = self.cost_manager.total()
+        total = self.month_of_protection * regular_cost_monthly
 
         return total
 
@@ -39,7 +40,7 @@ class EmergencyReserve(models.Model):
         return total
 
 
-class ProtectionManager(models.Model):
+class ProtectionManager(BaseModel):
 
     financial_planning = models.OneToOneField(
         'financial_planning.FinancialPlanning',
@@ -77,10 +78,10 @@ class ProtectionManager(models.Model):
         return data
 
 
-class ReserveInLack(models.Model):
+class ReserveInLack(BaseModel):
 
     protection_manager = models.OneToOneField(
-        ProtectionManager,
+        'ProtectionManager',
         on_delete=models.CASCADE,
         related_name='reserve_in_lack',
     )
@@ -113,14 +114,22 @@ class ReserveInLack(models.Model):
         return total
 
 
-class SuccessionTemplate(models.Model):
-
-    reserve_in_lack = models.OneToOneField(
-        ReserveInLack,
-    )
+class SuccessionTemplate(BaseModel):
 
     class Meta:
         abstract = True
+
+    protection_manager = models.OneToOneField(
+        'ProtectionManager',
+        on_delete=models.CASCADE,
+        related_name='%(class)s'
+    )
+
+    reserve_in_lack = models.OneToOneField(
+        'ReserveInLack',
+        on_delete=models.CASCADE,
+        related_name='%(class)s'
+    )
 
     __metaclass__ = abc.ABCMeta
     itcmd_tax = models.FloatField(default=0)
@@ -198,12 +207,6 @@ class SuccessionTemplate(models.Model):
 
 class ActualPatrimonySuccession(SuccessionTemplate):
 
-    protection_manager = models.OneToOneField(
-        ProtectionManager,
-        on_delete=models.CASCADE,
-        related_name='actual_patrimony_succession'
-    )
-
     def private_pension_total(self):
         total = self.protection_manager.private_pensions.aggregate(models.Sum(
             'value'))
@@ -223,12 +226,6 @@ class ActualPatrimonySuccession(SuccessionTemplate):
 
 
 class IndependencePatrimonySuccession(SuccessionTemplate):
-
-    protection_manager = models.OneToOneField(
-        ProtectionManager,
-        on_delete=models.CASCADE,
-        related_name='future_patrimony_succession'
-    )
 
     def private_pension_total(self):
         private_pensions = self.protection_manager.private_pensions.all()
@@ -251,8 +248,9 @@ class IndependencePatrimonySuccession(SuccessionTemplate):
 
 
 class PrivatePension(Active):
+
     protection_manager = models.ForeignKey(
-        ProtectionManager,
+        'ProtectionManager',
         on_delete=models.CASCADE,
         related_name='private_pensions'
     )
@@ -283,9 +281,10 @@ class PrivatePension(Active):
         return total_value_moniterized
 
 
-class LifeInsurance(models.Model):
+class LifeInsurance(BaseModel):
+
     protection_manager = models.ForeignKey(
-        ProtectionManager,
+        'ProtectionManager',
         on_delete=models.CASCADE,
         related_name='life_insurances'
     )
@@ -293,7 +292,7 @@ class LifeInsurance(models.Model):
     name = models.CharField(max_length=100)
     value_to_recive = models.FloatField(default=0)
     value_to_pay_annual = models.FloatField(default=0)
-    year_end = models.PositiveSmallIntegerField(null=True)
+    year_end = models.PositiveSmallIntegerField(blank=True, null=True)
     redeemable = models.BooleanField()
     actual = models.BooleanField()
     has_year_end = models.BooleanField()

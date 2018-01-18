@@ -144,10 +144,10 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 class PatrimonySerializer(serializers.ModelSerializer):
 
-    activemanager = ActiveManagerSerializer(read_only=True)
+    active_manager = ActiveManagerSerializer(read_only=True)
     arrearages = ArrearageSerializer(read_only=True, many=True)
-    realestates = RealEstateSerializer(read_only=True, many=True)
-    companyparticipations = CompanyParticipationSerializer(many=True,
+    real_estates = RealEstateSerializer(read_only=True, many=True)
+    company_participations = CompanyParticipationSerializer(many=True,
                                                            read_only=True)
     equipments = EquipmentSerializer(many=True, read_only=True)
     incomes = IncomeSerializer(many=True, read_only=True)
@@ -157,10 +157,10 @@ class PatrimonySerializer(serializers.ModelSerializer):
         fields = [
             'fgts',
             'pk',
-            'activemanager',
+            'active_manager',
             'arrearages',
-            'realestates',
-            'companyparticipations',
+            'real_estates',
+            'company_participations',
             'equipments',
             'incomes',
         ]

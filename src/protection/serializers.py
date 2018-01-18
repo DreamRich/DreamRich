@@ -16,7 +16,7 @@ class EmergencyReserveSerializer(serializers.ModelSerializer):
 
         fields = [
             'id',
-            'mounth_of_protection',
+            'month_of_protection',
             'cost_manager_id',
             'patrimony_id',
         ]
@@ -32,10 +32,10 @@ class ReserveInLackSerializer(serializers.ModelSerializer):
 
         fields = [
             'id',
-            'value_0_to_24_mounth',
-            'value_24_to_60_mounth',
-            'value_60_to_120_mounth',
-            'value_120_to_240_mounth',
+            'value_0_to_24_month',
+            'value_24_to_60_month',
+            'value_60_to_120_month',
+            'value_120_to_240_month',
             'protection_manager_id',
         ]
 

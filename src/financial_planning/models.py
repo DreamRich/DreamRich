@@ -29,8 +29,8 @@ class FinancialPlanning(GeneralModel):
     target_profitability = models.FloatField()
 
     def is_complete(self):
-        fields = ['cost_manager', 'goal_manager', 'financial_independence',
-                  'patrimony']
+        fields = ['cost_manager', 'goal_manager',
+                  'financial_independence', 'patrimony']
 
         for field in fields:
             if (not hasattr(self, field) or hasattr(self, field) and
@@ -141,7 +141,7 @@ class FinancialPlanning(GeneralModel):
     @property
     def actual_flow_patrimony(self):
         annual_leftovers = self.annual_leftovers()
-        target = self.patrimony.activemanager.real_profit_cdi()
+        target = self.patrimony.active_manager.real_profit_cdi()
         real_gain = self.real_gain_related_cdi(target) + 1
         flow = self.resource_monetization(annual_leftovers, real_gain)
 
@@ -157,7 +157,7 @@ class FinancialPlanning(GeneralModel):
 class FinancialIndependence(GeneralModel):
 
     financial_planning = models.OneToOneField(
-        FinancialPlanning,
+        'FinancialPlanning',
         on_delete=models.CASCADE,
         null=True,
         related_name='financial_independence'
@@ -241,7 +241,7 @@ class CostType(GeneralModel):
 class CostManager(GeneralModel):
 
     financial_planning = models.OneToOneField(
-        FinancialPlanning,
+        'FinancialPlanning',
         on_delete=models.CASCADE,
         null=True,
         related_name='cost_manager'
@@ -257,7 +257,7 @@ class CostManager(GeneralModel):
         return self.total()
 
     def flow(self):
-        cost_changes = self.flowunitchange_set.all()
+        cost_changes = self.flow_unit_changes.all()
         duration = self.financial_planning.duration()
         array_change = create_array_change_annual(cost_changes, duration,
                                                   self.financial_planning.
@@ -271,13 +271,17 @@ class CostManager(GeneralModel):
 class RegularCost(GeneralModel):
 
     cost_manager = models.ForeignKey(
-        CostManager,
+        'CostManager',
+        related_name='regular_costs',
+        on_delete=models.CASCADE
+    )
+    cost_type = models.ForeignKey(
+        'CostType',
         related_name='regular_costs',
         on_delete=models.CASCADE
     )
 
     value = models.FloatField(default=0)
-    cost_type = models.ForeignKey(CostType, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.cost_type_id is not None:
@@ -287,9 +291,18 @@ class RegularCost(GeneralModel):
 
 class FlowUnitChange(GeneralModel):
 
-    cost_manager = models.ForeignKey(
-        CostManager,
+    incomes = models.ForeignKey(
+        'patrimony.Patrimony',
         on_delete=models.CASCADE,
+        related_name='flow_unit_changes',
+        null=True,
+        blank=True
+    )
+
+    cost_manager = models.ForeignKey(
+        'CostManager',
+        on_delete=models.CASCADE,
+        related_name='flow_unit_changes',
         null=True,
         blank=True
     )
@@ -298,19 +311,14 @@ class FlowUnitChange(GeneralModel):
 
     year = models.PositiveSmallIntegerField()
 
-    incomes = models.ForeignKey(
-        'patrimony.Patrimony',
-        on_delete=models.CASCADE,
-        null=True
-    )
-
     def clean(self):
-        # Don't allow cost_manager and incomes id's null together
+        # Don't allow cost_manager and incomes id's blank together
         if self.cost_manager is None and self.incomes is None:
-            raise ValidationError("cost_manager_id and incomes_id can't be" +
-                                  " null together. Instaciate one")
+            raise ValidationError("cost_manager_id and incomes_id can't be"
+                                  " blank together. Instantiate one")
 
-        # Don't allow cost_manager and incomes instaciate together
+        # Don't allow cost_manager and incomes instantiated together
         if self.cost_manager is not None and self.incomes is not None:
-            raise ValidationError("cost_manager_id and incomes_id can't be" +
-                                  " instanciate together. Instaciate just one")
+            raise ValidationError("cost_manager_id and incomes_id can't be"
+                                  " instantiated together."
+                                  " Instantiate just one")

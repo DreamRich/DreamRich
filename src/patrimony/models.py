@@ -24,7 +24,7 @@ class Patrimony(models.Model):
     fgts = models.FloatField(default=0)
 
     def current_net_investment(self):
-        total_active = self.activemanager.total()
+        total_active = self.active_manager.total()
         total_arrearage = self.arrearages.filter(period__lte=2).aggregate(
             Sum('value'))
         total = (total_active
@@ -33,14 +33,14 @@ class Patrimony(models.Model):
         return total
 
     def current_property_investment(self):
-        non_salable_total = self.realestates.filter(
+        non_salable_total = self.real_estates.filter(
             salable=False).aggregate(Sum('value'))
         non_salable_total = (non_salable_total['value__sum'] or 0)
 
         return non_salable_total
 
     def possible_income_generation(self):
-        total_company_participation = self.companyparticipations.all(
+        total_company_participation = self.company_participations.all(
         ).aggregate(Sum('value'))
         total_equipment = self.equipments.all().aggregate(Sum('value'))
         total = (total_company_participation['value__sum'] or 0) + \
@@ -58,7 +58,7 @@ class Patrimony(models.Model):
         return total
 
     def income_flow(self):
-        income_changes = self.flowunitchange_set.all()
+        income_changes = self.flow_unit_changes.all()
         duration = self.financial_planning.duration()
         array_change = create_array_change_annual(income_changes, duration,
                                                   self.financial_planning.
@@ -69,14 +69,14 @@ class Patrimony(models.Model):
         return data
 
     def current_none_investment(self):
-        total_movable_property = self.movable_property.all().aggregate(
+        total_movable_properties = self.movable_properties.all().aggregate(
             Sum('value'))
-        total_movable_property = (total_movable_property['value__sum'] or 0)
-        salable_total = self.realestates.filter(
+        total_movable_properties = (total_movable_properties['value__sum'] or 0)
+        salable_total = self.real_estates.filter(
             salable=True).aggregate(Sum('value'))
         salable_total = (salable_total['value__sum'] or 0)
 
-        total = total_movable_property + salable_total
+        total = total_movable_properties + salable_total
         return total
 
     def total(self):
@@ -98,9 +98,10 @@ class ActiveType(models.Model):
 class ActiveManager(models.Model):
 
     patrimony = models.OneToOneField(
-        Patrimony,
+        'Patrimony',
         on_delete=models.CASCADE,
-        primary_key=True
+        primary_key=True,
+        related_name='active_manager'
     )
 
     cdi = 0.10
@@ -170,13 +171,13 @@ class Active(models.Model):
         unique_together = ('name', 'active_manager', 'active_type',)
 
     active_type = models.ForeignKey(
-        ActiveType,
+        'ActiveType',
         on_delete=models.CASCADE,
         related_name='actives'
     )
 
     active_manager = models.ForeignKey(
-        ActiveManager,
+        'ActiveManager',
         on_delete=models.CASCADE,
         related_name='actives'
     )
@@ -269,6 +270,7 @@ class ArrearageCalculator:
 
     def calculate_amortization(self, period):
         amortization = 0
+
         if (self.calculate.amortization_system == AMORTIZATION_CHOICES[0][0] or
                 self.calculate.rate == 0):
             amortization = self.calculate.value / self.calculate.period
@@ -310,7 +312,8 @@ class ArrearageCalculator:
 class Arrearage(models.Model):
 
     patrimony = models.ForeignKey(
-        Patrimony, on_delete=models.CASCADE,
+        'Patrimony',
+        on_delete=models.CASCADE,
         related_name='arrearages'
     )
 
@@ -347,9 +350,9 @@ class Arrearage(models.Model):
 class RealEstate(models.Model):
 
     patrimony = models.ForeignKey(
-        Patrimony,
+        'Patrimony',
         on_delete=models.CASCADE,
-        related_name='realestates'
+        related_name='real_estates'
     )
 
     name = models.CharField(max_length=100)
@@ -363,9 +366,9 @@ class RealEstate(models.Model):
 class CompanyParticipation(models.Model):
 
     patrimony = models.ForeignKey(
-        Patrimony,
+        'Patrimony',
         on_delete=models.CASCADE,
-        related_name='companyparticipations'
+        related_name='company_participations'
     )
 
     name = models.CharField(max_length=100)
@@ -378,9 +381,9 @@ class CompanyParticipation(models.Model):
 class MovableProperty(models.Model):
 
     patrimony = models.ForeignKey(
-        Patrimony,
+        'Patrimony',
         on_delete=models.CASCADE,
-        related_name='movable_property'
+        related_name='movable_properties'
     )
 
     name = models.CharField(max_length=100)
@@ -393,7 +396,7 @@ class MovableProperty(models.Model):
 class Equipment(models.Model):
 
     patrimony = models.ForeignKey(
-        Patrimony,
+        'Patrimony',
         on_delete=models.CASCADE,
         related_name='equipments'
     )
@@ -408,7 +411,7 @@ class Equipment(models.Model):
 class Income(models.Model):
 
     patrimony = models.ForeignKey(
-        Patrimony,
+        'Patrimony',
         on_delete=models.CASCADE,
         related_name='incomes'
     )

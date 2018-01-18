@@ -89,7 +89,7 @@ class Client(ClientBase):
 class Dependent(base_models.BaseModel):
 
     active_client = models.ForeignKey(
-        ActiveClient,
+        'ActiveClient',
         related_name='dependents',
         on_delete=models.CASCADE
     )
@@ -110,7 +110,7 @@ class Dependent(base_models.BaseModel):
 class BankAccount(base_models.BaseModel):
 
     active_client = models.OneToOneField(
-        ActiveClient,
+        'ActiveClient',
         related_name='bank_account',
         on_delete=models.CASCADE
     )
@@ -134,7 +134,7 @@ class BankAccount(base_models.BaseModel):
 class Address(base_models.BaseModel):
 
     active_client = models.ForeignKey(
-        ActiveClient,
+        'ActiveClient',
         related_name='addresses'
     )
 
@@ -190,7 +190,7 @@ class Country(base_models.BaseModel):
 class State(base_models.BaseModel):
 
     country = models.ForeignKey(
-        Country,
+        'Country',
         related_name='country_states',
         on_delete=models.CASCADE
     )
