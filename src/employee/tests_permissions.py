@@ -5,16 +5,14 @@ from dr_auth.permissions_tests import (
     UserToFinancialAdviser,
     UserToGeneral,
     UserToItself,
-    PermissionsTests,
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
 )
-from dreamrich.utils import Relationship
+from dr_auth.utils import PermissionsTests
 from dreamrich.requests import RequestTypes
-from client.factories import ActiveClientFactory
 from .factories import (
-    EmployeeMainFactory,
-    FinancialAdviserMainFactory
+    EmployeeFactory,
+    FinancialAdviserFactory
 )
 
 
@@ -39,6 +37,8 @@ class EmployeeToEmployee(UserToEmployee,
                          PermissionsTests,
                          NotAuthenticatedTests):
 
+    factory_user = EmployeeFactory
+
     def test_employee_get_employees_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
 
@@ -62,7 +62,7 @@ class EmployeeToClient(UserToClient,
                        PermissionsTests,
                        NotAuthenticatedTests):
 
-    factory_user = EmployeeMainFactory
+    factory_user = EmployeeFactory
 
     def test_employee_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -87,7 +87,7 @@ class EmployeeToFinancialAdviser(UserToFinancialAdviser,
                                  PermissionsTests,
                                  NotAuthenticatedTests):
 
-    factory_user = EmployeeMainFactory
+    factory_user = EmployeeFactory
 
     def test_employee_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -112,7 +112,7 @@ class EmployeeToGeneral(UserToGeneral,
                         PermissionsTests,
                         NotAuthenticatedTests):
 
-    factory_user = EmployeeMainFactory
+    factory_user = EmployeeFactory
 
     def test_employee_get_general(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
@@ -151,6 +151,8 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
                                          PermissionsTests,
                                          NotAuthenticatedTests):
 
+    factory_user = FinancialAdviserFactory
+
     def test_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
 
@@ -174,15 +176,12 @@ class FinancialAdviserToRelatedClient(UserToClient,
                                       PermissionsTests,
                                       NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserMainFactory
+    factory_user = FinancialAdviserFactory
 
-    def setUp(self):
-        super(FinancialAdviserToRelatedClient, self).setUp()
-
-        self.consulted_relationships.make(
-            many=True,
-            relationship_attr='financial_advisers'
-        )
+    relationship = PermissionsTests.Relationship(
+        related_names='clients',
+        many=True
+    )
 
     def test_financial_adviser_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -204,7 +203,7 @@ class FinancialAdviserToClient(UserToClient,
                                PermissionsTests,
                                NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserMainFactory
+    factory_user = FinancialAdviserFactory
 
     def test_financial_adviser_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -229,7 +228,7 @@ class FinancialAdviserToEmployee(UserToEmployee,
                                  PermissionsTests,
                                  NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserMainFactory
+    factory_user = FinancialAdviserFactory
 
     def test_financial_adviser_get_employees_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -254,25 +253,12 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
                                        PermissionsTests,
                                        NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserMainFactory
+    factory_user = FinancialAdviserFactory
 
-    def setUp(self):
-        super(FinancialAdviserToRelatedGeneral, self).setUp()
-
-        active_client = ActiveClientFactory()
-
-        # Financial adviser and active client
-        # Active client and general representant
-        self.consulted_relationships = [
-            Relationship(primary=self.user,
-                         secondary=active_client,
-                         many=True,
-                         relationship_attr='clients'),
-            Relationship(primary=active_client,
-                         secondary=self.consulted,
-                         many=False,
-                         relationship_attr='active_client')
-        ]
+    relationship = PermissionsTests.Relationship(
+        related_names='clients.financial_planning',
+        many=True
+    )
 
     def test_financial_adviser_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -294,7 +280,7 @@ class FinancialAdviserToGeneral(UserToGeneral,
                                 PermissionsTests,
                                 NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserMainFactory
+    factory_user = FinancialAdviserFactory
 
     def test_financial_adviser_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)

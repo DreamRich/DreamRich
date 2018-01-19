@@ -5,12 +5,12 @@ from dr_auth.permissions_tests import (
     UserToEmployee,
     UserToFinancialAdviser,
     UserToItself,
-    PermissionsTests,
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
 )
+from dr_auth.utils import PermissionsTests
 from dreamrich.requests import RequestTypes
-from client.factories import ActiveClientFactory
+from dreamrich.complete_factories import ActiveClientCompleteFactory
 
 
 class ClientToItself(UserToClient,
@@ -34,7 +34,7 @@ class ClientToClient(UserToClient,
                      PermissionsTests,
                      NotAuthenticatedTests):
 
-    factory_user = ActiveClientFactory
+    factory_user = ActiveClientCompleteFactory
 
     def test_client_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -59,7 +59,7 @@ class ClientToEmployee(UserToEmployee,
                        PermissionsTests,
                        NotAuthenticatedTests):
 
-    factory_user = ActiveClientFactory
+    factory_user = ActiveClientCompleteFactory
 
     def test_clients_get_employees_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -84,7 +84,7 @@ class ClientToFinancialAdviser(UserToFinancialAdviser,
                                PermissionsTests,
                                NotAuthenticatedTests):
 
-    factory_user = ActiveClientFactory
+    factory_user = ActiveClientCompleteFactory
 
     def test_clients_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -109,15 +109,12 @@ class ClientToRelatedGeneral(UserToGeneral,
                              PermissionsTests,
                              NotAuthenticatedTests):
 
-    factory_user = ActiveClientFactory
+    factory_user = ActiveClientCompleteFactory
 
-    def setUp(self):
-        super(ClientToRelatedGeneral, self).setUp()
-
-        self.consulted_relationships.make(
-            many=False,
-            relationship_attr='active_client'
-        )
+    relationship = PermissionsTests.Relationship(
+        related_names='financial_planning',
+        many=False
+    )
 
     def test_client_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
@@ -138,7 +135,8 @@ class ClientToRelatedGeneral(UserToGeneral,
 class ClientToGeneral(UserToGeneral,
                       PermissionsTests,
                       NotAuthenticatedTests):
-    factory_user = ActiveClientFactory
+
+    factory_user = ActiveClientCompleteFactory
 
     def test_client_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
