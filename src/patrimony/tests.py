@@ -2,8 +2,11 @@ import datetime
 from django.test import TestCase
 from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
-from dreamrich.complete_factories import FinancialPlanningCompleteFactory
-from dreamrich.complete_factories import PatrimonyCompleteFactory
+from dreamrich.complete_factories import (
+    ActiveClientCompleteFactory,
+    FinancialPlanningCompleteFactory,
+    PatrimonyCompleteFactory
+)
 from patrimony.models import Active, Arrearage
 from patrimony.factories import (
     ActiveFactory,
@@ -31,45 +34,45 @@ def _flatten(array):
 class PatrimonyTest(TestCase):
 
     def setUp(self):
-        active_client = ActiveClientFactory(
+        active_client = ActiveClientCompleteFactory(
             birthday=datetime.datetime(1967, 1, 1)
         )
 
-        self.patrimony = PatrimonyFactory.build()
+        self.patrimony = active_client.financial_planning.patrimony
         self.patrimony.incomes.all().update(value_monthly=1212.2)
-
-        FinancialPlanningCompleteFactory(
-            active_client=active_client,
-            patrimony=self.patrimony
-        )
 
         self.common_income = IncomeFactory(
             value_monthly=round(1200, 2),
             thirteenth=False,
-            patrimony=self.patrimony,
             vacation=False
         )
+        self.patrimony.incomes.add(self.common_income)
+
         self.income_with_thirteenth = IncomeFactory(
             value_monthly=1200.00,
             thirteenth=True,
-            patrimony=self.patrimony,
             vacation=False
         )
+        self.patrimony.incomes.add(self.income_with_thirteenth)
+
         self.income_with_vacation = IncomeFactory(
             value_monthly=round(1200, 2),
             thirteenth=False,
-            patrimony=self.patrimony,
             vacation=True
         )
-        ArrearageFactory(
-            patrimony=self.patrimony,
+        self.patrimony.incomes.add(self.income_with_vacation)
+
+        arrearage = ArrearageFactory(
             value=351200.00,
             period=3
         )
-        RealEstateFactory(
+        self.patrimony.arrearages.add(arrearage)
+
+        real_estate = RealEstateFactory(
             patrimony=self.patrimony,
             salable=True
         )
+        self.patrimony.real_estates.add(real_estate)
 
     def test_current_net_investment(self):
         self.assertEqual(321200.00, self.patrimony.current_net_investment())

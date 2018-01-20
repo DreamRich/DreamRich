@@ -17,7 +17,7 @@ class ClientBaseFactory(factory.DjangoModelFactory):
     birthday = factory.fuzzy.FuzzyNaiveDateTime(datetime.datetime(1967, 1, 1),
                                                 datetime.datetime(1987, 1, 1))
     profession = factory.Faker('job')
-    telephone = factory.Sequence(lambda n: '(61) 91234-5%03d' % n)
+    telephone = factory.Sequence(lambda n: '(61) 91234-%04d' % n)
     cpf = factory.LazyAttribute(gen_cpf)
     hometown = factory.Faker('city')
 

@@ -23,7 +23,7 @@ class EmergencyReserve(BaseModel):
 
     month_of_protection = models.PositiveSmallIntegerField()
 
-    def necessery_value(self):
+    def necessary_value(self):
         regular_cost_monthly = self.cost_manager.total()
         total = self.month_of_protection * regular_cost_monthly
 
@@ -31,9 +31,9 @@ class EmergencyReserve(BaseModel):
 
     def risk_gap(self):
         current_patrimony = self.patrimony.current_net_investment()
-        necessery_value = self.necessery_value()
-        if current_patrimony < necessery_value:
-            total = necessery_value - current_patrimony
+        necessary_value = self.necessary_value()
+        if current_patrimony < necessary_value:
+            total = necessary_value - current_patrimony
         else:
             total = 0
 
@@ -94,18 +94,18 @@ class ReserveInLack(BaseModel):
 
     value_120_to_240_month = models.PositiveSmallIntegerField()
 
-    def patrimony_necessery_in_period(self, month_quantities, value):
+    def patrimony_necessary_in_period(self, month_quantities, value):
         rate = self.protection_manager.financial_planning.real_gain()
         return numpy.pv(rate, month_quantities, -value)
 
-    def patrimony_necessery_total(self):
-        portion_0_to_24_month = self.patrimony_necessery_in_period(
+    def patrimony_necessary_total(self):
+        portion_0_to_24_month = self.patrimony_necessary_in_period(
             24, self.value_0_to_24_month)
-        portion_24_to_60_month = self.patrimony_necessery_in_period(
+        portion_24_to_60_month = self.patrimony_necessary_in_period(
             36, self.value_24_to_60_month)
-        portion_60_to_120_month = self.patrimony_necessery_in_period(
+        portion_60_to_120_month = self.patrimony_necessary_in_period(
             60, self.value_60_to_120_month)
-        portion_120_to_240_month = self.patrimony_necessery_in_period(
+        portion_120_to_240_month = self.patrimony_necessary_in_period(
             120, self.value_120_to_240_month)
 
         total = portion_0_to_24_month + portion_24_to_60_month +\
@@ -159,28 +159,28 @@ class SuccessionTemplate(BaseModel):
 
         return total
 
-    def patrimony_necessery_to_itcmd(self):
+    def patrimony_necessary_to_itcmd(self):
         total = self.patrimony_total() * self.itcmd_tax
         total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_to_oab(self):
+    def patrimony_necessary_to_oab(self):
         total = self.patrimony_total() * self.oab_tax
         total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_to_other_taxes(self):
+    def patrimony_necessary_to_other_taxes(self):
         total = self.patrimony_total() * self.other_taxes
         total = self.real_succession(total)
 
         return total
 
-    def patrimony_necessery_total_to_sucession(self):
-        total = self.patrimony_necessery_to_itcmd() +\
-            self.patrimony_necessery_to_oab() +\
-            self.patrimony_necessery_to_other_taxes()
+    def patrimony_necessary_total_to_sucession(self):
+        total = self.patrimony_necessary_to_itcmd() +\
+            self.patrimony_necessary_to_oab() +\
+            self.patrimony_necessary_to_other_taxes()
 
         return total
 
@@ -192,7 +192,7 @@ class SuccessionTemplate(BaseModel):
 
     def leftover_after_sucession(self):
         total = self.total_to_recive_after_death_without_taxes() -\
-            self.patrimony_necessery_total_to_sucession()
+            self.patrimony_necessary_total_to_sucession()
 
         return total
 
@@ -200,7 +200,7 @@ class SuccessionTemplate(BaseModel):
         total = self.leftover_after_sucession() +\
             self.patrimony_total() -\
             self.protection_manager.reserve_in_lack.\
-            patrimony_necessery_total()
+            patrimony_necessary_total()
 
         return total
 

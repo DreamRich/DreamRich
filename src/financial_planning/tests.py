@@ -120,13 +120,11 @@ class FinancialIndependencePatrimonyTest(TestCase):
 class RegularCostTest(TestCase):
 
     def setUp(self):
-        self.financial_planning = FinancialPlanningCompleteFactory.build()
-
-        ActiveClientCompleteFactory(
+        active_client = ActiveClientCompleteFactory(
             birthday=datetime.datetime(1967, 1, 1),
-            financial_planning=self.financial_planning
         )
 
+        self.financial_planning = active_client.financial_planning
         self.cost_manager = self.financial_planning.cost_manager
 
     def test_cost_manager_total(self):

@@ -104,12 +104,12 @@ class ProtectionManagerCompleteFactory(ProtectionManagerFactory):
         'protection_manager'
     )
 
-    actual_patrimony_succession = factory.RelatedFactory(
+    actualpatrimonysuccession = factory.RelatedFactory(
         ActualPatrimonySuccessionFactory,
         'protection_manager'
     )
 
-    future_patrimony_succession = factory.RelatedFactory(
+    independencepatrimonysuccession = factory.RelatedFactory(
         IndependencePatrimonySuccessionFactory,
         'protection_manager'
     )

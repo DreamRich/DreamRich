@@ -36,7 +36,7 @@ class Relationship:
                 primary_name = primary.__class__.__name__
                 secondary_name = secondary.__class__.__name__
 
-                raise ValueError("Wasn't possible to create relashionship"
+                raise ValueError("Wasn't possible to create relationship"
                                  " between {} and {} models"
                                  .format(primary_name, secondary_name))
 

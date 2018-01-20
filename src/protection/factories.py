@@ -78,9 +78,7 @@ class PrivatePensionFactory(ActiveFactory):
     class Meta:
         model = PrivatePension
 
-    protection_manager = factory.SubFactory(ProtectionManager)
-
-    annual_investment = factory.Faker('pyfloat')
+    protection_manager = factory.SubFactory(ProtectionManagerFactory)
 
 
 class LifeInsuranceFactory(factory.DjangoModelFactory):
@@ -88,7 +86,7 @@ class LifeInsuranceFactory(factory.DjangoModelFactory):
     class Meta:
         model = LifeInsurance
 
-    protection_manager = factory.SubFactory(ProtectionManager)
+    protection_manager = factory.SubFactory(ProtectionManagerFactory)
 
     name = factory.Faker('word')
     value_to_recive = factory.Faker('pyfloat')

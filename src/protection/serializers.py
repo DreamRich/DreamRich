@@ -114,9 +114,9 @@ class ProtectionManagerSerializer(serializers.ModelSerializer):
 
     financial_planning_id = serializers.IntegerField(write_only=True)
     reserve_in_lack = ReserveInLackSerializer(read_only=True)
-    actual_patrimony_succession = ActualPatrimonySuccessionSerializer(
+    actualpatrimonysuccession = ActualPatrimonySuccessionSerializer(
         read_only=True)
-    future_patrimony_succession = IndependencePatrimonySuccessionSerializer(
+    independencepatrimonysuccession = IndependencePatrimonySuccessionSerializer(
         read_only=True)
     life_insurances = LifeInsuranceSerializer(many=True, read_only=True)
     private_pensions = PrivatePensionSerializer(many=True, read_only=True)
@@ -127,8 +127,8 @@ class ProtectionManagerSerializer(serializers.ModelSerializer):
             'id',
             'financial_planning_id',
             'reserve_in_lack',
-            'actual_patrimony_succession',
-            'future_patrimony_succession',
+            'actualpatrimonysuccession',
+            'independencepatrimonysuccession',
             'life_insurances',
             'private_pensions',
         ]
