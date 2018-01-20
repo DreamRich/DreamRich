@@ -1,14 +1,16 @@
 from http import HTTPStatus
-from dr_auth.permissions_tests import (
+from dr_auth.tests_permissions import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,
     UserToGeneral,
     UserToItself,
+    PermissionsTests
+)
+from dr_auth.common_tests_permissions import (
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
 )
-from dr_auth.utils import PermissionsTests
 from dreamrich.requests import RequestTypes
 from .factories import (
     EmployeeFactory,
@@ -256,7 +258,7 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
     factory_user = FinancialAdviserFactory
 
     relationship = PermissionsTests.Relationship(
-        related_names='clients.financial_planning',
+        related_names='clients.first().financial_planning',
         many=True
     )
 
