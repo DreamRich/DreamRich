@@ -120,11 +120,10 @@ class ProtectionManagerTest(TestCase):
             private_pension.delete()
 
         life_insurances = [
-            {'value_to_pay_annual': 2000, 'has_year_end': False},
-            {'value_to_pay_annual': 2000, 'has_year_end': True,
-                'year_end': 2020, },
-            {'value_to_pay_annual': 1000, 'has_year_end': True,
-                'year_end': 2023, }]
+            {'value_to_pay_annual': 2000},
+            {'value_to_pay_annual': 2000, 'year_end': 2020},
+            {'value_to_pay_annual': 1000, 'year_end': 2023}
+        ]
 
         for life_insurance in life_insurances:
             LifeInsuranceFactory(**life_insurance,

@@ -20,7 +20,9 @@ class FinancialPlanning(GeneralModel):
         related_name='financial_planning'
     )
 
-    init_year = models.PositiveSmallIntegerField(null=True)
+    init_year = models.PositiveSmallIntegerField(
+        default=datetime.datetime.now().year
+    )
 
     cdi = models.FloatField()
 
@@ -44,6 +46,7 @@ class FinancialPlanning(GeneralModel):
         age_of_independence = self.financial_independence.age
         actual_year = datetime.datetime.now().year
         birthday_year = self.active_client.birthday.year
+
         actual_age = actual_year - birthday_year
         end_year = age_of_independence - actual_age + actual_year
 
@@ -117,8 +120,10 @@ class FinancialPlanning(GeneralModel):
     def year_init_to_end(self):
         init_year = self.init_year
         duration_goals = self.duration()
+
         range_year = range(init_year, init_year + duration_goals)
         array = list(range_year)
+
         return array
 
     @property
@@ -146,12 +151,6 @@ class FinancialPlanning(GeneralModel):
         flow = self.resource_monetization(annual_leftovers, real_gain)
 
         return {'flow': flow, 'rate': real_gain}
-
-    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        if not self.init_year:
-            self.init_year = datetime.datetime.now().year
-
-        super(FinancialPlanning, self).save(*args, **kwargs)
 
 
 class FinancialIndependence(GeneralModel):

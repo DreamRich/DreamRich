@@ -36,17 +36,19 @@ from dreamrich.complete_factories import (
 class FinancialIndependencePlanningTest(TestCase):
 
     def setUp(self):
-        self.financial_independence = FinancialIndependenceFactory.build(
+        active_client = ActiveClientCompleteFactory(
+            birthday=datetime.datetime(1967, 1, 1),
+        )
+
+        self.financial_planning = FinancialPlanningCompleteFactory()
+        active_client.financial_planning = self.financial_planning
+
+        self.financial_independence = FinancialIndependenceFactory(
             duration_of_usufruct=35,
             remain_patrimony=30000,
         )
-        self.financial_planning = FinancialPlanningCompleteFactory.build(
-            financial_independence=self.financial_independence,
-        )
-        ActiveClientFactory(
-            birthday=datetime.datetime(1967, 1, 1),
-            financial_planning=self.financial_planning
-        )
+        self.financial_planning.financial_independence = \
+            self.financial_independence
 
     def test_assets_required(self):
         self.assertAlmostEqual(self.financial_independence.assets_required(),
@@ -62,6 +64,7 @@ class FinancialIndependencePlanningTest(TestCase):
     def test_remain_necessary_for_retirement(self):
         self.financial_planning.active_client.\
             birthday = datetime.datetime(1978, 1, 1)
+
         self.assertAlmostEqual(self.financial_independence.
                                remain_necessary_for_retirement(),
                                12156.118288258309, 4)
@@ -171,7 +174,7 @@ class FinancialPlanningModelTest(TestCase):
                                0.04306976744186053)
 
     def test_save_financial_planning(self):
-        financial_planning = FinancialPlanningFactory(init_year=None)
+        financial_planning = FinancialPlanningFactory()
         self.assertEqual(financial_planning.init_year,
                          datetime.datetime.now().year)
 
@@ -241,7 +244,6 @@ class FinancialPlanningFlowTest(TestCase):
         LifeInsuranceFactory(
             protection_manager=protection_manager,
             value_to_pay_annual=2000,
-            has_year_end=False
         )
 
     def test_annual_leftovers_for_goal_without_change(self):

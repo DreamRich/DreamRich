@@ -105,7 +105,6 @@ class LifeInsuranceSerializer(serializers.ModelSerializer):
             'year_end',
             'redeemable',
             'actual',
-            'has_year_end',
             'protection_manager_id',
         ]
 

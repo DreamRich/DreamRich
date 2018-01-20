@@ -295,10 +295,9 @@ class LifeInsurance(BaseModel):
     year_end = models.PositiveSmallIntegerField(blank=True, null=True)
     redeemable = models.BooleanField()
     actual = models.BooleanField()
-    has_year_end = models.BooleanField()
 
     def index_end(self):
-        if self.has_year_end:
+        if self.year_end is not None:
             actual_year = datetime.datetime.now().year
             index = self.year_end - actual_year
         else:
