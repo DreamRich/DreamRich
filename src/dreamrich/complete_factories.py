@@ -33,6 +33,7 @@ from protection.factories import (
     ProtectionManagerFactory,
     ReserveInLackFactory
 )
+from employee.factories import FinancialAdviserFactory
 from goal.factories import GoalManagerFactory
 
 
@@ -178,3 +179,17 @@ class ActiveClientCompleteFactory(ActiveClientFactory):
         AddressFactory,
         'active_client'
     )
+
+
+class FinancialAdviserCompleteFactory(FinancialAdviserFactory):
+
+    @factory.post_generation
+    def clients(self, create, extracted, **unused_kwargs):
+        if not create:
+            return
+
+        if not extracted:
+            extracted = [ActiveClientCompleteFactory()]
+
+        for client in extracted:
+            self.clients.add(client)

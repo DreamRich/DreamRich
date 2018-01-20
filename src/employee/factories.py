@@ -2,6 +2,7 @@ import factory.fuzzy
 from lib.factories import gen_cpf
 from employee.models import Employee, FinancialAdviser
 from dr_auth.factories import UserFactory
+from client.factories import ActiveClientFactory
 
 
 class EmployeeFactory(UserFactory):
@@ -18,10 +19,10 @@ class FinancialAdviserFactory(EmployeeFactory):
         model = FinancialAdviser
 
     @factory.post_generation
-    def clients(self, create, extracted):
+    def clients(self, create, extracted, **unused_kwargs):
         if not create:
             return
 
         if extracted:
             for client in extracted:
-                self.groups.add(client)
+                self.clients.add(client)
