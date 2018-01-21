@@ -8,29 +8,27 @@ from employee.serializers import (
     EmployeeSerializer,
     FinancialAdviserSerializer
 )
-from employee.factories import EmployeeFactory
+from employee.factories import EmployeeFactory, FinancialAdviserFactory
 from client.factories import ActiveClientFactory
 from client.serializers import ActiveClientSerializer
 from financial_planning.serializers import FinancialPlanningSerializer
 from financial_planning.factories import FinancialPlanningFactory
 from dreamrich.requests import RequestTypes
-from dreamrich.complete_factories import FinancialAdviserCompleteFactory
 from .utils import authenticate_user
 
 
 class PermissionsTests(TestCase):
 
-    # If nested relationship, just pass related_name like one.two.three,
-    # many must be passed considering first and last on chain.
-    Relationship = namedtuple('Relationship', 'related_names many')
+    Relationship = namedtuple('Relationship', 'related_name many')
 
     # Children will fill these attributes
     factory_consulted = None
     factory_user = None
     serializer_consulted = None
     django_client = None
-
     base_route = ''
+
+    # If nested relationship pass list of Relationships,
     relationship = Relationship('', False)
 
     def setUp(self):
@@ -74,29 +72,39 @@ class PermissionsTests(TestCase):
         return response.status_code
 
     def handle_related(self):
-        if self.relationship.related_names:
-            related_names = self.relationship.related_names
-            user_name = self.user.__class__.__name__
+        if not isinstance(self.relationship, list):
+            self.relationship = [self.relationship]
+
+        if self.relationship[0].related_name:
+            self._set_related_to_consulted()
+
+    def _set_related_to_consulted(self):
+        consulted_user = self.user
+
+        for related_object in self.relationship:
+            related_name = related_object.related_name
+            consulted_user_name = consulted_user.__class__.__name__
 
             try:
-                self.consulted = getattr(self.user, related_names)
-
+                self.consulted = getattr(consulted_user, related_name)
             except AttributeError:
                 raise AttributeError(
                     "'{}' passed to PermissionsTests.relationship"
-                    " is not a valid related_names path or there is no created"
-                    " object associated with {}.".format(related_names,
-                                                         user_name)
+                    " is not a valid related_name path or there is no created"
+                    " object associated with {}.".format(related_name,
+                                                         consulted_user_name)
                 )
 
-            if self.relationship.many:
+            if related_object.many:
                 if self.consulted.last() is not None:
                     self.consulted = self.consulted.last()
                 else:
                     raise AttributeError(
                         "There isn't any '{}' created and associated"
-                        " with {}.".format(related_names, user_name)
+                        " with {}.".format(related_name, consulted_user_name)
                     )
+
+            consulted_user = self.consulted
 
     def _check_attributes(self):
         missing = ''
@@ -169,10 +177,13 @@ class PermissionsTests(TestCase):
 
     def _remove_read_only_fields(self, serialized_data):
         read_only_fields = self._get_read_only_fields(serialized_data)
-
         data = serialized_data.data
-        for field in read_only_fields:
-            data.pop(field)
+
+        try:
+            for field in read_only_fields:
+                data.pop(field)
+        except KeyError:
+            pass
 
         return data
 
@@ -217,7 +228,7 @@ class UserToEmployee:
 
 class UserToFinancialAdviser:
 
-    factory_consulted = FinancialAdviserCompleteFactory
+    factory_consulted = FinancialAdviserFactory
     serializer_consulted = FinancialAdviserSerializer
     base_route = '/api/employee/financial/'
 

@@ -12,6 +12,7 @@ from dr_auth.common_tests_permissions import (
     NotAuthenticatedToItselfTests
 )
 from dreamrich.requests import RequestTypes
+from dreamrich.complete_factories import FinancialAdviserCompleteFactory
 from .factories import (
     EmployeeFactory,
     FinancialAdviserFactory
@@ -178,12 +179,9 @@ class FinancialAdviserToRelatedClient(UserToClient,
                                       PermissionsTests,
                                       NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserFactory
+    factory_user = FinancialAdviserCompleteFactory
 
-    relationship = PermissionsTests.Relationship(
-        related_names='clients',
-        many=True
-    )
+    relationship = PermissionsTests.Relationship('clients', many=True)
 
     def test_financial_adviser_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -255,12 +253,12 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
                                        PermissionsTests,
                                        NotAuthenticatedTests):
 
-    factory_user = FinancialAdviserFactory
+    factory_user = FinancialAdviserCompleteFactory
 
-    relationship = PermissionsTests.Relationship(
-        related_names='clients.first().financial_planning',
-        many=True
-    )
+    relationship = [
+        PermissionsTests.Relationship('clients', many=True),
+        PermissionsTests.Relationship('financial_planning', many=False)
+    ]
 
     def test_financial_adviser_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)

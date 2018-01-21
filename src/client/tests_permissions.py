@@ -114,7 +114,7 @@ class ClientToRelatedGeneral(UserToGeneral,
     factory_user = ActiveClientCompleteFactory
 
     relationship = PermissionsTests.Relationship(
-        related_names='financial_planning',
+        'financial_planning',
         many=False
     )
 
