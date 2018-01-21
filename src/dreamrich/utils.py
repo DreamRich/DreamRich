@@ -1,66 +1,67 @@
+from django.core.exceptions import ObjectDoesNotExist
+
+
 class Relationship:
-    def __init__(self, primary, secondary, many=None, relationship_attr=None):
-        self.many, self.relationship_attr = many, relationship_attr
+
+    def __init__(self, primary, secondary, related_name=None, many=None):
+        self.many, self.related_name = many, related_name
         self.primary, self.secondary = primary, secondary
 
-        if many is not None and relationship_attr:  # If has enough info
-            self.make()
+    def make(self, primary=None, secondary=None, related_name=None, many=None):
 
-    def make(self, primary=None, secondary=None,
-             many=None, relationship_attr=None):
+        self._fill_missing_attributes(primary, secondary, many, related_name)
 
-        self._fill_missing_attributes(primary, secondary, many,
-                                      relationship_attr)
+        if not self.has_relationship():
+            raise AttributeError('There is no relationship between classes'
+                                 ' or related_name is wrong')
 
-        if not self._has_relationship():
-            raise AttributeError('There is no relationship between'
-                                 ' user and consulted classes')
-
-        # Avoid typing :)
-        primary, secondary, many, attr = self.primary, self.secondary, \
-            self.many, self.relationship_attr
-
-        if many is None and not attr:
-            raise Exception('Not enough information for making relationship')
-
-        if many:
-            attr = getattr(secondary, attr)
-            attr.add(primary)  # Making relationship 1 or n to many
+        if self.many:
+            related_manager = getattr(self.primary, self.related_name)
+            related_manager.add(self.secondary)
         else:
-            secondary.delete()  # Avoid unique constraint problems
-            setattr(secondary, attr, primary)  # Making relationship 1 to 1
+            setattr(self.primary, self.related_name, self.secondary)
 
+    def has_relationship(self):
+        # Check relationship between classes, not objects
+
+        if self.many is None or not self.related_name:
+            raise Exception('Not enough information. All attributes must be'
+                            ' filled for making a relationship.')
+
+        swapped = False
+
+        while True:
             try:
-                secondary.save()
-            except ValueError:
-                primary_name = primary.__class__.__name__
-                secondary_name = secondary.__class__.__name__
+                getattr(self.primary, self.related_name)
+            except ObjectDoesNotExist:
+                pass
+            except AttributeError:
+                self.primary, self.secondary = self.secondary, self.primary
 
-                raise ValueError("Wasn't possible to create relationship"
-                                 " between {} and {} models"
-                                 .format(primary_name, secondary_name))
+                if swapped:
+                    return False
+                swapped = True
+            break
 
-    def get_info(self):
-        return (self.many, self.relationship_attr,
-                self.primary, self.secondary)
+        return True
 
-    def _has_relationship(self):
+    def get(self):
+        return (self.primary, self.secondary, self.many, self.related_name)
 
-        # Primary will have primary key and secondary the foreign key
-        # hasattr called twice to test A to B and B to A relationships
-        if not hasattr(self.secondary, self.relationship_attr):
-            self.primary, self.secondary = self.secondary, self.primary
-
-        return hasattr(self.secondary, self.relationship_attr)
-
-    # Can't use None because None will be used to check what params were passed
     def _fill_missing_attributes(self, primary=None, secondary=None,
-                                 many=None, relationship_attr=None):
+                                 many=None, related_name=None):
 
         self.primary = primary or self.primary
         self.secondary = secondary or self.secondary
         self.many = many or self.many
-        self.relationship_attr = relationship_attr or self.relationship_attr
+        self.related_name = related_name or self.related_name
 
     def __str__(self):
-        return str(self.get_info())
+        primary_name = self.primary.__class__.__name__
+        secondary_name = self.secondary.__class__.__name__
+
+        return "{} has{}{}".format(
+            primary_name,
+            " many " if self.many else " ",
+            secondary_name
+        )
