@@ -47,5 +47,4 @@ class BaseUser(User, BaseModel):
 
         super(BaseUser, self).save(*args, **kwargs)
 
-        # pylint: disable=no-member
         self.user_permissions.set(self.default_permissions)

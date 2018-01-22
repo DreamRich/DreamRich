@@ -5,7 +5,7 @@
 [MESSAGES CONTROL]
 disable=missing-docstring, bad-continuation, indent-after-paren, indent-string,
 		max-line-lengh, max-module-lines, too-few-public-methods,
-		too-many-ancestors 
+		too-many-ancestors, no-member
 
 [MASTER]
 load-plugins=pylint_django
