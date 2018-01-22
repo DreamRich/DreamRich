@@ -8,25 +8,34 @@ class Relationship:
         self.primary, self.secondary = primary, secondary
 
     def make(self, primary=None, secondary=None, related_name=None, many=None):
-
+        self._check_attributes_for_make()
         self._fill_missing_attributes(primary, secondary, many, related_name)
 
-        if not self.has_relationship():
-            raise AttributeError('There is no relationship between classes'
-                                 ' or related_name is wrong')
+        if not self._check_relatedname():
+            raise AttributeError('related_name passed is not valid for any'
+                                 ' of given objects.')
 
+        is_ok = True
         if self.many:
             related_manager = getattr(self.primary, self.related_name)
-            related_manager.add(self.secondary)
+            try:
+                related_manager.add(self.secondary)
+            except TypeError:
+                is_ok = False
         else:
-            setattr(self.primary, self.related_name, self.secondary)
+            try:
+                setattr(self.primary, self.related_name, self.secondary)
+            except ValueError:
+                is_ok = False
 
-    def has_relationship(self):
-        # Check relationship between classes, not objects
+        if not is_ok:
+            raise TypeError("Can't create relationship between these classes."
+                            " Probably they don't have a relationship or"
+                            " tried the wrong related_name.")
 
-        if self.many is None or not self.related_name:
-            raise Exception('Not enough information. All attributes must be'
-                            ' filled for making a relationship.')
+    def _check_relatedname(self):
+        if not self.related_name:
+            raise AttributeError('related_name was not provided.')
 
         swapped = False
 
@@ -34,19 +43,29 @@ class Relationship:
             try:
                 getattr(self.primary, self.related_name)
             except ObjectDoesNotExist:
-                pass
+                break
             except AttributeError:
                 self.primary, self.secondary = self.secondary, self.primary
 
                 if swapped:
                     return False
                 swapped = True
-            break
 
         return True
 
     def get(self):
         return (self.primary, self.secondary, self.many, self.related_name)
+
+    def _check_attributes_for_make(self):
+        missing = ''
+
+        if self.many is None:
+            missing = 'many'
+        elif not self.related_name:
+            missing = 'related_name'
+        if missing:
+            raise AttributeError('Not enough information, {} is missing.'
+                                 .format(missing))
 
     def _fill_missing_attributes(self, primary=None, secondary=None,
                                  many=None, related_name=None):
