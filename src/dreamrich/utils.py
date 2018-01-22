@@ -10,10 +10,7 @@ class Relationship:
     def make(self, primary=None, secondary=None, related_name=None, many=None):
         self._check_attributes_for_make()
         self._fill_missing_attributes(primary, secondary, many, related_name)
-
-        if not self._check_relatedname():
-            raise AttributeError('related_name passed is not valid for any'
-                                 ' of given objects.')
+        self._check_relatedname()
 
         is_ok = True
         if self.many:
@@ -38,6 +35,7 @@ class Relationship:
             raise AttributeError('related_name was not provided.')
 
         swapped = False
+        is_valid = True
 
         while True:
             try:
@@ -48,13 +46,14 @@ class Relationship:
                 self.primary, self.secondary = self.secondary, self.primary
 
                 if swapped:
-                    return False
+                    is_valid = False
+                    break
                 swapped = True
+            break
 
-        return True
-
-    def get(self):
-        return (self.primary, self.secondary, self.many, self.related_name)
+        if not is_valid:
+            raise AttributeError('related_name passed is not valid for any'
+                                 ' of given objects.')
 
     def _check_attributes_for_make(self):
         missing = ''
