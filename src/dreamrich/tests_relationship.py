@@ -24,6 +24,49 @@ class RelationshipTest(TestCase):
         self.assertIn(self.active_client,
                       self.financial_adviser.clients.all())
 
+    def test_make_relationship_not_many(self):
+        self.assertFalse(hasattr(self.active_client, 'financial_planning'))
+
+        Relationship(self.active_client, self.financial_planning,
+                     related_name='financial_planning', many=False).make()
+
+        self.assertEqual(self.active_client.financial_planning.id,
+                         self.financial_planning.id)
+
+    def test_has_relationship_not_many(self):
+        self.active_client.financial_planning = self.financial_planning
+
+        relationship = Relationship(
+            self.active_client, self.financial_planning,
+            related_name='financial_planning', many=False
+        )
+
+        self.assertTrue(relationship.has_relationship())
+
+    def test_hasnt_relationship_not_many(self):
+        relationship = Relationship(
+            self.active_client,
+            self.financial_planning,
+            related_name='financial_planning',
+            many=False
+        )
+        self.assertFalse(relationship.has_relationship())
+
+    def test_has_relationship_many(self):
+        self.financial_adviser.clients.add(self.active_client)
+
+        relationship = Relationship(
+            self.active_client, self.financial_adviser,
+            related_name='clients', many=True
+        )
+
+        self.assertTrue(relationship.has_relationship())
+
+    def test_hasnt_relationship_many(self):
+        relationship = Relationship(self.active_client, self.financial_adviser,
+                                    related_name='clients', many=True)
+        self.assertFalse(relationship.has_relationship())
+
     def test_str_many(self):
         relationship = Relationship(self.financial_planning, self.patrimony)
         self.assertEqual(str(relationship), 'FinancialPlanning has Patrimony')
@@ -34,40 +77,29 @@ class RelationshipTest(TestCase):
         self.assertEqual(str(relationship),
                          'FinancialPlanning has many Patrimony')
 
-    def test_make_relationship_not_many(self):
-        self.assertFalse(
-            hasattr(self.active_client, 'financial_planning')
-        )
-
-        Relationship(self.active_client, self.financial_planning,
-                     many=False, related_name='financial_planning').make()
-
-        self.assertEqual(self.active_client.financial_planning.id,
-                         self.financial_planning.id)
-
-    def test_check_attributes_for_make(self):
+    def test_is_all_attributes_filled(self):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)
 
         # pylint: disable=protected-access
         self.assertRaisesMessage(
-            relationship._check_attributes_for_make,
+            relationship._is_all_attributes_filled,
             'Not enough information, many is missing.'
         )
         relationship.many = False
 
         self.assertRaisesMessage(
-            relationship._check_attributes_for_make,
+            relationship._is_all_attributes_filled,
             'Not enough information, related_name is missing.'
         )
         relationship.related_name = 'any'
 
-        relationship._check_attributes_for_make()  # Fail if Error
+        relationship._is_all_attributes_filled()  # Fail if Error
 
     def test_check_relatedname(self):
         relationship = Relationship(
             self.active_client, self.financial_planning,
-            'financial_planning', many=False
+            related_name='financial_planning', many=False
         )
         # pylint: disable=protected-access
         relationship._check_relatedname()
@@ -75,7 +107,7 @@ class RelationshipTest(TestCase):
     def test_check_relatedname_swapped(self):
         relationship = Relationship(
             self.financial_planning, self.active_client,
-            'financial_planning', many=False
+            related_name='financial_planning', many=False
         )
         # pylint: disable=protected-access
         relationship._check_relatedname()  # Fail if Error
@@ -83,7 +115,7 @@ class RelationshipTest(TestCase):
     def test_hasnt_relatedname(self):
         relationship = Relationship(
             self.active_client, self.patrimony,
-            'invalid', many=False
+            related_name='invalid', many=False
         )
         # pylint: disable=protected-access
         self.assertRaisesMessage(relationship._check_relatedname,

@@ -3,12 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class Relationship:
 
-    def __init__(self, primary, secondary, related_name=None, many=None):
+    def __init__(self, primary, secondary, *, related_name=None, many=None):
         self.many, self.related_name = many, related_name
         self.primary, self.secondary = primary, secondary
 
     def make(self, primary=None, secondary=None, related_name=None, many=None):
-        self._check_attributes_for_make()
+        self._is_all_attributes_filled()
         self._fill_missing_attributes(primary, secondary, many, related_name)
         self._check_relatedname()
 
@@ -29,6 +29,22 @@ class Relationship:
             raise TypeError("Can't create relationship between these classes."
                             " Probably they don't have a relationship or"
                             " tried the wrong related_name.")
+
+    def has_relationship(self):
+
+        self._check_relatedname()
+        self._is_all_attributes_filled()
+
+        has_relationship_bool = False
+        if hasattr(self.primary, self.related_name):
+            if self.many:
+                related_manager = getattr(self.primary, self.related_name)
+                has_relationship_bool = self.secondary in related_manager.all()
+            else:
+                related_attribute = getattr(self.primary, self.related_name)
+                has_relationship_bool = related_attribute == self.secondary
+
+        return has_relationship_bool
 
     def _check_relatedname(self):
         if not self.related_name:
@@ -55,7 +71,7 @@ class Relationship:
             raise AttributeError('related_name passed is not valid for any'
                                  ' of given objects.')
 
-    def _check_attributes_for_make(self):
+    def _is_all_attributes_filled(self):
         missing = ''
 
         if self.many is None:
@@ -63,7 +79,7 @@ class Relationship:
         elif not self.related_name:
             missing = 'related_name'
         if missing:
-            raise AttributeError('Not enough information, {} is missing.'
+            raise AttributeError("Not enough information, '{}' is missing."
                                  .format(missing))
 
     def _fill_missing_attributes(self, primary=None, secondary=None,
