@@ -19,7 +19,7 @@ class RelationshipTest(TestCase):
                          self.financial_adviser.clients.all())
 
         Relationship(self.financial_adviser, self.active_client,
-                     many=True, related_name='clients').make()
+                     'clients').make()
 
         self.assertIn(self.active_client,
                       self.financial_adviser.clients.all())
@@ -28,8 +28,9 @@ class RelationshipTest(TestCase):
         self.assertFalse(hasattr(self.active_client, 'financial_planning'))
 
         Relationship(self.active_client, self.financial_planning,
-                     related_name='financial_planning', many=False).make()
+                     related_name='financial_planning').make()
 
+        self.assertTrue(hasattr(self.active_client, 'financial_planning'))
         self.assertEqual(self.active_client.financial_planning.id,
                          self.financial_planning.id)
 
@@ -37,7 +38,7 @@ class RelationshipTest(TestCase):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)
 
-        relationship.make(related_name='financial_planning', many=False)
+        relationship.make(related_name='financial_planning')
 
         self.assertEqual(self.active_client.financial_planning,
                          self.financial_planning)
@@ -47,7 +48,7 @@ class RelationshipTest(TestCase):
 
         relationship = Relationship(
             self.active_client, self.financial_planning,
-            related_name='financial_planning', many=False
+            'financial_planning'
         )
 
         self.assertTrue(relationship.has_relationship())
@@ -55,7 +56,7 @@ class RelationshipTest(TestCase):
     def test_hasnt_relationship_not_many(self):
         relationship = Relationship(
             self.active_client, self.financial_planning,
-            related_name='financial_planning', many=False
+            'financial_planning'
         )
         self.assertFalse(relationship.has_relationship())
 
@@ -64,22 +65,40 @@ class RelationshipTest(TestCase):
 
         relationship = Relationship(
             self.active_client, self.financial_adviser,
-            related_name='clients', many=True
+            'clients'
         )
 
         self.assertTrue(relationship.has_relationship())
 
     def test_hasnt_relationship_many(self):
         relationship = Relationship(self.active_client, self.financial_adviser,
-                                    related_name='clients', many=True)
+                                    'clients')
         self.assertFalse(relationship.has_relationship())
+
+    def test_is_many(self):
+        relationship = Relationship(self.financial_adviser,
+                                    related_name='clients')
+
+        self.assertTrue(relationship.is_many())
+
+    def test_isnt_many(self):
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning')
+
+        self.assertFalse(relationship.is_many())
+
+    def test_isnt_many_related(self):
+        self.active_client.financial_planning = self.financial_planning
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning')
+
+        self.assertFalse(relationship.is_many())
 
     def test_get_related_not_many(self):
         self.active_client.financial_planning = self.financial_planning
 
         relationship = Relationship(self.active_client,
-                                    related_name='financial_planning',
-                                    many=False)
+                                    related_name='financial_planning')
 
         related = relationship.get_related()
 
@@ -88,12 +107,10 @@ class RelationshipTest(TestCase):
     def test_get_related_many(self):
         second_client = ActiveClientFactory()
 
-        self.financial_adviser.clients.add(self.active_client)
-        self.financial_adviser.clients.add(second_client)
+        self.financial_adviser.clients.add(self.active_client, second_client)
 
         relationship = Relationship(self.financial_adviser,
-                                    related_name='clients',
-                                    many=True)
+                                    related_name='clients')
 
         related = relationship.get_related()
 
@@ -103,8 +120,7 @@ class RelationshipTest(TestCase):
         self.assertFalse(hasattr(self.active_client, 'financial_planning'))
 
         relationship = Relationship(self.active_client,
-                                    related_name='financial_planning',
-                                    many=False)
+                                    related_name='financial_planning')
 
         related = relationship.get_related()
 
@@ -114,8 +130,7 @@ class RelationshipTest(TestCase):
         self.assertIsNone(self.financial_adviser.clients.last())
 
         relationship = Relationship(self.financial_adviser,
-                                    related_name='clients',
-                                    many=True)
+                                    related_name='clients')
 
         related = relationship.get_related()
 
@@ -123,29 +138,27 @@ class RelationshipTest(TestCase):
 
     def test_str_many(self):
         relationship = Relationship(self.financial_planning, self.patrimony)
-        self.assertEqual(str(relationship), 'FinancialPlanning has Patrimony')
+        self.assertEqual(str(relationship), '(FinancialPlanning : Patrimony)')
 
     def test_str_not_many(self):
-        relationship = Relationship(self.financial_planning, self.patrimony,
-                                    many=True)
-        self.assertEqual(str(relationship),
-                         'FinancialPlanning has many Patrimony')
+        relationship = Relationship(self.financial_planning, self.patrimony)
+        self.assertEqual(str(relationship), '(FinancialPlanning : Patrimony)')
 
     def test_check_all_attributes_filled(self):
-        relationship = Relationship(self.active_client,
-                                    self.financial_planning)
+        relationship = Relationship(self.active_client)
 
         # pylint: disable=protected-access
-        self.assertRaisesMessage(
-            relationship._check_all_attributes_filled,
-            'Not enough information, many is missing.'
-        )
-        relationship.many = False
+        with self.assertRaisesMessage(AttributeError,
+                                      "Not enough information, 'secondary'"
+                                      " is missing."):
+            relationship._check_all_attributes_filled()
 
-        self.assertRaisesMessage(
-            relationship._check_all_attributes_filled,
-            'Not enough information, related_name is missing.'
-        )
+        relationship.secondary = self.financial_planning
+
+        with self.assertRaisesMessage(AttributeError,
+                                      "Not enough information, 'related_name'"
+                                      " is missing."):
+            relationship._check_all_attributes_filled()
         relationship.related_name = 'any'
 
         relationship._check_all_attributes_filled()  # Fail if Error
@@ -153,7 +166,7 @@ class RelationshipTest(TestCase):
     def test_check_relatedname(self):
         relationship = Relationship(
             self.active_client, self.financial_planning,
-            related_name='financial_planning', many=False
+            'financial_planning'
         )
         # pylint: disable=protected-access
         relationship._check_relatedname()
@@ -161,39 +174,53 @@ class RelationshipTest(TestCase):
     def test_check_relatedname_swapped(self):
         relationship = Relationship(
             self.financial_planning, self.active_client,
-            related_name='financial_planning', many=False
+            'financial_planning'
         )
         # pylint: disable=protected-access
         relationship._check_relatedname()  # Fail if Error
 
-    def test_hasnt_relatedname(self):
+    def test_invalid_relatedname(self):
         relationship = Relationship(
             self.active_client, self.patrimony,
-            related_name='invalid', many=False
+            'invalid'
         )
+
         # pylint: disable=protected-access
-        self.assertRaisesMessage(relationship._check_relatedname,
-                                 'related_name passed is not valid for any')
+        with self.assertRaisesMessage(AttributeError,
+                                      "'related_name' passed is not valid for"
+                                      " any of related objects."):
+            relationship._check_relatedname()
+
+    def test_primay_not_saved(self):
+        client = ActiveClientFactory.build()
+
+        with self.assertRaisesMessage(AttributeError,
+                                      'Objects passed to this class must be'
+                                      ' on database.'):
+            Relationship(client, self.financial_planning,
+                         'financial_planning')
+
+    def test_secondary_not_saved(self):
+        financial_planning = FinancialPlanningFactory.build()
+
+        with self.assertRaisesMessage(AttributeError,
+                                      'Objects passed to this class must be'
+                                      ' on database.'):
+            Relationship(self.active_client, financial_planning,
+                         'financial_planning')
 
     def test_fill_attributes(self):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)
         self.assertEqual(relationship.primary, self.active_client)
         self.assertEqual(relationship.secondary, self.financial_planning)
-        self.assertIsNone(relationship.many)
         self.assertIsNone(relationship.related_name)
 
         # pylint: disable=protected-access
-        relationship._fill_attributes(many=False)
-        self.assertEqual(relationship.primary, self.active_client)
-        self.assertEqual(relationship.secondary, self.financial_planning)
-        self.assertIsNone(relationship.related_name)
-
         related_name = 'any'
         relationship._fill_attributes(related_name=related_name)
         self.assertEqual(relationship.primary, self.active_client)
         self.assertEqual(relationship.secondary, self.financial_planning)
-        self.assertIsNotNone(relationship.many)
         self.assertEqual(relationship.related_name, related_name)
 
     def test_fill_attributes_substituting(self):
