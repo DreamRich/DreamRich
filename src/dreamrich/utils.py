@@ -3,7 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class Relationship:
 
-    def __init__(self, primary, secondary, *, related_name=None, many=None):
+    def __init__(self, primary, secondary=None, *,
+                 related_name=None, many=None):
         self.many, self.related_name = many, related_name
         self.primary, self.secondary = primary, secondary
 
@@ -48,6 +49,22 @@ class Relationship:
 
         return has_relationship_bool
 
+    def get_related(self):
+        '''
+        Returns last related if many else returns related.
+        '''
+        self._check_relatedname()
+
+        related = None
+        if hasattr(self.primary, self.related_name):
+            if self.many:
+                related_manager = getattr(self.primary, self.related_name)
+                related = related_manager.last()
+            else:
+                related = getattr(self.primary, self.related_name)
+
+        return related
+
     def _check_relatedname(self):
         if not self.related_name:
             raise AttributeError('related_name was not provided.')
@@ -76,10 +93,13 @@ class Relationship:
     def _check_all_attributes_filled(self):
         missing = ''
 
-        if self.many is None:
+        if not self.secondary:
+            missing = 'secondary'
+        elif self.many is None:
             missing = 'many'
         elif not self.related_name:
             missing = 'related_name'
+
         if missing:
             raise AttributeError("Not enough information, '{}' is missing."
                                  .format(missing))

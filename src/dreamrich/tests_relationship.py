@@ -74,6 +74,53 @@ class RelationshipTest(TestCase):
                                     related_name='clients', many=True)
         self.assertFalse(relationship.has_relationship())
 
+    def test_get_related_not_many(self):
+        self.active_client.financial_planning = self.financial_planning
+
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning',
+                                    many=False)
+
+        related = relationship.get_related()
+
+        self.assertEqual(related, self.financial_planning)
+
+    def test_get_related_many(self):
+        second_client = ActiveClientFactory()
+
+        self.financial_adviser.clients.add(self.active_client)
+        self.financial_adviser.clients.add(second_client)
+
+        relationship = Relationship(self.financial_adviser,
+                                    related_name='clients',
+                                    many=True)
+
+        related = relationship.get_related()
+
+        self.assertEqual(related, second_client)
+
+    def test_get_related_not_many_none(self):
+        self.assertFalse(hasattr(self.active_client, 'financial_planning'))
+
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning',
+                                    many=False)
+
+        related = relationship.get_related()
+
+        self.assertIsNone(related)
+
+    def test_get_related_many_none(self):
+        self.assertIsNone(self.financial_adviser.clients.last())
+
+        relationship = Relationship(self.financial_adviser,
+                                    related_name='clients',
+                                    many=True)
+
+        related = relationship.get_related()
+
+        self.assertIsNone(related)
+
     def test_str_many(self):
         relationship = Relationship(self.financial_planning, self.patrimony)
         self.assertEqual(str(relationship), 'FinancialPlanning has Patrimony')
