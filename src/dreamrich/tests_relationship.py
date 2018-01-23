@@ -33,6 +33,15 @@ class RelationshipTest(TestCase):
         self.assertEqual(self.active_client.financial_planning.id,
                          self.financial_planning.id)
 
+    def test_passing_attributes_to_make(self):
+        relationship = Relationship(self.active_client,
+                                    self.financial_planning)
+
+        relationship.make(related_name='financial_planning', many=False)
+
+        self.assertEqual(self.active_client.financial_planning,
+                         self.financial_planning)
+
     def test_has_relationship_not_many(self):
         self.active_client.financial_planning = self.financial_planning
 
@@ -45,10 +54,8 @@ class RelationshipTest(TestCase):
 
     def test_hasnt_relationship_not_many(self):
         relationship = Relationship(
-            self.active_client,
-            self.financial_planning,
-            related_name='financial_planning',
-            many=False
+            self.active_client, self.financial_planning,
+            related_name='financial_planning', many=False
         )
         self.assertFalse(relationship.has_relationship())
 
@@ -77,24 +84,24 @@ class RelationshipTest(TestCase):
         self.assertEqual(str(relationship),
                          'FinancialPlanning has many Patrimony')
 
-    def test_is_all_attributes_filled(self):
+    def test_check_all_attributes_filled(self):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)
 
         # pylint: disable=protected-access
         self.assertRaisesMessage(
-            relationship._is_all_attributes_filled,
+            relationship._check_all_attributes_filled,
             'Not enough information, many is missing.'
         )
         relationship.many = False
 
         self.assertRaisesMessage(
-            relationship._is_all_attributes_filled,
+            relationship._check_all_attributes_filled,
             'Not enough information, related_name is missing.'
         )
         relationship.related_name = 'any'
 
-        relationship._is_all_attributes_filled()  # Fail if Error
+        relationship._check_all_attributes_filled()  # Fail if Error
 
     def test_check_relatedname(self):
         relationship = Relationship(
@@ -121,7 +128,7 @@ class RelationshipTest(TestCase):
         self.assertRaisesMessage(relationship._check_relatedname,
                                  'related_name passed is not valid for any')
 
-    def test_fill_missing_attributes(self):
+    def test_fill_attributes(self):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)
         self.assertEqual(relationship.primary, self.active_client)
@@ -130,24 +137,23 @@ class RelationshipTest(TestCase):
         self.assertIsNone(relationship.related_name)
 
         # pylint: disable=protected-access
-        relationship._fill_missing_attributes(many=False)
+        relationship._fill_attributes(many=False)
         self.assertEqual(relationship.primary, self.active_client)
         self.assertEqual(relationship.secondary, self.financial_planning)
-        self.assertFalse(relationship.many)
         self.assertIsNone(relationship.related_name)
 
         related_name = 'any'
-        relationship._fill_missing_attributes(related_name=related_name)
+        relationship._fill_attributes(related_name=related_name)
         self.assertEqual(relationship.primary, self.active_client)
         self.assertEqual(relationship.secondary, self.financial_planning)
-        self.assertFalse(relationship.many)
+        self.assertIsNotNone(relationship.many)
         self.assertEqual(relationship.related_name, related_name)
 
-    def test_fill_missing_attributes_substituting(self):
+    def test_fill_attributes_substituting(self):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)
 
         primary = self.patrimony
         # pylint: disable=protected-access
-        relationship._fill_missing_attributes(primary=primary)
+        relationship._fill_attributes(primary=primary)
         self.assertEqual(relationship.primary, primary)

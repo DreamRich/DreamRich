@@ -7,10 +7,13 @@ class Relationship:
         self.many, self.related_name = many, related_name
         self.primary, self.secondary = primary, secondary
 
-    def make(self, primary=None, secondary=None, related_name=None, many=None):
-        self._is_all_attributes_filled()
-        self._fill_missing_attributes(primary, secondary, many, related_name)
+    def make(self, *, related_name=None, many=None):
+        self._fill_attributes(many=many, related_name=related_name)
+        self._check_all_attributes_filled()
         self._check_relatedname()
+
+        if self.has_relationship():
+            return
 
         is_ok = True
         if self.many:
@@ -31,9 +34,8 @@ class Relationship:
                             " tried the wrong related_name.")
 
     def has_relationship(self):
-
         self._check_relatedname()
-        self._is_all_attributes_filled()
+        self._check_all_attributes_filled()
 
         has_relationship_bool = False
         if hasattr(self.primary, self.related_name):
@@ -71,7 +73,7 @@ class Relationship:
             raise AttributeError('related_name passed is not valid for any'
                                  ' of given objects.')
 
-    def _is_all_attributes_filled(self):
+    def _check_all_attributes_filled(self):
         missing = ''
 
         if self.many is None:
@@ -82,13 +84,13 @@ class Relationship:
             raise AttributeError("Not enough information, '{}' is missing."
                                  .format(missing))
 
-    def _fill_missing_attributes(self, primary=None, secondary=None,
-                                 many=None, related_name=None):
+    def _fill_attributes(self, primary=None, secondary=None,
+                         many=None, related_name=None):
 
         self.primary = primary or self.primary
         self.secondary = secondary or self.secondary
-        self.many = many or self.many
         self.related_name = related_name or self.related_name
+        self.many = many if many is not None else self.many
 
     def __str__(self):
         primary_name = self.primary.__class__.__name__
