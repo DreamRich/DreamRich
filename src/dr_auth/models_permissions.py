@@ -1,5 +1,3 @@
-from rest_framework.permissions import DjangoModelPermissions
-
 CLIENT_DEFAULT_CODENAMES_PERMISSIONS = [
     'see_any_client', 'see_own_client',
     'change_any_client', 'change_own_client',
@@ -100,44 +98,3 @@ GENERAL_MODEL_PERMISSIONS = (
     ('delete_own_general', 'Delete own generals)'),
     ('delete_other_general', 'Delete other generals (or not yours)'),
 )
-
-
-class ClientsModelPermissions(DjangoModelPermissions):
-    perms_map = {
-        'GET': ['client.see_any_client'],
-        'POST': ['client.add_any_client'],
-        'PUT': ['client.change_any_client'],
-        'PATCH': ['client.change_any_client'],
-        'DELETE': ['client.delete_any_client'],
-    }
-
-
-class EmployeesModelPermissions(DjangoModelPermissions):
-    perms_map = {
-        'GET': ['employee.see_any_employee'],
-        'POST': ['employee.add_any_employee'],
-        'PUT': ['employee.change_any_employee'],
-        'PATCH': ['employee.change_any_employee'],
-        'DELETE': ['employee.delete_any_employee'],
-    }
-
-
-class FinancialAdvisersModelPermissions(DjangoModelPermissions):
-    # fa = financial adviser
-    perms_map = {
-        'GET': ['fa.see_any_fa'],
-        'POST': ['fa.add_any_fa'],
-        'PUT': ['fa.change_any_fa'],
-        'PATCH': ['fa.change_any_fa'],
-        'DELETE': ['fa.delete_any_fa'],
-    }
-
-
-class GeneralModelPermissions(DjangoModelPermissions):
-    perms_map = {
-        'GET': ['general.see_any_general'],
-        'POST': ['general.add_any_general'],
-        'PUT': ['general.change_any_general'],
-        'PATCH': ['general.change_any_general'],
-        'DELETE': ['general.delete_any_general'],
-    }

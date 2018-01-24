@@ -257,19 +257,19 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
 
     related_names = ['clients', 'financial_planning']
 
-    def test_financial_adviser_get_financial_advisers_list(self):
+    def test_financial_adviser_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
 
-    def test_financial_adviser_get_financial_adviser(self):
+    def test_financial_adviser_get_general(self):
         self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
 
-    def test_financial_adviser_delete_financial_adviser(self):
+    def test_financial_adviser_delete_general(self):
         self.user_test_request(RequestTypes.DELETE, HTTPStatus.NO_CONTENT)
 
-    def test_financial_adviser_put_financial_adviser(self):
+    def test_financial_adviser_put_general(self):
         self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
 
-    def test_financial_adviser_patch_financial_adviser(self):
+    def test_financial_adviser_patch_general(self):
         self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 

@@ -16,40 +16,35 @@ from financial_planning.models import (
     FlowUnitChange, FinancialIndependence,
 )
 from employee.models import FinancialAdviser
-from dr_auth.models_permissions import GeneralModelPermissions
-from dr_auth.custom_permissions import GeneralCustomPermissions
+from dr_auth.permissions import GeneralPermissions
 
 
 class CostTypeViewList(generics.ListAPIView):
 
     serializer_class = CostTypeSerializer
     queryset = CostType.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class RegularCostViewSet(viewsets.ModelViewSet):
 
     serializer_class = RegularCostSerializer
     queryset = RegularCost.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class CostManagerViewSet(viewsets.ModelViewSet):
 
     serializer_class = CostManagerSerializer
     queryset = CostManager.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class FinancialPlanningViewSet(viewsets.ModelViewSet):
 
     serializer_class = FinancialPlanningSerializer
     queryset = FinancialPlanning.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
     # pylint: disable=invalid-name, unused-argument, no-self-use
     @detail_route(methods=['get'])
@@ -91,13 +86,11 @@ class FlowUnitChangeViewSet(viewsets.ModelViewSet):
     serializer_class = FlowUnitChangeSerializer
     queryset = FlowUnitChange.objects.all()
     filter_fields = ('cost_manager_id', 'incomes_id')
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class FinancialIndependenceViewSet(viewsets.ModelViewSet):
 
     serializer_class = FinancialIndependenceSerializer
     queryset = FinancialIndependence.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)

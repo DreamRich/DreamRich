@@ -1,7 +1,8 @@
 from rest_framework.permissions import BasePermission
+from dreamrich.utils import Relationship
 
 
-class ClientsCustomPermissions(BasePermission):
+class ClientsPermissions(BasePermission):
 
     def has_permission(self, request, view):
         user_pk = str(request.user.pk)
@@ -16,24 +17,24 @@ class ClientsCustomPermissions(BasePermission):
                 view.kwargs['pk'] == user_pk):
             authorized = True
         else:
-            authorized = False
+            authorized = True
 
         return authorized
 
 
-class EmployeesCustomPermissions(BasePermission):
+class EmployeesPermissions(BasePermission):
 
     def has_permission(self, request, view):
-        return False
+        return True
 
 
-class FinancialAdvisersCustomPermissions(BasePermission):
-
-    def has_permission(self, request, view):
-        return False
-
-
-class GeneralCustomPermissions(BasePermission):
+class FinancialAdvisersPermissions(BasePermission):
 
     def has_permission(self, request, view):
-        return False
+        return True
+
+
+class GeneralPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        return True

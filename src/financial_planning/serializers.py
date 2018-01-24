@@ -6,6 +6,7 @@ from financial_planning.models import (
 )
 from patrimony.serializers import PatrimonySerializer
 from goal.serializers import GoalManagerSerializer
+from client.serializers import ActiveClientSerializer
 
 
 class FinancialIndependenceSerializer(serializers.ModelSerializer):
@@ -83,13 +84,14 @@ class FinancialPlanningSerializer(serializers.ModelSerializer):
     patrimony = PatrimonySerializer(read_only=True)
     goal_manager = GoalManagerSerializer(read_only=True)
     cost_manager = CostManagerSerializer(read_only=True)
+    active_client = ActiveClientSerializer(read_only=True)
 
     class Meta:
         model = FinancialPlanning
         fields = [
             'pk',
-            'active_client_id',
             'patrimony',
+            'active_client',
             'financial_independence',
             'goal_manager',
             'cost_manager',

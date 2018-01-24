@@ -25,56 +25,49 @@ from patrimony.models import (
     Patrimony,
     RealEstate,
 )
-from dr_auth.models_permissions import GeneralModelPermissions
-from dr_auth.custom_permissions import GeneralCustomPermissions
+from dr_auth.permissions import GeneralPermissions
 
 
 class PatrimonyViewSet(viewsets.ModelViewSet):
 
     serializer_class = PatrimonySerializer
     queryset = Patrimony.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class ActiveManagerViewSet(viewsets.ModelViewSet):
 
     serializer_class = ActiveManagerSerializer
     queryset = ActiveManager.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class ActiveChartDetailView(viewsets.ModelViewSet):
 
     serializer_class = ActiveChartSerializer
     queryset = ActiveManager.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class ActiveTypeViewSet(viewsets.ModelViewSet):
 
     serializer_class = ActiveTypeSerializer
     queryset = ActiveType.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class ActiveViewSet(viewsets.ModelViewSet):
 
     serializer_class = ActiveSerializer
     queryset = Active.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class ArrearageViewSet(viewsets.ModelViewSet):
 
     serializer_class = ArrearageSerializer
     queryset = Arrearage.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
     # pylint: disable=invalid-name, unused-argument, no-self-use
     @detail_route(methods=['get'])
@@ -105,29 +98,25 @@ class RealEstateViewSet(viewsets.ModelViewSet):
 
     serializer_class = RealEstateSerializer
     queryset = RealEstate.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class CompanyParticipationViewSet(viewsets.ModelViewSet):
 
     serializer_class = CompanyParticipationSerializer
     queryset = CompanyParticipation.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class EquipmentViewSet(viewsets.ModelViewSet):
 
     serializer_class = EquipmentSerializer
     queryset = Equipment.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
 
     serializer_class = IncomeSerializer
     queryset = Income.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)

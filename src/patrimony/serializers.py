@@ -155,8 +155,8 @@ class PatrimonySerializer(serializers.ModelSerializer):
     class Meta:
         model = Patrimony
         fields = [
-            'fgts',
             'pk',
+            'fgts',
             'active_manager',
             'arrearages',
             'real_estates',

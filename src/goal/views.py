@@ -10,29 +10,25 @@ from goal.models import (
     GoalType,
     GoalManager,
 )
-from dr_auth.models_permissions import GeneralModelPermissions
-from dr_auth.custom_permissions import GeneralCustomPermissions
+from dr_auth.permissions import GeneralPermissions
 
 
 class GoalViewSet(viewsets.ModelViewSet):
 
     serializer_class = GoalSerializer
     queryset = Goal.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class GoalTypeViewSet(viewsets.ModelViewSet):
 
     serializer_class = GoalTypeSerializer
     queryset = GoalType.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
 
 
 class GoalManagerViewSet(viewsets.ModelViewSet):
 
     serializer_class = GoalManagerSerializer
     queryset = GoalManager.objects.all()
-    permission_classes = (GeneralModelPermissions,
-                          GeneralCustomPermissions)
+    permission_classes = (GeneralPermissions,)
