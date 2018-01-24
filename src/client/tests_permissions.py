@@ -113,10 +113,7 @@ class ClientToRelatedGeneral(UserToGeneral,
 
     factory_user = ActiveClientCompleteFactory
 
-    relationship = PermissionsTests.Relationship(
-        'financial_planning',
-        many=False
-    )
+    related_names = 'financial_planning'
 
     def test_client_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)

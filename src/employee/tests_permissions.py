@@ -181,7 +181,7 @@ class FinancialAdviserToRelatedClient(UserToClient,
 
     factory_user = FinancialAdviserCompleteFactory
 
-    relationship = PermissionsTests.Relationship('clients', many=True)
+    related_names = 'clients'
 
     def test_financial_adviser_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -255,10 +255,7 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
 
     factory_user = FinancialAdviserCompleteFactory
 
-    relationship = [
-        PermissionsTests.Relationship('clients', many=True),
-        PermissionsTests.Relationship('financial_planning', many=False)
-    ]
+    related_names = ['clients', 'financial_planning']
 
     def test_financial_adviser_get_financial_advisers_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
