@@ -1,100 +1,91 @@
 CLIENT_DEFAULT_CODENAMES_PERMISSIONS = [
-    'see_any_client', 'see_own_client',
-    'change_any_client', 'change_own_client',
-
-    'see_any_general', 'see_own_general'
+    'see_own_clients', 'change_own_clients',
+    'see_own_general'
 ]
 
 EMPLOYEE_DEFAULT_CODENAMES_PERMISSIONS = [
-    'see_any_client', 'delete_any_client',
-    'see_other_client', 'add_any_client',
-
-    'see_any_employee', 'change_any_employee',
-    'see_own_employee', 'change_own_employee'
+    'see_all_clients', 'add_clients', 'see_clients_list',
+    'see_own_employees', 'change_own_employees'
 ]
 
 # fa = financial adviser
 FINANCIAL_ADVISER_DEFAULT_CODENAMES_PERMISSIONS = [
-    'see_any_client', 'delete_any_client', 'change_any_client',
-    'see_own_client', 'delete_own_client', 'change_own_client',
-    'see_other_client', 'add_any_client',
+    'see_all_clients', 'delete_own_clients', 'change_own_clients',
+    'see_clients_list',
 
-    'see_any_employee', 'delete_any_employee', 'change_any_employee',
-    'see_other_employee', 'delete_other_employee', 'add_any_employee',
+    'see_all_employees', 'add_employees', 'delete_all_employees',
+    'see_employees_list',
 
-    'see_any_fa', 'delete_any_fa', 'change_any_fa',
-    'see_own_fa', 'delete_own_fa', 'change_own_fa',
-    'see_other_fa', 'delete_other_fa', 'add_any_fa',
+    'see_all_fa', 'add_employees', 'delete_all_fa', 'change_all_fa',
+    'see_fa_list',
 
-    'see_any_general', 'delete_any_general', 'change_any_general',
-    'see_own_general', 'delete_own_general', 'change_own_general',
-    'see_other_general',
-    'add_any_general'
+    'see_all_general', 'see_general_list', 'add_generals',
+    'delete_own_general', 'change_own_general',
 ]
 
 CLIENT_MODEL_PERMISSIONS = (
-    ('see_any_client', 'Obrigatory for user can see any client'),
-    ('see_own_client', 'See own clients (or itself, if client)'),
-    ('see_other_client', 'See other clients (or not yours)'),
-    ('see_any_client_list', 'See list of clients itself'),
+    ('see_all_clients', 'See all clients from database'),
+    ('see_own_clients', 'See own clients (or itself, if clients)'),
+    ('see_clients_from_others', 'See clients which others own'),
+    ('see_clients_list', 'See list of clients itself'),
 
-    ('add_any_client', 'Create a client'),
+    ('add_clients', 'Create a clients'),
 
-    ('change_any_client', 'Obrigatory for user can change any client'),
-    ('change_own_client', 'Change own clients (or itself)'),
-    ('change_other_client', 'See other clients (or not yours)'),
+    ('change_all_clients', 'Change all clients from database'),
+    ('change_own_clients', 'Change own clients (or itself, if client)'),
+    ('change_clients_from_others', 'See clients which others own'),
 
-    ('delete_any_client', 'Obrigatory for user can delete any client'),
-    ('delete_own_client', 'Delete own clients (or itself, if client)'),
-    ('delete_other_client', 'Delete other clients (or not yours)'),
+    ('delete_all_clients', 'Delete all clients from database'),
+    ('delete_own_clients', 'Delete own clients (or itself, if clients)'),
+    ('delete_clients_from_others', 'Delete clients which others own'),
 )
 
 EMPLOYEE_MODEL_PERMISSIONS = (
-    ('see_any_employee', 'Obrigatory for user can see any employee'),
-    ('see_own_employee', 'See own employees (or itself, if employee)'),
-    ('see_other_employee', 'See other employees (or not yours)'),
-    ('see_any_employee_list', 'See list of employees itself'),
+    ('see_all_employees', 'See all employees from database'),
+    ('see_own_employees', 'See own employeess (or itself, if employees)'),
+    ('see_employees_from_others', 'See employeess which others own'),
+    ('see_employees_list', 'See list of employeess itself'),
 
-    ('add_any_employee', 'Create an employee'),
+    ('add_employees', 'Create an employees'),
 
-    ('change_any_employee', 'Obrigatory for user can change any employee'),
-    ('change_own_employee', 'Change own employees (or itself)'),
-    ('change_other_employee', 'See other employees (or not yours)'),
+    ('change_all_employees', 'Change all employees from database'),
+    ('change_own_employees', 'Change own employeess (or itself)'),
+    ('change_employees_from_others', 'See employeess which others own'),
 
-    ('delete_any_employee', 'Obrigatory for user can change any employee'),
-    ('delete_other_employee', 'Delete other employees (or not yours)'),
+    ('delete_all_employees', 'Change all employees from database'),
+    ('delete_employees_from_others', 'Delete employeess which others own'),
 )
 
 FINANCIAL_ADVISER_MODEL_PERMISSIONS = (
-    ('see_any_fa', 'Obrigatory for user can see any fa'),
-    ('see_own_fa', 'See own fas (or itself, if fa)'),
-    ('see_other_fa', 'See other fa (or not yours)'),
-    ('see_any_fa_list', 'See list of fa itself'),
+    ('see_all_fa', 'See all fa, owns and others'),
+    ('see_own_fa', 'See own fa (or itself, if fa)'),
+    ('see_fa_from_others', 'See fa which others own'),
+    ('see_fa_list', 'See list of fa itself'),
 
-    ('add_any_fa', 'Create an fa'),
+    ('add_fa', 'Create an fa'),
 
-    ('change_any_fa', 'Obrigatory for user can change any fa'),
+    ('change_all_fa', 'Change all fa from database'),
     ('change_own_fa', 'Change own fa (or itself)'),
-    ('change_other_fa', 'See other fa (or not yours)'),
+    ('change_fa_from_others', 'See fa which others own'),
 
-    ('delete_any_fa', 'Obrigatory for user can change any fa'),
+    ('delete_all_fa', 'Change all fa from database'),
     ('delete_own_fa', 'Delete own fa (or itself, if fa))'),
-    ('delete_other_fa', 'Delete other fa (or not yours)'),
+    ('delete_fa_from_others', 'Delete fa which others own'),
 )
 
 GENERAL_MODEL_PERMISSIONS = (
-    ('see_any_general', 'Obrigatory for user can see any general'),
+    ('see_all_general', 'See all general from database'),
     ('see_own_general', 'See own generals)'),
-    ('see_other_general', 'See other generals)'),
-    ('see_any_general_list', 'See list of generals itself'),
+    ('see_general_from_others', 'See others generals)'),
+    ('see_general_list', 'See list of generals itself'),
 
-    ('add_any_general', 'Create a general'),
+    ('add_generals', 'Create a general'),
 
-    ('change_any_general', 'Obrigatory for user can change any general'),
+    ('change_all_general', 'Change all general from database'),
     ('change_own_general', 'Change own generals (or itself)'),
-    ('change_other_general', 'See other generals (or not yours)'),
+    ('change_general_from_others', 'See general which others own'),
 
-    ('delete_any_general', 'Obrigatory for user can delete any general'),
+    ('delete_all_general', 'Delete all general from database'),
     ('delete_own_general', 'Delete own generals)'),
-    ('delete_other_general', 'Delete other generals (or not yours)'),
+    ('delete_general_from_others', 'Delete generals which others own'),
 )
