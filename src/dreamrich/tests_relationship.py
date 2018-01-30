@@ -136,6 +136,19 @@ class RelationshipTest(TestCase):
 
         self.assertIsNone(related)
 
+    def test_get_nested_related(self):
+        self.active_client.financial_planning = self.financial_planning
+        self.financial_planning.patrimony = self.patrimony
+
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning')
+
+        last_related = relationship.get_nested_related(
+            ('financial_planning', 'patrimony')
+        )
+
+        self.assertEqual(last_related, self.patrimony)
+
     def test_str_many(self):
         relationship = Relationship(self.financial_planning, self.patrimony)
         self.assertEqual(str(relationship), '(FinancialPlanning : Patrimony)')

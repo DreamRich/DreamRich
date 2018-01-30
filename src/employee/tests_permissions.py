@@ -181,7 +181,7 @@ class FinancialAdviserToRelatedClient(UserToClient,
 
     factory_user = FinancialAdviserCompleteFactory
 
-    related_names = 'clients'
+    related_name = 'clients'
 
     def test_financial_adviser_get_clients_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)
@@ -255,7 +255,7 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
 
     factory_user = FinancialAdviserCompleteFactory
 
-    related_names = ['clients', 'financial_planning']
+    related_names = ('clients', 'financial_planning')
 
     def test_financial_adviser_get_generals_list(self):
         self.user_test_request(RequestTypes.GETLIST, HTTPStatus.OK)

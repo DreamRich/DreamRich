@@ -26,8 +26,8 @@ class PermissionsTests(TestCase):
     django_client = None
     base_route = ''
 
-    # If nested relationship pass list of related_names (in right order),
-    related_names = ''
+    related_name = ''
+    related_names = ('',)
 
     def setUp(self):
         # pylint: disable=not-callable
@@ -71,22 +71,19 @@ class PermissionsTests(TestCase):
         return response.status_code
 
     def handle_related(self):
-        if not isinstance(self.related_names, list):
-            self.related_names = [self.related_names]
-
-        if self.related_names[0]:
-            self._set_related_to_consulted()
-
-    def _set_related_to_consulted(self):
-        consulted_user = self.user
-
-        for related_name in self.related_names:
-            relationship = Relationship(consulted_user,
-                                        related_name=related_name)
-
-            consulted_user = relationship.get_related()
-
-        self.consulted = consulted_user
+        if self.related_name:
+            relationship = Relationship(
+                self.user,
+                related_name=self.related_name
+            )
+            self.consulted = relationship.get_related()
+        elif self.related_names[0]:
+            relationship = Relationship(
+                self.user,
+                related_name=self.related_names[0]
+            )
+            self.consulted = \
+                relationship.get_nested_related(self.related_names)
 
     def _check_attributes(self):
         missing = ''

@@ -62,9 +62,6 @@ class Relationship:
         return has_relationship_bool
 
     def get_related(self):
-        '''
-        Returns last related if many else returns related.
-        '''
         self._check_relatedname()
 
         related = None
@@ -74,6 +71,15 @@ class Relationship:
                 related = related_manager.last()
             else:
                 related = getattr(self.primary, self.related_name)
+
+        return related
+
+    def get_nested_related(self, related_names):
+        related = self.primary
+
+        for related_name in related_names:
+            relationship = Relationship(related, related_name=related_name)
+            related = relationship.get_related()
 
         return related
 
