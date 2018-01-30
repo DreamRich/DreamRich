@@ -61,15 +61,22 @@ class Relationship:
 
         return has_relationship_bool
 
-    def get_related(self):
+    def get_related(self, *, return_manager=False):
         self._check_relatedname()
 
         related = None
-        if hasattr(self.primary, self.related_name):
-            if self.is_many():
-                related_manager = getattr(self.primary, self.related_name)
-                related = related_manager.last()
-            else:
+        if self.is_many():
+            related_manager = getattr(self.primary, self.related_name)
+
+            related = (related_manager.last()
+                       if not return_manager else related_manager)
+
+        else:
+            if return_manager:
+                raise AttributeError('return_manager is valid only for'
+                                     ' to many relationships')
+
+            if hasattr(self.primary, self.related_name):
                 related = getattr(self.primary, self.related_name)
 
         return related

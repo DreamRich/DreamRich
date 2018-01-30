@@ -136,6 +136,32 @@ class RelationshipTest(TestCase):
 
         self.assertIsNone(related)
 
+    def test_get_related_return_manager(self):
+        relationship = Relationship(self.financial_adviser,
+                                    related_name='clients')
+        related_manager = relationship.get_related(return_manager=True)
+
+        self.assertEqual(related_manager, self.financial_adviser.clients)
+
+    def test_get_related_return_manager_fail_one_to_one(self):
+        self.active_client.financial_planning = self.financial_planning
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning')
+
+        with self.assertRaisesMessage(AttributeError,
+                                      'return_manager is valid only for to'
+                                      ' many relationships'):
+            relationship.get_related(return_manager=True)
+
+    def test_get_related_return_manager_fail_no_related(self):
+        relationship = Relationship(self.active_client,
+                                    related_name='financial_planning')
+
+        with self.assertRaisesMessage(AttributeError,
+                                      'return_manager is valid only for to'
+                                      ' many relationships'):
+            relationship.get_related(return_manager=True)
+
     def test_get_nested_related(self):
         self.active_client.financial_planning = self.financial_planning
         self.financial_planning.patrimony = self.patrimony
