@@ -12,6 +12,10 @@ class BaseCustomPermissions(BasePermission):
     request = None
     user = None
 
+    # Same used when defining models permissions
+    app_name = ''
+    checked_name = ''
+
     _not_implemented_error_message = ('This method must be implemented at all'
                                       ' children classes')
 
@@ -20,103 +24,80 @@ class BaseCustomPermissions(BasePermission):
         self.request = request
         self.user = self.request.user
 
-        authorized = False
-        if view.action == 'list':
-            authorized = self.list()
-        elif view.action == 'retrieve':
-            authorized = self.retrieve()
-        elif view.action == 'create':
-            authorized = self.create()
-        elif view.action in ('update', 'partial_update'):
-            authorized = self.update()
-        elif view.action == 'destroy':
-            authorized = self.destroy()
+        self._check_children_params()
 
-        return authorized
+        view_actions = {
+            'list': self.list,
+            'retrieve': self.retrieve,
+            'create': self.create,
+            'update': self.update,
+            'partial_update': self.update,
+            'destroy': self.destroy
+        }
+
+        action_method = view_actions[view.action]
+        is_authorized = action_method()
+
+        return is_authorized
 
     def list(self):
-        raise NotImplementedError(self._not_implemented_error_message)
+        return False
 
     def retrieve(self):
-        raise NotImplementedError(self._not_implemented_error_message)
+        is_authorized = any((
+            self.to_own('see', self.app_name, self.checked_name),
+        ))
+
+        return is_authorized
 
     def create(self):
-        raise NotImplementedError(self._not_implemented_error_message)
+        return False
 
     def update(self):
-        raise NotImplementedError(self._not_implemented_error_message)
+        return False
 
     def destroy(self):
-        raise NotImplementedError(self._not_implemented_error_message)
+        return False
+
+    def to_own(self, action, app, user):
+        user_pk = str(self.user.pk)
+        consulted_pk = self.view.kwargs['pk']
+
+        permission_name = '{}.{}_own_{}'.format(app, action, user)
+        
+        if self.user.has_perm(permission_name) and user_pk == consulted_pk:
+            return True
+        return False
+
+    def _check_children_params(self):
+        required_params = {
+            self.app_name: 'app_name',
+            self.checked_name: 'checked_name'
+        }
+
+        if not all(required_params.keys()):
+            raise AttributeError('Attribute {} was not filled at child class')
 
 
 class ClientsPermissions(BaseCustomPermissions):
 
-    def list(self):
-        return False
-
-    def retrieve(self):
-        return False
-
-    def create(self):
-        return False
-
-    def update(self):
-        return False
-
-    def destroy(self):
-        return False
+    app_name = 'client'
+    checked_name = 'clients'
 
 
 class EmployeesPermissions(BaseCustomPermissions):
 
-    def list(self):
-        return False
-
-    def retrieve(self):
-        return False
-
-    def create(self):
-        return False
-
-    def update(self):
-        return False
-
-    def destroy(self):
-        return False
+    app_name = 'employee'
+    checked_name = 'employees'
 
 
 class FinancialAdvisersPermissions(BaseCustomPermissions):
 
-    def list(self):
-        return False
-
-    def retrieve(self):
-        return False
-
-    def create(self):
-        return False
-
-    def update(self):
-        return False
-
-    def destroy(self):
-        return False
+    app_name = 'employee'
+    checked_name = 'fa'
 
 
 class GeneralPermissions(BaseCustomPermissions):
 
-    def list(self):
-        return False
-
-    def retrieve(self):
-        return False
-
-    def create(self):
-        return False
-
-    def update(self):
-        return False
-
-    def destroy(self):
-        return False
+    app_name = 'dreamrich'
+    checked_name = 'general'

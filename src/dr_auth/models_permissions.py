@@ -4,22 +4,22 @@ CLIENT_DEFAULT_CODENAMES_PERMISSIONS = [
 ]
 
 EMPLOYEE_DEFAULT_CODENAMES_PERMISSIONS = [
-    'see_all_clients', 'add_clients', 'see_clients_list',
+    'see_all_clients', 'add_clients', 'list_clients',
     'see_own_employees', 'change_own_employees'
 ]
 
 # fa = financial adviser
 FINANCIAL_ADVISER_DEFAULT_CODENAMES_PERMISSIONS = [
     'see_all_clients', 'delete_own_clients', 'change_own_clients',
-    'see_clients_list',
+    'list_clients',
 
     'see_all_employees', 'add_employees', 'delete_all_employees',
-    'see_employees_list',
+    'list_employees',
 
     'see_all_fa', 'add_employees', 'delete_all_fa', 'change_all_fa',
     'see_fa_list',
 
-    'see_all_general', 'see_general_list', 'add_generals',
+    'see_all_general', 'list_general', 'add_generals',
     'delete_own_general', 'change_own_general',
 ]
 
@@ -27,7 +27,7 @@ CLIENT_MODEL_PERMISSIONS = (
     ('see_all_clients', 'See all clients from database'),
     ('see_own_clients', 'See own clients (or itself, if clients)'),
     ('see_clients_from_others', 'See clients which others own'),
-    ('see_clients_list', 'See list of clients itself'),
+    ('list_clients', 'See list of clients itself'),
 
     ('add_clients', 'Create a clients'),
 
@@ -44,7 +44,7 @@ EMPLOYEE_MODEL_PERMISSIONS = (
     ('see_all_employees', 'See all employees from database'),
     ('see_own_employees', 'See own employeess (or itself, if employees)'),
     ('see_employees_from_others', 'See employeess which others own'),
-    ('see_employees_list', 'See list of employeess itself'),
+    ('list_employees', 'See list of employeess itself'),
 
     ('add_employees', 'Create an employees'),
 
@@ -77,7 +77,7 @@ GENERAL_MODEL_PERMISSIONS = (
     ('see_all_general', 'See all general from database'),
     ('see_own_general', 'See own generals)'),
     ('see_general_from_others', 'See others generals)'),
-    ('see_general_list', 'See list of generals itself'),
+    ('list_general', 'See list of generals itself'),
 
     ('add_generals', 'Create a general'),
 
