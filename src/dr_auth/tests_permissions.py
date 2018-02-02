@@ -54,9 +54,9 @@ class PermissionsTests(TestCase):
         http_method = self._handle_request_method(request_method)
         api_client_method = getattr(self.django_client, http_method)
 
-        required_data_methods = [RequestTypes.PUT,
+        required_data_methods = (RequestTypes.PUT,
                                  RequestTypes.PATCH,
-                                 RequestTypes.POST]
+                                 RequestTypes.POST)
 
         self._set_user_permissions()
 
@@ -132,7 +132,7 @@ class PermissionsTests(TestCase):
         return response
 
     def _get_route(self, request_method):
-        general_routes_tests = [RequestTypes.POST, RequestTypes.GETLIST]
+        general_routes_tests = (RequestTypes.POST, RequestTypes.GETLIST)
 
         if request_method not in general_routes_tests:
             route = '{}{}/'.format(self.base_route, self.consulted.pk)
