@@ -25,20 +25,17 @@ class BaseCustomPermissions(BasePermission):
                                       ' children classes')
 
     def has_permission(self, request, view):
-        if not request.user.is_authenticated():
-            return False
+        if request.user.is_authenticated():
+            self._check_children_params()
 
-        self._check_children_params()
+            self.view = view
+            self.request = request
+            self.user = self.get_user_original_object()
 
-        self.view = view
-        self.request = request
-        self.user = self.get_user_original_object()
-
-        return self.has_permission_to(self.view.action)
+            return self.has_permission_to(self.view.action)
+        return False
 
     def has_permission_to(self, permission_action):
-        print(self.request.data)
-        self.consulted = self.view.get_object()
         permission_action = ('update' if permission_action == 'partial_update'
                              else permission_action)
 
@@ -61,6 +58,8 @@ class BaseCustomPermissions(BasePermission):
         return False
 
     def has_passed_related_checks(self):
+        self._fill_consulted_attr()
+
         # Should be one checker for each user
         # Override called methods to get personalized checks
         related_checkers = {
@@ -93,13 +92,20 @@ class BaseCustomPermissions(BasePermission):
         return user_object
 
     def _check_children_params(self):
-        required_params = {
-            self.app_name: 'app_name',
-            self.checked_name: 'checked_name'
-        }
+        required_params = {self.app_name: 'app_name',
+                           self.checked_name: 'checked_name'}
 
         if not all(required_params.keys()):
             raise AttributeError('Attribute {} was not filled at child class')
+
+    # To be used for children classes
+    def _fill_consulted_attr(self):
+        self.consulted = None
+
+        # Http methods which are not directed to specific instances would raise
+        # exception
+        if self.view.action not in ('list', 'post'):
+            self.consulted = self.view.get_object()
 
     def related_activeclient_checker(self):  # pylint: disable=no-self-use
         return False
