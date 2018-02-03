@@ -169,9 +169,8 @@ class RelationshipTest(TestCase):
         relationship = Relationship(self.active_client,
                                     related_name='financial_planning')
 
-        last_related = relationship.get_nested_related(
-            ('financial_planning', 'patrimony')
-        )
+        last_related = relationship.get_nested_related('financial_planning',
+                                                       'patrimony')
 
         self.assertEqual(last_related, self.patrimony)
 

@@ -81,7 +81,7 @@ class Relationship:
 
         return related
 
-    def get_nested_related(self, related_names):
+    def get_nested_related(self, *related_names):
         related = self.primary
 
         for related_name in related_names:
