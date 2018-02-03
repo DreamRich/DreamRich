@@ -25,42 +25,26 @@ class BaseCustomPermissions(BasePermission):
                                       ' children classes')
 
     def has_permission(self, request, view):
+        if not request.user.is_authenticated():
+            return False
+
         self._check_children_params()
 
         self.view = view
         self.request = request
-
-        if str(self.request.user) == 'AnonymousUser':
-            return False
-
-        # User from request is from django.contrib.auth.models and not an
-        # instance of ActiveClient, for example.
         self.user = self.get_user_original_object()
 
-        view_actions = {
-            'list': self.list,
-            'retrieve': self.retrieve,
-            'create': self.create,
-            'update': self.update,
-            'partial_update': self.update,
-            'destroy': self.destroy
-        }
+        return self.has_permission_to(self.view.action)
 
-        action_method = view_actions[view.action]
-        is_authorized = action_method()
-
-        return is_authorized
-
-    def list(self):
-        return False
-
-    def retrieve(self):
+    def has_permission_to(self, permission_action):
+        print(self.request.data)
         self.consulted = self.view.get_object()
-        action = 'see'
+        permission_action = ('update' if permission_action == 'partial_update'
+                             else permission_action)
 
         allowed_permissions = [
             '{}.{}_{}_{}'.format(
-                self.app_name, action, ownership, self.checked_name
+                self.app_name, permission_action, ownership, self.checked_name
             ) for ownership in ('all', 'any', 'related')
         ]
 
@@ -70,35 +54,19 @@ class BaseCustomPermissions(BasePermission):
         return (self.has_any_permission(*allowed_permissions) or
                 has_related_permission and self.has_passed_related_checks())
 
-    def create(self):
+    def has_any_permission(self, *permissions_codenames):
+        for permission in permissions_codenames:
+            if self.request.user.has_perm(permission):
+                return True
         return False
-
-    def update(self):
-        return False
-
-    def destroy(self):
-        return False
-
-    def get_user_original_object(self):
-        user = self.request.user
-
-        for model in self._users_models:
-            try:
-                user_object = model.objects.get(username=user.username)
-                break
-            except ObjectDoesNotExist:
-                pass
-        else:
-            raise AttributeError("Couldn't find user model"
-                                 " for the user provided.")
-        return user_object
 
     def has_passed_related_checks(self):
         # Should be one checker for each user
+        # Override called methods to get personalized checks
         related_checkers = {
             'ActiveClient': self.related_activeclient_checker,
             'Employee': self.related_employee_checker,
-            'FinancialAdviser': self.related_financialadviser_checker
+            'FinancialAdviser': self.related_financialadviser_checker,
         }
         try:
             checker_function = related_checkers[self.user.__class__.__name__]
@@ -109,20 +77,20 @@ class BaseCustomPermissions(BasePermission):
 
         return passed_checker
 
-    def related_activeclient_checker(self):  # pylint: disable=no-self-use
-        return False
+    # We want, for example, an ActiveClient and not an User instance
+    def get_user_original_object(self):
+        user = self.request.user
 
-    def related_employee_checker(self):  # pylint: disable=no-self-use
-        return False
-
-    def related_financialadviser_checker(self):  # pylint: disable=no-self-use
-        return False
-
-    def has_any_permission(self, *permissions_codenames):
-        for permission in permissions_codenames:
-            if self.request.user.has_perm(permission):
-                return True
-        return False
+        for model in self._users_models:
+            try:
+                user_object = model.objects.get(username=user.username)
+                break
+            except ObjectDoesNotExist:
+                pass
+        else:
+            raise ObjectDoesNotExist("Couldn't find user model"
+                                     " for the user provided.")
+        return user_object
 
     def _check_children_params(self):
         required_params = {
@@ -132,6 +100,15 @@ class BaseCustomPermissions(BasePermission):
 
         if not all(required_params.keys()):
             raise AttributeError('Attribute {} was not filled at child class')
+
+    def related_activeclient_checker(self):  # pylint: disable=no-self-use
+        return False
+
+    def related_employee_checker(self):  # pylint: disable=no-self-use
+        return False
+
+    def related_financialadviser_checker(self):  # pylint: disable=no-self-use
+        return False
 
 
 class ClientsPermissions(BaseCustomPermissions):
