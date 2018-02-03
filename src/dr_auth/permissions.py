@@ -33,6 +33,8 @@ class BaseCustomPermissions(BasePermission):
         if str(self.request.user) == 'AnonymousUser':
             return False
 
+        # User from request is from django.contrib.auth.models and not an
+        # instance of ActiveClient, for example.
         self.user = self.get_user_original_object()
 
         view_actions = {
@@ -54,12 +56,19 @@ class BaseCustomPermissions(BasePermission):
 
     def retrieve(self):
         self.consulted = self.view.get_object()
+        action = 'see'
 
-        is_authorized = any((
-            self.to_own('see', self.app_name, self.checked_name),
-        ))
+        allowed_permissions = [
+            '{}.{}_{}_{}'.format(
+                self.app_name, action, ownership, self.checked_name
+            ) for ownership in ('all', 'any', 'related')
+        ]
 
-        return is_authorized
+        related_permission = allowed_permissions.pop()
+        has_related_permission = self.has_any_permission(related_permission)
+
+        return (self.has_any_permission(*allowed_permissions) or
+                has_related_permission and self.has_passed_related_checks())
 
     def create(self):
         return False
@@ -84,7 +93,7 @@ class BaseCustomPermissions(BasePermission):
                                  " for the user provided.")
         return user_object
 
-    def to_own(self, action, app, user):
+    def has_passed_related_checks(self):
         # Should be one checker for each user
         related_checkers = {
             'ActiveClient': self.related_activeclient_checker,
@@ -95,16 +104,10 @@ class BaseCustomPermissions(BasePermission):
             checker_function = related_checkers[self.user.__class__.__name__]
             passed_checker = checker_function()
         except KeyError:
-            raise AttributeError('User not listed at checkers made a request.')
+            raise AttributeError('User not listed at checkers'
+                                 'has made a request.')
 
-        possible_permissions = [
-            '{}.{}_{}_{}'.format(app, action, which_clients, user)
-            for which_clients in ('all', 'own')
-        ]
-
-        if self.has_any_permission(*possible_permissions) and passed_checker:
-            return True
-        return False
+        return passed_checker
 
     def related_activeclient_checker(self):  # pylint: disable=no-self-use
         return False
