@@ -126,7 +126,8 @@ class ClientsPermissions(BaseCustomPermissions):
         return self.user.pk == self.consulted.pk
 
     def related_financialadviser_checker(self):
-        relationship = Relationship(self.consulted, self.user, 'clients')
+        relationship = Relationship(self.consulted, self.user,
+                                    related_name='clients')
 
         return relationship.has_relationship()
 

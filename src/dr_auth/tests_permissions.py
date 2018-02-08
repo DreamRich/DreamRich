@@ -82,8 +82,11 @@ class PermissionsTests(TestCase):
                 self.user,
                 related_name=self.related_names[0]
             )
-            self.consulted = \
-                relationship.get_nested_related(self.related_names)
+            related_metas = tuple(
+                Relationship.RelatedMeta(related_name, None)
+                for related_name in self.related_names
+            )
+            self.consulted = relationship.get_nested_related(*related_metas)
 
     def _check_attributes(self):
         missing = ''

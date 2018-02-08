@@ -1,18 +1,28 @@
+from collections import namedtuple
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import related_descriptors
 
 
 class Relationship:
 
-    def __init__(self, primary, secondary=None, related_name=None):
+    RelatedMeta = namedtuple('RelatedMeta', 'related_name pk')
+
+    def __init__(self, primary, secondary=None, *,
+                 related_name=None, pk=None):  # pylint: disable=invalid-name
+        # pylint: disable=invalid-name
         self.primary, self.secondary = primary, secondary
-        self.related_name = related_name
+        self.related_name, self.pk = related_name, pk
+        # pylint: disable=invalid-name
 
         self._check_objects_are_saved()
 
+        if secondary and pk:
+            raise AttributeError('Both classes were provided and pk. This'
+                                 ' can cause inconsistencies')
+
     def make(self, related_name=None):
         self._fill_attributes(related_name=related_name)
-        self._check_all_attributes_filled()
+        self._check_all_core_attributes_filled()
         self._check_relatedname()
 
         is_ok = True
@@ -48,18 +58,24 @@ class Relationship:
 
     def has_relationship(self):
         self._check_relatedname()
-        self._check_all_attributes_filled()
+        self._check_all_core_attributes_filled()
 
-        has_relationship_bool = False
-        if hasattr(self.primary, self.related_name):
-            if self.is_many():
-                related_manager = getattr(self.primary, self.related_name)
-                has_relationship_bool = self.secondary in related_manager.all()
-            else:
-                related_attribute = getattr(self.primary, self.related_name)
-                has_relationship_bool = related_attribute == self.secondary
+        try:
+            related = self.get_related(return_manager=True)
+        except AttributeError:
+            related = self.get_related()
 
-        return has_relationship_bool
+        if self.is_many():
+            return related.filter(pk=self.secondary.pk).exists()
+        return related == self.secondary
+
+    def has_nested_relationship(self, *relateds_metas, return_manager=False):
+        try:
+            self.get_nested_related(return_manager=return_manager,
+                                    *relateds_metas)
+            return True
+        except ObjectDoesNotExist:
+            return False
 
     def get_related(self, *, return_manager=False):
         self._check_relatedname()
@@ -68,25 +84,58 @@ class Relationship:
         if self.is_many():
             related_manager = getattr(self.primary, self.related_name)
 
-            related = (related_manager.last()
-                       if not return_manager else related_manager)
+            related = related_manager
+            if not return_manager:
+                if self.pk:
+                    related = related_manager.filter(pk=self.pk)
 
+                    if related.exists():
+                        related, = related
+                    else:
+                        raise ObjectDoesNotExist(
+                            'Was not possible to get the object indicated by'
+                            ' the information passed. pk not found.'
+                        )
+                else:
+                    related = related_manager.last()
         else:
-            if return_manager:
+            if not return_manager:
+                try:
+                    related = getattr(self.primary, self.related_name)
+                except AttributeError:
+                    related = None
+            else:
                 raise AttributeError('return_manager is valid only for'
-                                     ' to many relationships')
-
-            if hasattr(self.primary, self.related_name):
-                related = getattr(self.primary, self.related_name)
+                                     ' "to many" relationships')
 
         return related
 
-    def get_nested_related(self, *related_names):
+    def get_nested_related(self, *relateds_metas, return_manager=False):
         related = self.primary
 
-        for related_name in related_names:
-            relationship = Relationship(related, related_name=related_name)
-            related = relationship.get_related()
+        for related_meta in relateds_metas:
+            relationship = Relationship(
+                related,
+                related_name=related_meta.related_name, pk=related_meta.pk
+            )
+            if related_meta is not relateds_metas[-1]:
+                related = relationship.get_related()
+
+                if related is None:
+                    raise AttributeError(
+                        "Not possible getting nested related."
+                        " '{}' related_name got a None object.".format(
+                            relationship.related_name
+                        )
+                    )
+
+            else:
+                try:
+                    related = relationship.get_related(
+                        return_manager=return_manager
+                    )
+                except AttributeError:
+                    related = relationship.get_related()
 
         return related
 
@@ -109,8 +158,17 @@ class Relationship:
                 swapped = True
 
         if not is_valid:
-            raise AttributeError("'related_name' passed is not valid for any"
-                                 " of related objects.")
+            primary__class_name = self.primary.__class__.__name__
+            secondary__class_name = self.secondary.__class__.__name__
+
+            raise AttributeError(
+                "'{}' is not a valid related_name for {}{}".format(
+                    self.related_name,
+                    primary__class_name,
+                    " nor for {}.".format(secondary__class_name) if
+                    self.secondary else "."
+                )
+            )
 
     def _check_objects_are_saved(self):
         if (self.primary.id is None or
@@ -118,7 +176,7 @@ class Relationship:
             raise AttributeError('Objects passed to this class must be on'
                                  ' database.')
 
-    def _check_all_attributes_filled(self):
+    def _check_all_core_attributes_filled(self):
         missing = ''
 
         if not self.secondary:
@@ -130,12 +188,13 @@ class Relationship:
             raise AttributeError("Not enough information, '{}' is missing."
                                  .format(missing))
 
-    def _fill_attributes(self, primary=None, secondary=None,
-                         related_name=None):
+    def _fill_attributes(self, primary=None,  # pylint: disable=invalid-name
+                         secondary=None, related_name=None, pk=None):
 
         self.primary = primary or self.primary
         self.secondary = secondary or self.secondary
         self.related_name = related_name or self.related_name
+        self.pk = pk or self.pk
 
     def __str__(self):
         primary_name = self.primary.__class__.__name__
