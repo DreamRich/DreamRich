@@ -1,3 +1,4 @@
+from functools import reduce
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission
 from client.models import ActiveClient
@@ -148,3 +149,55 @@ class GeneralPermissions(BaseCustomPermissions):
 
     app_name = 'dreamrich'
     checked_name = 'general'
+
+    def related_activeclient_checker(self):
+        relationship = Relationship(self.user, self.consulted,
+                                    related_name='financial_planning')
+
+        return relationship.has_relationship()
+
+    def related_financialadviser_checker(self):
+
+        relationship = Relationship(self.user, related_name='clients')
+
+        related_client_pk = self._get_active_client_pk()
+        related_meta_class = Relationship.RelatedMeta
+
+        return relationship.has_nested_relationship(
+            related_meta_class('clients', related_client_pk),
+            related_meta_class('financial_planning', None)
+        )
+
+    def _get_active_client_pk(self):
+        '''
+        Covers the types of relationships that self.consulted can have
+        with the class which represents General
+        '''
+
+        # The more towards the end, the deeper
+        prefixes_depths = [
+            '.active_client.pk',
+            '.financial_planning',
+            '.patrimony'
+        ]
+
+        paths_to_client_pk = ['']
+        for prefixe in prefixes_depths:
+            paths_to_client_pk += [prefixe + paths_to_client_pk[-1]]
+
+        for possible_path in paths_to_client_pk[1:]:
+            iterable = [self.consulted] + possible_path.split('.')[1:]
+
+            try:
+                active_client_pk = reduce(getattr, iterable)
+                break
+            except AttributeError:
+                pass
+        else:
+            raise AttributeError(
+                'The type of relationship that {} has with the class'
+                ' representing General is not listed in possibilities'
+                ' for getting ActiveClient pk'.format(self.consulted)
+            )
+
+        return active_client_pk
