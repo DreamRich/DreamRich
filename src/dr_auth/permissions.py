@@ -41,9 +41,9 @@ class BaseCustomPermissions(BasePermission):
                              else permission_action)
 
         allowed_permissions = [
-            '{}.{}_{}_{}'.format(
+            '{}.{}_{}{}'.format(
                 self.app_name, permission_action, ownership, self.checked_name
-            ) for ownership in ('all', 'any', 'related')
+            ) for ownership in ('', 'all_', 'any_', 'related_')
         ]
 
         related_permission = allowed_permissions.pop()
@@ -138,11 +138,18 @@ class EmployeesPermissions(BaseCustomPermissions):
     app_name = 'employee'
     checked_name = 'employees'
 
+    def related_employee_checker(self):
+        return (self.consulted.pk == self.user.pk and
+                self.view.action in ('update', 'partial_update', 'retrieve'))
+
 
 class FinancialAdvisersPermissions(BaseCustomPermissions):
 
     app_name = 'employee'
     checked_name = 'fa'
+
+    def related_financialadviser_checker(self):
+        return self.consulted.pk == self.user.pk
 
 
 class GeneralPermissions(BaseCustomPermissions):
@@ -157,7 +164,6 @@ class GeneralPermissions(BaseCustomPermissions):
         return relationship.has_relationship()
 
     def related_financialadviser_checker(self):
-
         relationship = Relationship(self.user, related_name='clients')
 
         related_client_pk = self._get_active_client_pk()
