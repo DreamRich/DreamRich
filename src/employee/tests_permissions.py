@@ -33,7 +33,7 @@ class EmployeeToItself(UserToEmployee,
         self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
 
     def test_employee_patch_itself(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
 
 
 class EmployeeToEmployee(UserToEmployee,

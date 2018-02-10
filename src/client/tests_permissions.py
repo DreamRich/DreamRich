@@ -125,10 +125,10 @@ class ClientToRelatedGeneral(UserToGeneral,
         self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
 
     def test_client_put_general(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
 
     def test_client_patch_general(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
+        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
 
 
 class ClientToGeneral(UserToGeneral,
