@@ -3,7 +3,8 @@ from dreamrich import validators
 from dreamrich import models as base_models
 from dr_auth.models import BaseUser
 from dr_auth.models_permissions import (
-    CLIENT_MODEL_PERMISSIONS,
+    get_formatted_permissions,
+    CLIENT_PERMISSION_NAME,
     CLIENT_DEFAULT_CODENAMES_PERMISSIONS
 )
 
@@ -51,7 +52,7 @@ class ClientBase(base_models.BaseModel):
 class ActiveClient(BaseUser, ClientBase):
 
     class Meta:
-        permissions = CLIENT_MODEL_PERMISSIONS
+        permissions = get_formatted_permissions(CLIENT_PERMISSION_NAME)
 
     id_document = models.ImageField(
         null=True,

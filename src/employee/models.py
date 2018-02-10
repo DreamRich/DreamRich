@@ -2,9 +2,10 @@ from django.db import models
 from dreamrich import validators
 from dr_auth.models import BaseUser
 from dr_auth.models_permissions import (
-    EMPLOYEE_MODEL_PERMISSIONS,
+    get_formatted_permissions,
+    EMPLOYEE_PERMISSION_NAME,
     EMPLOYEE_DEFAULT_CODENAMES_PERMISSIONS,
-    FINANCIAL_ADVISER_MODEL_PERMISSIONS,
+    FINANCIAL_ADVISER_PERMISSION_NAME,
     FINANCIAL_ADVISER_DEFAULT_CODENAMES_PERMISSIONS
 )
 
@@ -12,7 +13,7 @@ from dr_auth.models_permissions import (
 class Employee(BaseUser):
 
     class Meta:
-        permissions = EMPLOYEE_MODEL_PERMISSIONS
+        permissions = get_formatted_permissions(EMPLOYEE_PERMISSION_NAME)
 
     cpf = models.CharField(
         max_length=14,
@@ -25,7 +26,9 @@ class Employee(BaseUser):
 class FinancialAdviser(Employee):
 
     class Meta:
-        permissions = FINANCIAL_ADVISER_MODEL_PERMISSIONS
+        permissions = get_formatted_permissions(
+            FINANCIAL_ADVISER_PERMISSION_NAME
+        )
 
     clients = models.ManyToManyField(
         'client.ActiveClient',
