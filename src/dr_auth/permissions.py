@@ -38,9 +38,6 @@ class BaseCustomPermissions(BasePermission):
         return False
 
     def has_permission_to(self, permission_action):
-        permission_action = ('update' if permission_action == 'partial_update'
-                             else permission_action)
-
         allowed_permissions = [
             '{}.{}_{}{}'.format(
                 self.app_name, permission_action, ownership, self.class_nick

@@ -11,7 +11,7 @@ USERS_PERMISSIONS_INFO = UsersPermissionsInfo(
         nick='clients',
         default_codenames=(
             'retrieve_related_clients',
-            'update_related_clients',
+            'update_related_clients', 'partial_update_related_clients',
 
             'retrieve_related_general'
         )
@@ -24,7 +24,7 @@ USERS_PERMISSIONS_INFO = UsersPermissionsInfo(
             'retrieve_all_clients',
 
             'retrieve_related_employees',
-            'update_related_employees',
+            'update_related_employees', 'partial_update_related_employees',
         )
     ),
     financial_adviser=PermissionInfo(
@@ -34,7 +34,7 @@ USERS_PERMISSIONS_INFO = UsersPermissionsInfo(
             'destroy_related_clients',
             'list_all_clients',
             'retrieve_all_clients',
-            'update_related_clients',
+            'update_related_clients', 'partial_update_related_clients',
 
             'create_employees',
             'destroy_all_employees',
@@ -45,13 +45,13 @@ USERS_PERMISSIONS_INFO = UsersPermissionsInfo(
             'destroy_all_fa',
             'list_all_fa',
             'retrieve_all_fa',
-            'update_all_fa',
+            'update_all_fa', 'partial_update_all_fa',
 
             'create_general',
             'destroy_related_general',
             'list_all_general',
             'retrieve_all_general',
-            'update_related_general',
+            'update_related_general', 'partial_update_related_general',
         )
     )
 )
@@ -77,7 +77,9 @@ def get_formatted_permissions(checked_name):
     # Maps actions to friendly names
     actions_with_ownership = dict(
         retrieve='Get',
-        update='Update',
+        update='Change',
+        uxpdate='Change',
+        partial_update='Partially change',
         destroy='Delete',
         list='List'
     )
