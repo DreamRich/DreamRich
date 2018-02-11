@@ -1,13 +1,13 @@
 from functools import reduce
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 from client.models import ActiveClient
 from employee.models import Employee, FinancialAdviser
 from dreamrich.utils import Relationship
 from .models_permissions import USERS_PERMISSIONS_INFO
 
 
-class BaseCustomPermissions(BasePermission):
+class BasePermissions(permissions.BasePermission):
 
     class Meta:
         abstract = True
@@ -22,9 +22,9 @@ class BaseCustomPermissions(BasePermission):
     app_name = ''
     class_nick = ''
 
-    _users_models = (ActiveClient, FinancialAdviser, Employee)
-    _not_implemented_error_message = ('This method must be implemented at all'
-                                      ' children classes')
+    # Filled with models of users, users that can try to access views
+    # protected by children of this permission class
+    users_models = ()
 
     def has_permission(self, request, view):
         if request.user.is_authenticated():
@@ -57,29 +57,41 @@ class BaseCustomPermissions(BasePermission):
         return False
 
     def has_passed_related_checks(self):
+        def get_checker_method(class_name):
+            method_name = 'related_' + class_name.lower() + '_checker'
+
+            if not hasattr(self, method_name):
+                setattr(self, method_name, lambda: False)
+
+            return getattr(self, method_name)
+
         self._fill_consulted_attr()
 
-        # Should be one checker for each user
-        # Override called methods to get personalized checks
-        related_checkers = {
-            'ActiveClient': self.related_activeclient_checker,
-            'Employee': self.related_employee_checker,
-            'FinancialAdviser': self.related_financialadviser_checker,
-        }
-        try:
-            checker_function = related_checkers[self.user.__class__.__name__]
-            passed_checker = checker_function()
-        except KeyError:
-            raise AttributeError('User not listed at checkers'
-                                 'has made a request.')
+        users_class_names = [user.__name__ for user in self.users_models]
 
-        return passed_checker
+        related_checkers = {
+            class_name: get_checker_method(class_name)
+            for class_name in users_class_names
+        }
+
+        user_class_name = self.user.__class__.__name__
+        try:
+            checker_function = related_checkers[user_class_name]
+        except KeyError:
+            raise AttributeError(
+                "Model '{}' not listed at 'users_models' attribute."
+                " All models from users must be listed on it."
+                .format(user_class_name)
+            )
+
+        has_passed_on_checker = checker_function()
+        return has_passed_on_checker
 
     # We want, for example, an ActiveClient and not an User instance
     def get_user_original_object(self):
         user = self.request.user
 
-        for model in self._users_models:
+        for model in self.users_models:
             try:
                 user_object = model.objects.get(username=user.username)
                 break
@@ -106,17 +118,13 @@ class BaseCustomPermissions(BasePermission):
         if self.view.action not in ('list', 'post'):
             self.consulted = self.view.get_object()
 
-    def related_activeclient_checker(self):  # pylint: disable=no-self-use
-        return False
 
-    def related_employee_checker(self):  # pylint: disable=no-self-use
-        return False
+class ProjectBasePermissions(BasePermissions):
 
-    def related_financialadviser_checker(self):  # pylint: disable=no-self-use
-        return False
+    users_models = (ActiveClient, FinancialAdviser, Employee)
 
 
-class ClientsPermissions(BaseCustomPermissions):
+class ClientsPermissions(ProjectBasePermissions):
 
     app_name = 'client'
     class_nick = USERS_PERMISSIONS_INFO.client.nick
@@ -131,17 +139,17 @@ class ClientsPermissions(BaseCustomPermissions):
         return relationship.has_relationship()
 
 
-class EmployeesPermissions(BaseCustomPermissions):
+class EmployeesPermissions(ProjectBasePermissions):
 
     app_name = 'employee'
-    class_nick = USERS_PERMISSIONS_INFO.client.nick
+    class_nick = USERS_PERMISSIONS_INFO.employee.nick
 
     def related_employee_checker(self):
         return (self.consulted.pk == self.user.pk and
                 self.view.action in ('update', 'partial_update', 'retrieve'))
 
 
-class FinancialAdvisersPermissions(BaseCustomPermissions):
+class FinancialAdvisersPermissions(ProjectBasePermissions):
 
     app_name = 'employee'
     class_nick = USERS_PERMISSIONS_INFO.financial_adviser.nick
@@ -150,7 +158,7 @@ class FinancialAdvisersPermissions(BaseCustomPermissions):
         return self.consulted.pk == self.user.pk
 
 
-class GeneralPermissions(BaseCustomPermissions):
+class GeneralPermissions(ProjectBasePermissions):
 
     app_name = 'dreamrich'
     class_nick = 'general'
@@ -186,12 +194,11 @@ class GeneralPermissions(BaseCustomPermissions):
         ]
 
         paths_to_client_pk = ['']
-        for prefixe in prefixes_depths:
-            paths_to_client_pk += [prefixe + paths_to_client_pk[-1]]
+        paths_to_client_pk = [prefixe + paths_to_client_pk[-1] for prefixe in
+                              prefixes_depths]
 
-        for possible_path in paths_to_client_pk[1:]:
+        for possible_path in paths_to_client_pk:
             iterable = [self.consulted] + possible_path.split('.')[1:]
-
             try:
                 active_client_pk = reduce(getattr, iterable)
                 break
