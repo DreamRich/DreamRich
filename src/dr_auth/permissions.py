@@ -4,6 +4,7 @@ from rest_framework.permissions import BasePermission
 from client.models import ActiveClient
 from employee.models import Employee, FinancialAdviser
 from dreamrich.utils import Relationship
+from .models_permissions import USERS_PERMISSIONS_INFO
 
 
 class BaseCustomPermissions(BasePermission):
@@ -19,7 +20,7 @@ class BaseCustomPermissions(BasePermission):
 
     # Same used when defining models permissions
     app_name = ''
-    checked_name = ''
+    class_nick = ''
 
     _users_models = (ActiveClient, FinancialAdviser, Employee)
     _not_implemented_error_message = ('This method must be implemented at all'
@@ -42,7 +43,7 @@ class BaseCustomPermissions(BasePermission):
 
         allowed_permissions = [
             '{}.{}_{}{}'.format(
-                self.app_name, permission_action, ownership, self.checked_name
+                self.app_name, permission_action, ownership, self.class_nick
             ) for ownership in ('', 'all_', 'any_', 'related_')
         ]
 
@@ -94,7 +95,7 @@ class BaseCustomPermissions(BasePermission):
 
     def _check_children_params(self):
         required_params = {self.app_name: 'app_name',
-                           self.checked_name: 'checked_name'}
+                           self.class_nick: 'class_nick'}
 
         if not all(required_params.keys()):
             raise AttributeError('Attribute {} was not filled at child class')
@@ -121,7 +122,7 @@ class BaseCustomPermissions(BasePermission):
 class ClientsPermissions(BaseCustomPermissions):
 
     app_name = 'client'
-    checked_name = 'clients'
+    class_nick = USERS_PERMISSIONS_INFO.client.nick
 
     def related_activeclient_checker(self):
         return self.user.pk == self.consulted.pk
@@ -136,7 +137,7 @@ class ClientsPermissions(BaseCustomPermissions):
 class EmployeesPermissions(BaseCustomPermissions):
 
     app_name = 'employee'
-    checked_name = 'employees'
+    class_nick = USERS_PERMISSIONS_INFO.client.nick
 
     def related_employee_checker(self):
         return (self.consulted.pk == self.user.pk and
@@ -146,7 +147,7 @@ class EmployeesPermissions(BaseCustomPermissions):
 class FinancialAdvisersPermissions(BaseCustomPermissions):
 
     app_name = 'employee'
-    checked_name = 'fa'
+    class_nick = USERS_PERMISSIONS_INFO.financial_adviser.nick
 
     def related_financialadviser_checker(self):
         return self.consulted.pk == self.user.pk
@@ -155,7 +156,7 @@ class FinancialAdvisersPermissions(BaseCustomPermissions):
 class GeneralPermissions(BaseCustomPermissions):
 
     app_name = 'dreamrich'
-    checked_name = 'general'
+    class_nick = 'general'
 
     def related_activeclient_checker(self):
         relationship = Relationship(self.user, self.consulted,
