@@ -27,10 +27,8 @@ class GeneralModel(BaseModel):
         permissions = get_formatted_permissions('general')
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        this_class_name = 'GeneralModel'
-
         # Prevent this class from being instantiated
-        if self.__class__.__name__ == this_class_name:
+        if self is GeneralModel:
             raise Exception("Can't save object of class GeneralModel"
                             " it's an abstract model.")
 
