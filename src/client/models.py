@@ -4,8 +4,7 @@ from dreamrich import models as base_models
 from dr_auth.models import BaseUser
 from dr_auth.models_permissions import (
     get_formatted_permissions,
-    CLIENT_PERMISSION_NAME,
-    CLIENT_DEFAULT_CODENAMES_PERMISSIONS
+    USERS_PERMISSIONS_INFO
 )
 
 
@@ -52,7 +51,9 @@ class ClientBase(base_models.BaseModel):
 class ActiveClient(BaseUser, ClientBase):
 
     class Meta:
-        permissions = get_formatted_permissions(CLIENT_PERMISSION_NAME)
+        permissions = get_formatted_permissions(
+            USERS_PERMISSIONS_INFO.client.nick
+        )
 
     id_document = models.ImageField(
         null=True,
@@ -64,7 +65,8 @@ class ActiveClient(BaseUser, ClientBase):
         blank=True
     )
 
-    default_permissions_codenames = CLIENT_DEFAULT_CODENAMES_PERMISSIONS
+    default_permissions_codenames = \
+        USERS_PERMISSIONS_INFO.client.default_codenames
 
     @property
     def is_complete(self):

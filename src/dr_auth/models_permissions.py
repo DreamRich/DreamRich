@@ -1,49 +1,60 @@
-CLIENT_PERMISSION_NAME = 'clients'
-EMPLOYEE_PERMISSION_NAME = 'employees'
-FINANCIAL_ADVISER_PERMISSION_NAME = 'fa'
-GENERAL_PERMISSION_NAME = 'general'
+from collections import namedtuple
 
-CLIENT_DEFAULT_CODENAMES_PERMISSIONS = [
-    'retrieve_related_clients',
-    'update_related_clients',
+PermissionInfo = namedtuple('PermissionInfo', 'nick default_codenames')
 
-    'retrieve_related_general'
-]
+UsersPermissionsInfo = namedtuple('UsersPermissionsInfo',
+                                  'client employee financial_adviser')
 
-EMPLOYEE_DEFAULT_CODENAMES_PERMISSIONS = [
-    'create_clients',
-    'list_all_clients',
-    'retrieve_all_clients',
+# Nicks are the ones used on permissions codenames
+USERS_PERMISSIONS_INFO = UsersPermissionsInfo(
+    client=PermissionInfo(
+        nick='clients',
+        default_codenames=(
+            'retrieve_related_clients',
+            'update_related_clients',
 
-    'retrieve_related_employees',
-    'update_related_employees',
-]
+            'retrieve_related_general'
+        )
+    ),
+    employee=PermissionInfo(
+        nick='employees',
+        default_codenames=(
+            'create_clients',
+            'list_all_clients',
+            'retrieve_all_clients',
 
-# fa = financial adviser
-FINANCIAL_ADVISER_DEFAULT_CODENAMES_PERMISSIONS = [
-    'create_clients',
-    'destroy_related_clients',
-    'list_all_clients',
-    'retrieve_all_clients',
-    'update_related_clients',
+            'retrieve_related_employees',
+            'update_related_employees',
+        )
+    ),
+    financial_adviser=PermissionInfo(
+        nick='fa',
+        default_codenames=(
+            'create_clients',
+            'destroy_related_clients',
+            'list_all_clients',
+            'retrieve_all_clients',
+            'update_related_clients',
 
-    'create_employees',
-    'destroy_all_employees',
-    'list_all_employees',
-    'retrieve_all_employees',
+            'create_employees',
+            'destroy_all_employees',
+            'list_all_employees',
+            'retrieve_all_employees',
 
-    'create_fa',
-    'destroy_all_fa',
-    'list_all_fa',
-    'retrieve_all_fa',
-    'update_all_fa',
+            'create_fa',
+            'destroy_all_fa',
+            'list_all_fa',
+            'retrieve_all_fa',
+            'update_all_fa',
 
-    'create_general',
-    'destroy_related_general',
-    'list_all_general',
-    'retrieve_all_general',
-    'update_related_general',
-]
+            'create_general',
+            'destroy_related_general',
+            'list_all_general',
+            'retrieve_all_general',
+            'update_related_general',
+        )
+    )
+)
 
 
 def get_formatted_permissions(checked_name):
@@ -71,6 +82,7 @@ def get_formatted_permissions(checked_name):
         list='List'
     )
 
+    # Assembling permissions tuples
     unformatted_template = [(codenames[ownership], descriptions[ownership])
                             for ownership in ownership_types]
 

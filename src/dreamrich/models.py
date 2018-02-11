@@ -1,9 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from dr_auth.models_permissions import (
-    get_formatted_permissions,
-    GENERAL_PERMISSION_NAME
-)
+from dr_auth.models_permissions import get_formatted_permissions
 
 
 class BaseModel(models.Model):
@@ -27,7 +24,7 @@ class BaseModel(models.Model):
 class GeneralModel(BaseModel):
     class Meta:
         # Can't set abstract here because permissions wouldn't get generated
-        permissions = get_formatted_permissions(GENERAL_PERMISSION_NAME)
+        permissions = get_formatted_permissions('general')
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         this_class_name = 'GeneralModel'
