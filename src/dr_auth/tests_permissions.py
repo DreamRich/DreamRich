@@ -58,8 +58,6 @@ class PermissionsTests(TestCase):
                                  RequestTypes.PATCH,
                                  RequestTypes.POST)
 
-        self._set_user_permissions()
-
         # Prepare data and make request
         if request_method in required_data_methods:
             response = self._make_required_data_request(request_method,
@@ -183,15 +181,6 @@ class PermissionsTests(TestCase):
             [field for field in read_only_fields if field[-3:] != '_id']
 
         return read_only_fields
-
-    # Permissions which are not being explicitly gotten from database inside
-    # these tests are not being seen, probably because of database signals,
-    # which are different at this environment. Fix when/if possible.
-    def _set_user_permissions(self):
-        for permission in self.user.default_permissions:
-            fetched_permission = \
-                Permission.objects.get(codename=permission.codename)
-            self.user.user_permissions.add(fetched_permission)
 
 
 class UserToClient:
