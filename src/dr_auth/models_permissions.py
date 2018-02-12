@@ -78,7 +78,6 @@ def get_formatted_permissions(checked_name):
     actions_with_ownership = dict(
         retrieve='Get',
         update='Change',
-        uxpdate='Change',
         partial_update='Partially change',
         destroy='Delete',
         list='List'

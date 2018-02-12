@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from dr_auth.tests_permissions import (
+from dr_auth.permissions_tests_utils import (
     UserToGeneral,
     UserToClient,
     UserToEmployee,
@@ -10,7 +10,7 @@ from dr_auth.common_tests_permissions import (
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
 )
-from dr_auth.tests_permissions import PermissionsTests
+from dr_auth.permissions_tests_utils import PermissionsTests
 from dreamrich.requests import RequestTypes
 from dreamrich.complete_factories import ActiveClientCompleteFactory
 

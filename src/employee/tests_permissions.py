@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from dr_auth.tests_permissions import (
+from dr_auth.permissions_tests_utils import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,

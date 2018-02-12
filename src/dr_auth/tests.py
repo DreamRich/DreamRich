@@ -1,81 +1,16 @@
 from json import dumps
-from django.test import TestCase, Client as DjangoClient
 from rest_framework.test import APIClient
+from django.test import TestCase
 from django.contrib.auth.models import User
 from client.factories import ActiveClientFactory
-from dreamrich.utils import get_token
-from employee.factories import (
-    EmployeeMainFactory,
-    FinancialAdviserMainFactory,
-)
-
-
-class AuthTest(TestCase):
-
-    def setUp(self):
-        self.employee = EmployeeMainFactory()
-        self.financial_adviser = FinancialAdviserMainFactory()
-        self.active_client = ActiveClientFactory()
-        self.django_client = DjangoClient()
-
-    def test_get_token(self):
-        response = self.django_client.post('/api/auth/',
-                                           {'username': self.employee.username,
-                                            'password': 'default123'})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data['token'] is not None)
-
-    def test_assign_permissions_employee(self):
-        response = self.django_client.post('/api/auth/',
-                                           {'username': self.employee.username,
-                                            'password': 'default123'})
-
-        response_permissions = response.data['permissions']
-        must_have_permissions = ('allow_any, see_all_basic_client_data, '
-                                 'see_employee_data')
-
-        self.assertEqual(response_permissions, must_have_permissions)
-
-    def test_assign_permissions_financial_adviser(self):
-        response = self.django_client.post('/api/auth/',
-                                           {'username': self.financial_adviser
-                                            .username,
-                                            'password': 'default123'})
-
-        response_permissions = response.data['permissions']
-
-        must_have_permissions = ('allow_any, change_own_client_data, '
-                                 'see_all_basic_client_data, '
-                                 'see_employee_data, '
-                                 'see_financial_adviser_data, '
-                                 'see_own_client_data')
-
-        self.assertEqual(response_permissions, must_have_permissions)
-
-    def test_assign_permissions_active_client(self):
-        response = self.django_client.post('/api/auth/',
-                                           {'username': self.active_client
-                                            .username,
-                                            'password': 'default123'})
-
-        response_permissions = response.data['permissions']
-        must_have_permissions = ('allow_any, see_own_client_data')
-
-        self.assertEqual(response_permissions, must_have_permissions)
-
-    def test_not_get_token(self):
-        response = self.django_client.post('/api/auth/',
-                                           {'username': self.employee.username,
-                                            'password': 'DEFAULT123'})
-
-        self.assertEqual(response.status_code, 400)
+from employee.factories import EmployeeFactory
+from .utils import get_token
 
 
 class PasswordChange(TestCase):
 
     def setUp(self):
-        self.user = EmployeeMainFactory()
+        self.user = EmployeeFactory()
         self.token = 'JWT {}'.format(get_token(self.user))
         self.django_client = APIClient()
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)

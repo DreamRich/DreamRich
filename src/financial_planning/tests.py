@@ -314,41 +314,6 @@ class FinancialPlanningFlowTest(TestCase):
                          array)
 
 
-class RegularCostViewTest(TestCase):
-
-    def setUp(self):
-        self.client = APIClient()
-        self.manager = CostManagerFactory()
-        financial_adviser = FinancialAdviserFactory()
-        self.client.credentials(HTTP_AUTHORIZATION='JWT '
-                                '{}'.format(get_token(financial_adviser)))
-
-    def test_get_view(self):
-        primary_key = self.manager.pk
-        response = self.client.get('/api/financial_planning/cost_manager/'
-                                   '{}/'.format(primary_key))
-        self.assertEqual(response.status_code, 200)
-
-    def test_post_view(self):
-        response = self.client.post('/api/financial_planning/cost_manager', {},
-                                    follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.redirect_chain,
-                         [('/api/financial_planning/cost_manager/', 301)])
-
-    def test_delete_view(self):
-        primary_key = self.manager.pk
-        response = self.client.delete('/api/financial_planning/cost_manager/'
-                                      '{}/'.format(primary_key))
-        self.assertEqual(response.status_code, 204)
-
-    def test_update_view(self):
-        primary_key = self.manager.pk
-        response = self.client.put('/api/financial_planning/cost_manager/'
-                                   '{}/'.format(primary_key))
-        self.assertEqual(response.status_code, 200)
-
-
 class FlowTest(TestCase):
 
     changes = []
