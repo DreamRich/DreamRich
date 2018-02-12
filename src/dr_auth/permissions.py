@@ -16,6 +16,7 @@ class BasePermissions(permissions.BasePermission):
     view = None
     request = None
     user = None
+    user_from_project = None
     consulted = None
 
     # Same used when defining models permissions
@@ -32,7 +33,8 @@ class BasePermissions(permissions.BasePermission):
 
             self.view = view
             self.request = request
-            self.user = self.get_user_original_object()
+            self.user = self.request.user
+            self.user_from_project = self._get_user_from_project()
 
             return self.has_permission_to(self.view.action)
         return False
@@ -52,48 +54,49 @@ class BasePermissions(permissions.BasePermission):
 
     def has_any_permission(self, *permissions_codenames):
         for permission in permissions_codenames:
-            if self.request.user.has_perm(permission):
+            if self.user.has_perm(permission):
                 return True
         return False
 
     def has_passed_related_checks(self):
-        def get_checker_method(class_name):
-            method_name = 'related_' + class_name.lower() + '_checker'
-
-            if not hasattr(self, method_name):
-                setattr(self, method_name, lambda: False)
-
-            return getattr(self, method_name)
-
         self._fill_consulted_attr()
 
-        users_class_names = [user.__name__ for user in self.users_models]
+        # users_class_names = [user.__name__ for user in self.users_models]
 
-        related_checkers = {
-            class_name: get_checker_method(class_name)
-            for class_name in users_class_names
-        }
+        # related_checkers = {
+        #     class_name: get_checker_method(class_name)
+        #     for class_name in users_class_names
+        # }
 
-        user_class_name = self.user.__class__.__name__
-        try:
-            checker_function = related_checkers[user_class_name]
-        except KeyError:
-            raise AttributeError(
-                "Model '{}' not listed at 'users_models' attribute."
-                " All models from users must be listed on it."
-                .format(user_class_name)
-            )
+        # user_class_name = self.user_from_project.__class__.__name__
+        # try:
+        #     checker_function = related_checkers[user_class_name]
+        # except KeyError:
+        #     raise AttributeError(
+        #         "Model '{}' not listed at 'users_models' attribute."
+        #         " All models from users must be listed on it."
+        #         .format(user_class_name)
+        #     )
 
-        has_passed_on_checker = checker_function()
-        return has_passed_on_checker
+        has_passed_on_checker = self._get_checker_method(
+            self.user_from_project.__class__.__name__
+        )
 
-    # We want, for example, an ActiveClient and not an User instance
-    def get_user_original_object(self):
-        user = self.request.user
+        return has_passed_on_checker()
 
+    def _get_checker_method(self, class_name):
+        method_name = 'related_' + class_name.lower() + '_checker'
+
+        if not hasattr(self, method_name):
+            setattr(self, method_name, lambda: False)
+
+        return getattr(self, method_name)
+
+    # We don't want an instance of django.contrib.auth.models.User
+    def _get_user_from_project(self):
         for model in self.users_models:
             try:
-                user_object = model.objects.get(username=user.username)
+                user_object = model.objects.get(username=self.user.username)
                 break
             except ObjectDoesNotExist:
                 pass
@@ -130,10 +133,11 @@ class ClientsPermissions(ProjectBasePermissions):
     class_nick = USERS_PERMISSIONS_INFO.client.nick
 
     def related_activeclient_checker(self):
-        return self.user.pk == self.consulted.pk
+        return self.user_from_project.pk == self.consulted.pk
 
     def related_financialadviser_checker(self):
-        relationship = Relationship(self.consulted, self.user,
+        relationship = Relationship(self.consulted,
+                                    self.user_from_project,
                                     related_name='clients')
 
         return relationship.has_relationship()
@@ -145,7 +149,7 @@ class EmployeesPermissions(ProjectBasePermissions):
     class_nick = USERS_PERMISSIONS_INFO.employee.nick
 
     def related_employee_checker(self):
-        return (self.consulted.pk == self.user.pk and
+        return (self.consulted.pk == self.user_from_project.pk and
                 self.view.action in ('update', 'partial_update', 'retrieve'))
 
 
@@ -155,7 +159,7 @@ class FinancialAdvisersPermissions(ProjectBasePermissions):
     class_nick = USERS_PERMISSIONS_INFO.financial_adviser.nick
 
     def related_financialadviser_checker(self):
-        return self.consulted.pk == self.user.pk
+        return self.consulted.pk == self.user_from_project.pk
 
 
 class GeneralPermissions(ProjectBasePermissions):
@@ -164,13 +168,15 @@ class GeneralPermissions(ProjectBasePermissions):
     class_nick = 'general'
 
     def related_activeclient_checker(self):
-        relationship = Relationship(self.user, self.consulted,
+        relationship = Relationship(self.user_from_project,
+                                    self.consulted,
                                     related_name='financial_planning')
 
         return relationship.has_relationship()
 
     def related_financialadviser_checker(self):
-        relationship = Relationship(self.user, related_name='clients')
+        relationship = Relationship(self.user_from_project,
+                                    related_name='clients')
 
         related_client_pk = self._get_active_client_pk()
         related_meta_class = Relationship.RelatedMeta
