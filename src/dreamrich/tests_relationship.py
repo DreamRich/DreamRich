@@ -285,24 +285,6 @@ class RelationshipTest(TestCase):
                                       " for ActiveClient nor for Patrimony."):
             relationship._check_relatedname()
 
-    def test_primay_not_saved(self):
-        client = ActiveClientFactory.build()
-
-        with self.assertRaisesMessage(AttributeError,
-                                      'Objects passed to this class must be'
-                                      ' on database.'):
-            Relationship(client, self.financial_planning,
-                         related_name='financial_planning')
-
-    def test_secondary_not_saved(self):
-        financial_planning = FinancialPlanningFactory.build()
-
-        with self.assertRaisesMessage(AttributeError,
-                                      'Objects passed to this class must be'
-                                      ' on database.'):
-            Relationship(self.active_client, financial_planning,
-                         related_name='financial_planning')
-
     def test_fill_attributes(self):
         relationship = Relationship(self.active_client,
                                     self.financial_planning)

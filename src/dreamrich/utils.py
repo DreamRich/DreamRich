@@ -14,8 +14,6 @@ class Relationship:
         self.related_name, self.pk = related_name, pk
         # pylint: disable=invalid-name
 
-        self._check_objects_are_saved()
-
         if secondary and pk:
             raise AttributeError('Both classes were provided and pk. This'
                                  ' can cause inconsistencies')
@@ -169,12 +167,6 @@ class Relationship:
                     self.secondary else "."
                 )
             )
-
-    def _check_objects_are_saved(self):
-        if (self.primary.id is None or
-                (self.secondary and self.secondary.id is None)):
-            raise AttributeError('Objects passed to this class must be on'
-                                 ' database.')
 
     def _check_all_core_attributes_filled(self):
         missing = ''
