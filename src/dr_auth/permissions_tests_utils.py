@@ -1,7 +1,6 @@
 import json
 from http import HTTPStatus
 from django.test import TestCase
-from django.contrib.auth.models import Permission
 from rest_framework.test import APIClient
 from employee.serializers import (
     EmployeeSerializer,
@@ -23,7 +22,7 @@ class PermissionsTests(TestCase):
     factory_consulted = None
     factory_user = None
     serializer_consulted = None
-    django_client = None
+    authenticated_user = None
     base_route = ''
 
     related_name = ''
@@ -39,20 +38,22 @@ class PermissionsTests(TestCase):
         self.handle_related()
 
     def user_test_request(self, request_method, status_code):
-        self.django_client = authenticate_user(self.user)
+        self.authenticated_user = authenticate_user(self.user)
         response_status_code = self.make_request(request_method)
+
         self.assertEqual(response_status_code, status_code)
 
     def user_test_not_authenticated_request(self, request_method):
-        self.django_client = APIClient()
+        self.authenticated_user = APIClient()
         response_status_code = self.make_request(request_method)
+
         self.assertEqual(response_status_code, HTTPStatus.UNAUTHORIZED)
 
     def make_request(self, request_method, route=None):
         route = self._get_route(request_method) if not route else route
 
         http_method = self._handle_request_method(request_method)
-        api_client_method = getattr(self.django_client, http_method)
+        api_client_method = getattr(self.authenticated_user, http_method)
 
         required_data_methods = (RequestTypes.PUT,
                                  RequestTypes.PATCH,
@@ -87,21 +88,20 @@ class PermissionsTests(TestCase):
             self.consulted = relationship.get_nested_related(*related_metas)
 
     def _check_attributes(self):
-        missing = ''
+        attributes_names = {
+            self.consulted: 'factory_consulted',
+            self.user: 'factory_user',
+            self.serializer_consulted: 'serializer_consulted',
+            self.base_route: 'base_route'
+        }
 
-        if not self.consulted:
-            missing = 'factory_consulted'
-        elif not self.user:
-            missing = 'factory_user'
-        elif not self.serializer_consulted:
-            missing = 'serializer_consulted'
-        elif not self.base_route:
-            missing = 'base_route'
+        missing = [attributes_names[attr] for attr
+                   in attributes_names if not attr]
 
         if missing:
-            raise AttributeError('There are missing information in'
-                                 ' permissions tests hierarchy,'
-                                 ' {} is missing.'.format(missing))
+            raise AttributeError("There are missing information in permissions"
+                                 "tests hierarchy. Missing: '{}'."
+                                 .format(', '.join(missing)))
 
     def _make_required_data_request(self, request_method,
                                     api_client_method, route):
@@ -111,20 +111,10 @@ class PermissionsTests(TestCase):
         # pylint: enable=not-callable
 
         if request_method == RequestTypes.PATCH:
-            field = data.popitem()
-            data = {field[0]: field[1]}
-
+            field = (data.popitem(),)
+            data = dict(field)
         elif request_method == RequestTypes.POST:
-            # When there was no use of "primary_key=True" on class definition
-            # If the consulted has own primary key (pk isn't necessary)
-            if hasattr(self.consulted, 'id'):
-                try:
-                    data.pop('pk')
-                except KeyError:
-                    pass
-
             self.consulted.delete()
-            data['cpf'] = '75116625109'  # Arbitrary, generated online
 
         data = json.dumps(data)
         response = api_client_method(route, data,
@@ -173,12 +163,12 @@ class PermissionsTests(TestCase):
         all_fields_names = list(all_fields.keys())
 
         # Get all fields with read_only == True
-        read_only_fields = \
-            [name for name in all_fields_names if all_fields[name].read_only]
+        read_only_fields = [name for name in all_fields_names
+                            if all_fields[name].read_only]
 
         # Remove id's fields
-        read_only_fields = \
-            [field for field in read_only_fields if field[-3:] != '_id']
+        read_only_fields = [field for field in read_only_fields
+                            if field[-3:] != '_id']
 
         return read_only_fields
 
