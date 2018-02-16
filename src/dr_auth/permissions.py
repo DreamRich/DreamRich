@@ -28,13 +28,10 @@ class BasePermissions(permissions.BasePermission):
     users_models = ()
 
     def has_permission(self, request, view):
-        if request.user.is_authenticated():
-            self._check_children_params()
+        self._check_children_params()
 
-            self.view = view
-            self.request = request
-            self.user = self.request.user
-            self.user_from_project = self._get_user_from_project()
+        if request.user.is_authenticated():
+            self._initialize_checking_attrs(view, request)
 
             return self.has_permission_to(self.view.action)
         return False
@@ -61,28 +58,21 @@ class BasePermissions(permissions.BasePermission):
     def has_passed_related_checks(self):
         self._fill_consulted_attr()
 
-        # users_class_names = [user.__name__ for user in self.users_models]
-
-        # related_checkers = {
-        #     class_name: get_checker_method(class_name)
-        #     for class_name in users_class_names
-        # }
-
-        # user_class_name = self.user_from_project.__class__.__name__
-        # try:
-        #     checker_function = related_checkers[user_class_name]
-        # except KeyError:
-        #     raise AttributeError(
-        #         "Model '{}' not listed at 'users_models' attribute."
-        #         " All models from users must be listed on it."
-        #         .format(user_class_name)
-        #     )
-
         has_passed_on_checker = self._get_checker_method(
             self.user_from_project.__class__.__name__
         )
 
         return has_passed_on_checker()
+
+    def _initialize_checking_attrs(self, view, request):
+        '''
+        Fill attrs generateds at checking time
+        '''
+        self.view = view
+        self.request = request
+
+        self.user = self.request.user
+        self.user_from_project = self._get_user_from_project()
 
     def _get_checker_method(self, class_name):
         method_name = 'related_' + class_name.lower() + '_checker'
