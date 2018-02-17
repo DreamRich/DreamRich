@@ -91,8 +91,8 @@ class Relationship:
                         related, = related
                     else:
                         raise ObjectDoesNotExist(
-                            'Was not possible to get the object indicated by'
-                            ' the information passed. pk not found.'
+                            "Was not possible to get the object indicated by"
+                            " the information passed. 'pk' not found."
                         )
                 else:
                     related = related_manager.last()
@@ -103,8 +103,8 @@ class Relationship:
                 except AttributeError:
                     related = None
             else:
-                raise AttributeError('return_manager is valid only for'
-                                     ' "to many" relationships')
+                raise AttributeError("'return_manager' is valid only for"
+                                     " \"to many\" relationships")
 
         return related
 
@@ -122,7 +122,7 @@ class Relationship:
                 if related is None:
                     raise AttributeError(
                         "Not possible getting nested related."
-                        " '{}' related_name got a None object.".format(
+                        " '{}' related name got a None object.".format(
                             relationship.related_name
                         )
                     )
@@ -160,11 +160,11 @@ class Relationship:
             secondary__class_name = self.secondary.__class__.__name__
 
             raise AttributeError(
-                "'{}' is not a valid related_name for {}{}".format(
+                "'{}' is not a valid related_name for '{}'{}.".format(
                     self.related_name,
                     primary__class_name,
-                    " nor for {}.".format(secondary__class_name) if
-                    self.secondary else "."
+                    " nor for '{}'".format(secondary__class_name) if
+                    self.secondary else ""
                 )
             )
 
@@ -177,8 +177,8 @@ class Relationship:
             missing = 'related_name'
 
         if missing:
-            raise AttributeError("Not enough information, '{}' is missing."
-                                 .format(missing))
+            raise AttributeError("Not enough information, '{}' is missing"
+                                 " or None.".format(missing))
 
     def _fill_attributes(self, primary=None,  # pylint: disable=invalid-name
                          secondary=None, related_name=None, pk=None):

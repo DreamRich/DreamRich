@@ -152,9 +152,9 @@ class RelationshipTest(TestCase):
                                     related_name='clients', pk=wrong_pk)
 
         with self.assertRaisesMessage(ObjectDoesNotExist,
-                                      'Was not possible to get the object'
-                                      ' indicated by the information passed.'
-                                      ' pk not found.'):
+                                      "Was not possible to get the object"
+                                      " indicated by the information passed."
+                                      " 'pk' not found."):
             relationship.get_related()
 
     def test_get_related_not_many_none(self):
@@ -190,8 +190,8 @@ class RelationshipTest(TestCase):
                                     related_name='financial_planning')
 
         with self.assertRaisesMessage(AttributeError,
-                                      'return_manager is valid only for'
-                                      ' "to many" relationships'):
+                                      "'return_manager' is valid only for"
+                                      " \"to many\" relationships"):
             relationship.get_related(return_manager=True)
 
     def test_get_related_return_manager_fail_no_related(self):
@@ -199,8 +199,8 @@ class RelationshipTest(TestCase):
                                     related_name='financial_planning')
 
         with self.assertRaisesMessage(AttributeError,
-                                      'return_manager is valid only for'
-                                      ' "to many" relationships'):
+                                      "'return_manager' is valid only for"
+                                      " \"to many\" relationships"):
             relationship.get_related(return_manager=True)
 
     def test_get_nested_related(self):
@@ -225,7 +225,7 @@ class RelationshipTest(TestCase):
 
         with self.assertRaisesMessage(AttributeError,
                                       "Not possible getting nested related."
-                                      " 'financial_planning' related_name got"
+                                      " 'financial_planning' related name got"
                                       " a None object."):
             relationship.get_nested_related(
                 Relationship.RelatedMeta('financial_planning', None),
@@ -246,14 +246,14 @@ class RelationshipTest(TestCase):
         # pylint: disable=protected-access
         with self.assertRaisesMessage(AttributeError,
                                       "Not enough information, 'secondary'"
-                                      " is missing."):
+                                      " is missing or None."):
             relationship._check_all_core_attributes_filled()
 
         relationship.secondary = self.financial_planning
 
         with self.assertRaisesMessage(AttributeError,
                                       "Not enough information, 'related_name'"
-                                      " is missing."):
+                                      " is missing or None."):
             relationship._check_all_core_attributes_filled()
         relationship.related_name = 'any'
 
@@ -282,7 +282,8 @@ class RelationshipTest(TestCase):
         # pylint: disable=protected-access
         with self.assertRaisesMessage(AttributeError,
                                       "'invalid' is not a valid related_name"
-                                      " for ActiveClient nor for Patrimony."):
+                                      " for 'ActiveClient' nor for"
+                                      " 'Patrimony'."):
             relationship._check_relatedname()
 
     def test_fill_attributes(self):
