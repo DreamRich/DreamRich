@@ -28,7 +28,7 @@ class BasePermissions(permissions.BasePermission):
     users_models = ()
 
     def has_permission(self, request, view):
-        self._check_children_params()
+        self._check_children_attrs()
 
         if request.user.is_authenticated():
             self._initialize_checking_attrs(view, request)
@@ -58,9 +58,7 @@ class BasePermissions(permissions.BasePermission):
     def has_passed_related_checks(self):
         self._fill_consulted_attr()
 
-        has_passed_on_checker = self._get_checker_method(
-            self.user_from_project.__class__.__name__
-        )
+        has_passed_on_checker = self._get_checker_method()
 
         return has_passed_on_checker()
 
@@ -74,7 +72,8 @@ class BasePermissions(permissions.BasePermission):
         self.user = self.request.user
         self.user_from_project = self._get_user_from_project()
 
-    def _get_checker_method(self, class_name):
+    def _get_checker_method(self):
+        class_name = self.user_from_project.__class__.__name__
         method_name = 'related_' + class_name.lower() + '_checker'
 
         if not hasattr(self, method_name):
@@ -95,12 +94,19 @@ class BasePermissions(permissions.BasePermission):
                                      " for the user provided.")
         return user_object
 
-    def _check_children_params(self):
-        required_params = {self.app_name: 'app_name',
-                           self.class_nick: 'class_nick'}
+    def _check_children_attrs(self):
+        required_attrs_names = {
+            self.app_name: 'app_name',
+            self.class_nick: 'class_nick',
+            self.users_models: 'users_models'
+        }
 
-        if not all(required_params.keys()):
-            raise AttributeError('Attribute {} was not filled at child class')
+        for attr, attr_name in required_attrs_names.items():
+            if not attr:
+                raise AttributeError(
+                    "Attribute '{}' was not filled at child class"
+                    .format(attr_name)
+                )
 
     # To be used for children classes
     def _fill_consulted_attr(self):

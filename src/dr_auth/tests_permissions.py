@@ -1,5 +1,6 @@
 from collections import namedtuple
 from django.test import TestCase
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User, Permission
 from django.db import models
 from dr_auth.permissions import BasePermissions
@@ -16,7 +17,6 @@ class BaseCustomPermissionsTests(TestCase):
                 ('retrieve_all_anymodels', 'Can see all anymodels'),
                 ('retrieve_any_anymodels', 'Can see any of anymodels'),
                 ('update_related_anymodels', 'Can update all anymodels'),
-                ('destroy_all_anymodels', 'Can destroy all anymodels'),
             )
 
         user = models.ForeignKey(User, null=True)
@@ -51,6 +51,18 @@ class BaseCustomPermissionsTests(TestCase):
             self.RequestMock(self.user)
         )
         # pylint: disable=protected-access
+
+    def test_initialize_checking_attrs(self):
+        '''
+        Used on setUp() and too simple. Check only if attributes are filled.
+        '''
+
+        self.assertTrue(all((
+            self.permission_class.view,
+            self.permission_class.request,
+            self.permission_class.user,
+            self.permission_class.user_from_project
+        )))
 
     def test_has_permission_to_retrieve_all(self):
         permission = Permission.objects.get(codename='retrieve_all_anymodels')
@@ -94,15 +106,93 @@ class BaseCustomPermissionsTests(TestCase):
 
         self.assertFalse(self.permission_class.has_permission_to('update'))
 
-    # def test_has_any_permission(self):
-    # def test_has_any_permission_fail(self):
-    # def test_has_passed_related_checks(self):
-    # def test_has_passed_related_checks_fail(self):
-    # def test_get_checker_method_have_attr(self):
-    # def test_get_checker_method_havent_attr(self):
-    # def test_get_user_from_project(self):
-    # def test_get_user_from_project_fail(self):
-    # def test_check_children_params(self):
-    # def test_check_children_params_fail(self):
-    # def test_fill_consulted_attr(self):
-    # def test_fill_consulted_attr_fail(self):
+    def test_has_any_permission(self):
+        permission = Permission.objects.get(codename='retrieve_all_anymodels')
+        self.user.user_permissions.add(permission)
+
+        self.assertTrue(
+            self.permission_class.has_any_permission(
+                'dr_auth.retrieve_all_anymodels',
+                'invalid'
+            )
+        )
+
+    def test_has_any_permission_fail(self):
+        self.assertFalse(
+            self.permission_class.has_any_permission(
+                'dr_auth.retrieve_all_anymodels',
+                'invalid'
+            )
+        )
+
+    def test_has_passed_related_checks(self):
+        # pylint: disable=attribute-defined-outside-init
+        self.permission_class.related_user_checker = lambda: True
+        # pylint: disable=attribute-defined-outside-init
+
+        self.assertTrue(self.permission_class.has_passed_related_checks())
+
+    def test_hasnt_passed_related_checks(self):
+        # pylint: disable=attribute-defined-outside-init
+        self.permission_class.related_user_checker = lambda: False
+        # pylint: disable=attribute-defined-outside-init
+
+        self.assertFalse(self.permission_class.has_passed_related_checks())
+
+    def test_get_checker_method_have_attr(self):
+        # pylint: disable=attribute-defined-outside-init
+        self.permission_class.related_user_checker = lambda: False
+        # pylint: disable=attribute-defined-outside-init
+
+        self.assertEqual(
+            self.permission_class.related_user_checker,
+            self.permission_class._get_checker_method()
+        )
+
+    def test_get_checker_method_havent_attr(self):
+        checker_method = self.permission_class._get_checker_method()
+        self.assertFalse(checker_method())
+
+    def test_get_user_from_project(self):
+        self.permission_class.users_models = (User,)
+        user_from_project = self.permission_class._get_user_from_project()
+
+        self.assertTrue(
+            user_from_project.__class__ is User
+        )
+
+    def test_get_user_from_project_not_found(self):
+        self.permission_class.users_models = tuple()
+
+        with self.assertRaisesMessage(ObjectDoesNotExist,
+                                      "Couldn't find user model"
+                                      " for the user provided."):
+            self.permission_class._get_user_from_project()
+
+    def test_check_children_attrs(self):
+        self.permission_class._check_children_attrs()
+
+    def test_check_children_attrs_fail(self):
+        self.permission_class.users_models = None
+
+        with self.assertRaisesMessage(AttributeError,
+                                      "Attribute 'users_models' was"
+                                      " not filled at child class"):
+            self.permission_class._check_children_attrs()
+
+    def test_fill_consulted_attr_not_convenient_view_action(self):
+        self.permission_class.view.action = 'list'
+        self.permission_class._fill_consulted_attr()
+
+        self.assertIsNone(self.permission_class.consulted)
+
+    def test_fill_consulted_attr_convenient_view_action(self):
+        expected_consulted = self.permission_class.consulted
+
+        self.permission_class.view.action = 'retrieve'
+        self.permission_class._fill_consulted_attr()
+
+        self.assertEqual(
+            expected_consulted,
+            self.permission_class.consulted
+        )
