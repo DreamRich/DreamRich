@@ -64,6 +64,22 @@ class BaseCustomPermissionsTests(TestCase):
             self.permission_class.user_from_project
         )))
 
+    def test_get_possible_permissions(self):
+        possible_permissions = \
+            self.permission_class._get_possible_permissions('retrieve')
+
+        expected_possible_permissions = (
+            "{'all': 'dr_auth.retrieve_all_anymodels',"
+            " 'any': 'dr_auth.retrieve_any_anymodels',"
+            " 'related': 'dr_auth.retrieve_related_anymodels',"
+            " 'no_owner': 'dr_auth.retrieve_anymodels'}"
+        )
+
+        self.assertEqual(
+            str(possible_permissions),
+            expected_possible_permissions
+        )
+
     def test_has_permission_to_retrieve_all(self):
         permission = Permission.objects.get(codename='retrieve_all_anymodels')
         self.user.user_permissions.add(permission)

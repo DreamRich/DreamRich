@@ -37,16 +37,16 @@ class BasePermissions(permissions.BasePermission):
         return False
 
     def has_permission_to(self, permission_action):
-        allowed_permissions = [
-            '{}.{}_{}{}'.format(
-                self.app_name, permission_action, ownership, self.class_nick
-            ) for ownership in ('', 'all_', 'any_', 'related_')
-        ]
+        get_possible_permissions = self._get_possible_permissions
 
-        related_permission = allowed_permissions.pop()
+        possible_permissions = get_possible_permissions(permission_action)
+        related_permission = possible_permissions.pop('related')
+
         has_related_permission = self.has_any_permission(related_permission)
 
-        return (self.has_any_permission(*allowed_permissions) or
+        permissions_names = list(possible_permissions.values())
+
+        return (self.has_any_permission(*permissions_names) or
                 has_related_permission and self.has_passed_related_checks())
 
     def has_any_permission(self, *permissions_codenames):
@@ -71,6 +71,25 @@ class BasePermissions(permissions.BasePermission):
 
         self.user = self.request.user
         self.user_from_project = self._get_user_from_project()
+
+    def _get_possible_permissions(self, permission_action):
+        ownerships_types = ('all', 'any', 'related')
+
+        permission_template = '{}.{}_{}_{}'.format(
+            self.app_name, permission_action, '{}', self.class_nick
+        )
+
+        possible_permissions = {
+            ownership: permission_template.format(ownership)
+            for ownership in ownerships_types
+        }
+
+        # Case with no ownership
+        possible_permissions['no_owner'] = '{}.{}_{}'.format(
+            self.app_name, permission_action, self.class_nick
+        )
+
+        return possible_permissions
 
     def _get_checker_method(self):
         class_name = self.user_from_project.__class__.__name__
