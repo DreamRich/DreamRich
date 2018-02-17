@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User, Permission
 from django.db import models
 from dr_auth.permissions import BasePermissions
+from dreamrich.utils import Relationship
 
 
 class BaseCustomPermissionsTests(TestCase):
@@ -12,50 +13,87 @@ class BaseCustomPermissionsTests(TestCase):
         class Meta:
             default_permissions = ()
             permissions = (
-                ('retrieve_all_any_models', 'Can see all users1'),
-                ('retrieve_any_any_models', 'Can see any of users1'),
-                ('destroy_all_any_models', 'Can destroy all users1'),
+                ('retrieve_all_anymodels', 'Can see all anymodels'),
+                ('retrieve_any_anymodels', 'Can see any of anymodels'),
+                ('update_related_anymodels', 'Can update all anymodels'),
+                ('destroy_all_anymodels', 'Can destroy all anymodels'),
             )
 
-        user1 = models.ForeignKey(User)
+        user = models.ForeignKey(User, null=True)
 
     class AnyModelPermissions(BasePermissions):
 
         app_name = 'dr_auth'
-        class_nick = 'any_models'
+        class_nick = 'anymodels'
         users_models = (User, )
 
     class ViewMock:
 
-        def __init__(self, user, action):
+        def __init__(self, user, consulted, action):
             self.user = user
             self.action = action
+            self.consulted = consulted
 
         def get_object(self):
-            return self.user
+            return self.consulted
 
     RequestMock = namedtuple('RequestMock', 'user')
 
     def setUp(self):
-        self.user1 = User.objects.create(username='user1')
+        self.user = User.objects.create(username='user')
         self.permission_class = self.AnyModelPermissions()
+        self.permission_class.consulted = self.AnyModel.objects.create()
 
         # pylint: disable=protected-access
         self.permission_class._initialize_checking_attrs(
-            self.ViewMock(self.user1, 'retrieve'),
-            self.RequestMock(self.user1)
+            self.ViewMock(self.user, self.permission_class.consulted,
+                          'retrieve'),
+            self.RequestMock(self.user)
         )
         # pylint: disable=protected-access
 
     def test_has_permission_to_retrieve_all(self):
-        permission = Permission.objects.get(codename='retrieve_all_any_models')
-        self.user1.user_permissions.add(permission)
+        permission = Permission.objects.get(codename='retrieve_all_anymodels')
+        self.user.user_permissions.add(permission)
 
         self.assertTrue(self.permission_class.has_permission_to('retrieve'))
 
-    # def test_has_permission_to_retrieve_any(self):
-    # def test_hasnt_permission_to_retrieve(self):
-    # def test_has_permission_to_retrieve_related(self):
+    def test_hasnt_permission_to_retrieve(self):
+        self.assertFalse(self.permission_class.has_permission_to('retrieve'))
+
+    def test_has_permission_to_update_related(self):
+        def related_user_checker(self=self.permission_class):
+            relationship = Relationship(self.user, self.consulted,
+                                        related_name='anymodel_set')
+
+            return relationship.has_relationship()
+
+        permission_codename = 'update_related_anymodels'
+        permission = Permission.objects.get(codename=permission_codename)
+
+        self.user.user_permissions.add(permission)
+        self.user.anymodel_set.add(self.permission_class.consulted)
+
+        # pylint: disable=attribute-defined-outside-init
+        self.permission_class.related_user_checker = related_user_checker
+        # pylint: disable=attribute-defined-outside-init
+
+        self.assertTrue(self.permission_class.has_permission_to('update'))
+
+    def test_hasnt_permission_to_update_related(self):
+        self.user.anymodel_set.add(self.permission_class.consulted)
+
+        self.assertFalse(self.permission_class.has_permission_to('update'))
+
+    def test_has_permission_to_update_related_without_method(self):
+        permission_codename = 'update_related_anymodels'
+        permission = Permission.objects.get(codename=permission_codename)
+
+        self.user.user_permissions.add(permission)
+        self.user.anymodel_set.add(self.permission_class.consulted)
+
+        self.assertFalse(self.permission_class.has_permission_to('update'))
+
     # def test_has_any_permission(self):
     # def test_has_any_permission_fail(self):
     # def test_has_passed_related_checks(self):

@@ -66,7 +66,7 @@ class BasePermissions(permissions.BasePermission):
 
     def _initialize_checking_attrs(self, view, request):
         '''
-        Fill attrs generateds at checking time
+        Fills attrs generateds at checking time
         '''
         self.view = view
         self.request = request
