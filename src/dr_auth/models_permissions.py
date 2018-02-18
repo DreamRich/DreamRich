@@ -61,9 +61,8 @@ def get_formatted_permissions(checked_name):
     ownership_types = ('all', 'related', 'not_related')
 
     # Format codenames with actions
-    codenames = dict()
-    for ownership in ownership_types:
-        codenames[ownership] = '{}_{}_{}'.format('{}', ownership, '{}')
+    codenames = {ownership: '{}_{}_{}'.format('{}', ownership, '{}')
+                 for ownership in ownership_types}
 
     # Define descriptions
     descriptions = dict()

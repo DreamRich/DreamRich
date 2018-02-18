@@ -245,3 +245,9 @@ class TestModelsPermissions(TestCase):
         ]
         for description in expected_descriptions:
             self.assertIn(description, descriptions)
+
+    def test_no_repetition_at_default_codenames(self):
+        all_codenames = [user.nick for user in
+                         models_permissions.USERS_PERMISSIONS_INFO]
+
+        self.assertEqual(len(all_codenames), len(set(all_codenames)))
