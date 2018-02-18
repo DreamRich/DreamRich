@@ -73,7 +73,7 @@ class BasePermissions(permissions.BasePermission):
         self.user_from_project = self._get_user_from_project()
 
     def _get_possible_permissions(self, permission_action):
-        ownerships_types = ('all', 'any', 'related')
+        ownerships_types = ('all', 'any', 'related', 'not_related')
 
         permission_template = '{}.{}_{}_{}'.format(
             self.app_name, permission_action, '{}', self.class_nick

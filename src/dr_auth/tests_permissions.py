@@ -73,6 +73,7 @@ class BaseCustomPermissionsTests(TestCase):
             "{'all': 'dr_auth.retrieve_all_anymodels',"
             " 'any': 'dr_auth.retrieve_any_anymodels',"
             " 'related': 'dr_auth.retrieve_related_anymodels',"
+            " 'not_related': 'dr_auth.retrieve_not_related_anymodels',"
             " 'no_owner': 'dr_auth.retrieve_anymodels'}"
         )
 
