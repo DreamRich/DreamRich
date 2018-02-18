@@ -70,17 +70,17 @@ def get_formatted_permissions(checked_name):
     descriptions['all'] = \
         'To {} all {} from database'
     descriptions['related'] = \
-        'To {} {} which has relationship with itself (or is itself)'
+        'To {} {} which have relationship with, or is, itself'
     descriptions['not_related'] = \
         "To {} only {} that don't have relationship with itself"
 
     # Maps actions to friendly names
     actions_with_ownership = dict(
-        retrieve='Get',
-        update='Change',
-        partial_update='Partially change',
-        destroy='Delete',
-        list='List'
+        retrieve='get',
+        update='change',
+        partial_update='partially change',
+        destroy='delete',
+        list='list'
     )
 
     # Assembling permissions tuples
@@ -96,7 +96,7 @@ def get_formatted_permissions(checked_name):
                  description.format(name_friendly, checked_name))
             ]
 
-    # Add specific cases
+    # Add case with no ownership
     permissions += [
         ('create_{}'.format(checked_name), 'To create {}'.format(checked_name))
     ]

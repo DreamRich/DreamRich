@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, Permission
 from django.db import models
 from dr_auth.permissions import BasePermissions
 from dreamrich.utils import Relationship
+from . import models_permissions
 
 
 class BaseCustomPermissionsTests(TestCase):
@@ -212,3 +213,35 @@ class BaseCustomPermissionsTests(TestCase):
             expected_consulted,
             self.permission_class.consulted
         )
+
+
+class TestModelsPermissions(TestCase):
+
+    def test_get_formatted_permissions(self):
+        formatted_permissions = \
+            models_permissions.get_formatted_permissions('nicks')
+
+        codenames = [permission[0] for permission in formatted_permissions]
+        expected_codenames = [
+            'retrieve_all_nicks',
+            'update_all_nicks',
+            'partial_update_all_nicks',
+            'destroy_related_nicks',
+            'list_not_related_nicks',
+            'create_nicks',
+        ]
+        for codename in expected_codenames:
+            self.assertIn(codename, codenames)
+
+        descriptions = [permission[1] for permission in formatted_permissions]
+        expected_descriptions = [
+            'To get all nicks from database',
+            'To change all nicks from database',
+            'To partially change all nicks from database',
+            'To delete all nicks from database',
+            'To change nicks which have relationship with, or is, itself',
+            "To list only nicks that don't have relationship with itself",
+            'To create nicks',
+        ]
+        for description in expected_descriptions:
+            self.assertIn(description, descriptions)
