@@ -1,7 +1,8 @@
 from json import dumps
-from rest_framework.test import APIClient
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 from client.factories import ActiveClientFactory
 from employee.factories import EmployeeFactory
 from .utils import get_token
@@ -12,11 +13,14 @@ class PasswordChange(TestCase):
     def setUp(self):
         self.user = EmployeeFactory()
         self.token = 'JWT {}'.format(get_token(self.user))
+
         self.django_client = APIClient()
         self.django_client.credentials(HTTP_AUTHORIZATION=self.token)
 
+        self.password_url = reverse('password')
+
     def test_user_change_password(self):
-        response = self.django_client.post('/api/auth/password/',
+        response = self.django_client.post(self.password_url,
                                            {
                                                'userid': self.user.pk,
                                                'password': 'default123',
@@ -28,7 +32,7 @@ class PasswordChange(TestCase):
         self.assertEqual(response.data, dumps({'detail': 'password changed'}))
 
     def test_user_match_change_password(self):
-        self.django_client.post('/api/auth/password/',
+        self.django_client.post(self.password_url,
                                 {'userid': self.user.pk,
                                  'password': 'default123',
                                  'new_password': 'DEFAULT123',
@@ -39,7 +43,7 @@ class PasswordChange(TestCase):
         self.assertTrue(user.check_password('DEFAULT123'))
 
     def test_different_passwords(self):
-        response = self.django_client.post('/api/auth/password/',
+        response = self.django_client.post(self.password_url,
                                            {'userid': self.user.pk,
                                             'password': 'default123',
                                             'new_password': 'default123',
@@ -52,7 +56,7 @@ class PasswordChange(TestCase):
         )
 
     def test_different_password(self):
-        response = self.django_client.post('/api/auth/password/',
+        response = self.django_client.post(self.password_url,
                                            {'userid': self.user.pk,
                                             'password': 'def123',
                                             'new_password': 'DEFAULT123',
@@ -64,7 +68,7 @@ class PasswordChange(TestCase):
         )
 
     def test_not_found_user(self):
-        response = self.django_client.post('/api/auth/password/',
+        response = self.django_client.post(self.password_url,
                                            {'userid': self.user.pk + 1,
                                             'password': 'DEFAULT123',
                                             'new_password': 'DEFAULT123',
