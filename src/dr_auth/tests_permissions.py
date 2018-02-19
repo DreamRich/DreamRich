@@ -19,6 +19,7 @@ class BaseCustomPermissionsTests(TestCase):
                 ('retrieve_any_anymodels', 'Can see any of anymodels'),
                 ('update_related_anymodels', 'Can update all anymodels'),
             )
+            app_label = 'dr_auth'
 
         user = models.ForeignKey(User, null=True)
 

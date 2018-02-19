@@ -119,7 +119,7 @@ class ActiveClientSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = ActiveClient
-        
+
         fields = [
             'pk',
             'name',

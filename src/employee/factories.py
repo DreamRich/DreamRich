@@ -2,7 +2,6 @@ import factory.fuzzy
 from lib.factories import gen_cpf
 from employee.models import Employee, FinancialAdviser
 from dr_auth.factories import UserFactory
-from client.factories import ActiveClientFactory
 
 
 class EmployeeFactory(UserFactory):

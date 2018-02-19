@@ -22,9 +22,6 @@ from financial_planning.factories import (
     FinancialPlanningFactory,
 )
 from lib.financial_planning.flow import create_array_change_annual
-from rest_framework.test import APIClient
-from dr_auth.utils import get_token
-from employee.factories import FinancialAdviserFactory
 from client.factories import ActiveClientFactory
 from dreamrich.complete_factories import (
     ActiveClientCompleteFactory,
