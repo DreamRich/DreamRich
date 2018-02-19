@@ -60,10 +60,10 @@ class ArrearageFactory(factory.DjangoModelFactory):
     amortization_system = factory.fuzzy.FuzzyChoice(AMORTIZATION_CHOICES_LIST)
 
 
-class RealEstateFactory(factory.DjangoModelFactory):
+class RealStateFactory(factory.DjangoModelFactory):
 
     class Meta:
-        model = models.RealEstate
+        model = models.RealState
 
     patrimony = factory.SubFactory(PatrimonyFactory)
 

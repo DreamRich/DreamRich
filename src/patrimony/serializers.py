@@ -4,7 +4,7 @@ from patrimony.models import (
     ActiveManager,
     Active,
     Arrearage,
-    RealEstate,
+    RealState,
     CompanyParticipation,
     Equipment,
     Income,
@@ -82,12 +82,12 @@ class ArrearageSerializer(serializers.ModelSerializer):
         ]
 
 
-class RealEstateSerializer(serializers.ModelSerializer):
+class RealStateSerializer(serializers.ModelSerializer):
 
     patrimony_id = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = RealEstate
+        model = RealState
         fields = [
             'pk',
             'name',
@@ -146,7 +146,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
 
     active_manager = ActiveManagerSerializer(read_only=True)
     arrearages = ArrearageSerializer(read_only=True, many=True)
-    real_estates = RealEstateSerializer(read_only=True, many=True)
+    real_estates = RealStateSerializer(read_only=True, many=True)
     company_participations = CompanyParticipationSerializer(many=True,
                                                            read_only=True)
     equipments = EquipmentSerializer(many=True, read_only=True)

@@ -347,7 +347,7 @@ class Arrearage(models.Model):
         return "{name} {value}".format(**self.__dict__)
 
 
-class RealEstate(models.Model):
+class RealState(models.Model):
 
     patrimony = models.ForeignKey(
         'Patrimony',

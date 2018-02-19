@@ -8,7 +8,7 @@ from patrimony.serializers import (
     ActiveChartSerializer,
     ActiveTypeSerializer,
     ArrearageSerializer,
-    RealEstateSerializer,
+    RealStateSerializer,
     CompanyParticipationSerializer,
     EquipmentSerializer,
     IncomeSerializer,
@@ -23,7 +23,7 @@ from patrimony.models import (
     Equipment,
     Income,
     Patrimony,
-    RealEstate,
+    RealState,
 )
 from dr_auth.permissions import GeneralPermissions
 
@@ -94,10 +94,10 @@ class ArrearageViewSet(viewsets.ModelViewSet):
         return Response(list_arrearage)
 
 
-class RealEstateViewSet(viewsets.ModelViewSet):
+class RealStateViewSet(viewsets.ModelViewSet):
 
-    serializer_class = RealEstateSerializer
-    queryset = RealEstate.objects.all()
+    serializer_class = RealStateSerializer
+    queryset = RealState.objects.all()
     permission_classes = (GeneralPermissions,)
 
 

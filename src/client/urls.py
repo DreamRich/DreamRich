@@ -12,7 +12,7 @@ from client.views import (
 APP_NAME = 'client'
 
 ROUTER = routers.DefaultRouter()
-ROUTER.register(r'active', ActiveClientViewSet)
+ROUTER.register(r'active-client', ActiveClientViewSet)
 ROUTER.register(r'address', AddressViewSet)
 ROUTER.register(r'state', StateViewSet)
 ROUTER.register(r'country', CountryViewSet)

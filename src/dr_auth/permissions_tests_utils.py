@@ -177,7 +177,7 @@ class UserToClient:
 
     factory_consulted = ActiveClientFactory
     serializer_consulted = ActiveClientSerializer
-    base_route = '/api/client/active/'
+    base_route = '/api/client/active-client/'
 
 
 class UserToEmployee:
@@ -191,7 +191,7 @@ class UserToFinancialAdviser:
 
     factory_consulted = FinancialAdviserFactory
     serializer_consulted = FinancialAdviserSerializer
-    base_route = '/api/employee/financial/'
+    base_route = '/api/employee/financial-adviser/'
 
 
 # Refer to all others classes which have the same permissions
@@ -200,7 +200,7 @@ class UserToGeneral:
 
     factory_consulted = FinancialPlanningFactory
     serializer_consulted = FinancialPlanningSerializer
-    base_route = '/api/financial_planning/financial_planning/'
+    base_route = '/api/financial-planning/financial-planning/'
 
 
 class UserToItself(PermissionsTests):

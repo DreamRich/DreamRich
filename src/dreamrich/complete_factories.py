@@ -22,7 +22,7 @@ from patrimony.factories import (
     IncomeFactory,
     MovablePropertyFactory,
     PatrimonyFactory,
-    RealEstateFactory,
+    RealStateFactory,
 )
 from protection.factories import (
     ActualPatrimonySuccessionFactory,
@@ -61,7 +61,7 @@ class PatrimonyCompleteFactory(PatrimonyFactory):
         'patrimony'
     )
     real_estates = factory.RelatedFactory(
-        RealEstateFactory,
+        RealStateFactory,
         'patrimony'
     )
     equipments = factory.RelatedFactory(

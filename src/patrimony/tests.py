@@ -1,6 +1,5 @@
 import datetime
 from django.test import TestCase
-from client.factories import ActiveClientFactory
 from financial_planning.models import FlowUnitChange
 from dreamrich.complete_factories import (
     ActiveClientCompleteFactory,
@@ -14,8 +13,7 @@ from patrimony.factories import (
     ActiveTypeFactory,
     ArrearageFactory,
     IncomeFactory,
-    PatrimonyFactory,
-    RealEstateFactory
+    RealStateFactory
 )
 
 
@@ -68,7 +66,7 @@ class PatrimonyTest(TestCase):
         )
         self.patrimony.arrearages.add(arrearage)
 
-        real_estate = RealEstateFactory(
+        real_estate = RealStateFactory(
             patrimony=self.patrimony,
             salable=True
         )

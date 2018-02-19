@@ -12,13 +12,14 @@ from .views import (
 APP_NAME = 'protection'
 
 ROUTER = DefaultRouter()
-ROUTER.register(r'emergency_reserve', EmergencyReserveViewSet)
-ROUTER.register(r'protection_manager', ProtectionManagerViewSet)
-ROUTER.register(r'reserve_lack', ReserveInLackViewSet)
-ROUTER.register(r'actual_patrimony', ActualPatrimonySuccessionViewSet)
-ROUTER.register(r'independence_patrimony',
+ROUTER.register(r'emergency-reserve', EmergencyReserveViewSet)
+ROUTER.register(r'protection-manager', ProtectionManagerViewSet)
+ROUTER.register(r'reserve-in-lack', ReserveInLackViewSet)
+ROUTER.register(r'actual-patrimony-succession',
+                ActualPatrimonySuccessionViewSet)
+ROUTER.register(r'independence-patrimony-succession',
                 IndependencePatrimonySuccessionViewSet)
-ROUTER.register(r'private_pension', PrivatePensionViewSet)
-ROUTER.register(r'life_insurance', LifeInsuranceViewSet)
+ROUTER.register(r'private-pension', PrivatePensionViewSet)
+ROUTER.register(r'life-insurance', LifeInsuranceViewSet)
 
 urlpatterns = ROUTER.urls
