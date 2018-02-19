@@ -46,6 +46,7 @@ class AddressViewSet(viewsets.ModelViewSet):
     def type_of_address(self, unused_request):
         addresses = self.queryset.values('type_of_address').distinct()
         distinct_types = map(lambda x: x['type_of_address'], addresses)
+
         return Response(list(distinct_types), 200)
 
 
@@ -59,9 +60,12 @@ class StateViewSet(viewsets.ModelViewSet):
     def list(self, request):
         country_id = request.query_params.get('country_id', None)
 
-        states = State.objects.filter(
-                country_id=country_id
-        ) if country_id else self.queryset
+        states = (State.objects.filter(country_id=country_id)
+                  if country_id else self.queryset)
+
+        states = self.serializer_class(states, many=True)
+
+        return Response(states.data)
 
 
 class CountryViewSet(viewsets.ModelViewSet):
