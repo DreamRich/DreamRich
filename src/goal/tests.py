@@ -25,13 +25,13 @@ class GoalTest(TestCase):
             goal_manager=self.goal_manager
         )
         self.goal_has_end_date = GoalFactory(
-             has_end_date=True,
-             goal_type=goal_type2,
-             init_year=2021,
-             periodicity=3,
-             value=50000,
-             end_year=2031,
-             goal_manager=self.goal_manager
+            has_end_date=True,
+            goal_type=goal_type2,
+            init_year=2021,
+            periodicity=3,
+            value=50000,
+            end_year=2031,
+            goal_manager=self.goal_manager
         )
         self.array_flow_without_date = [0, 0, 0, 0, 50000, 0, 0, 50000, 0, 0,
                                         50000, 0, 0, 50000, 0, 0, 50000, 0, 0,

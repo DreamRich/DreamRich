@@ -77,8 +77,8 @@ class PatrimonyCompleteFactory(PatrimonyFactory):
         'patrimony'
     )
     emergency_reserve = factory.RelatedFactory(
-       EmergencyReserveFactory,
-       'patrimony'
+        EmergencyReserveFactory,
+        'patrimony'
     )
     company_participations = factory.RelatedFactory(
         CompanyParticipationFactory,

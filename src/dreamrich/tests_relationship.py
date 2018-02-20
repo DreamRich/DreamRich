@@ -85,8 +85,8 @@ class RelationshipTest(TestCase):
 
         self.assertTrue(
             relationship.has_nested_relationship(
-                 Relationship.RelatedMeta('clients', self.active_client.pk),
-                 Relationship.RelatedMeta('financial_planning', None)
+                Relationship.RelatedMeta('clients', self.active_client.pk),
+                Relationship.RelatedMeta('financial_planning', None)
             )
         )
 
@@ -96,8 +96,8 @@ class RelationshipTest(TestCase):
 
         self.assertFalse(
             relationship.has_nested_relationship(
-                 Relationship.RelatedMeta('clients', self.active_client.pk),
-                 Relationship.RelatedMeta('financial_planning', None)
+                Relationship.RelatedMeta('clients', self.active_client.pk),
+                Relationship.RelatedMeta('financial_planning', None)
             )
         )
 

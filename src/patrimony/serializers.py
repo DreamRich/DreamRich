@@ -148,7 +148,7 @@ class PatrimonySerializer(serializers.ModelSerializer):
     arrearages = ArrearageSerializer(read_only=True, many=True)
     real_estates = RealStateSerializer(read_only=True, many=True)
     company_participations = CompanyParticipationSerializer(many=True,
-                                                           read_only=True)
+                                                            read_only=True)
     equipments = EquipmentSerializer(many=True, read_only=True)
     incomes = IncomeSerializer(many=True, read_only=True)
 

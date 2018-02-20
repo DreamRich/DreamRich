@@ -70,10 +70,14 @@ class Patrimony(models.Model):
 
     def current_none_investment(self):
         total_movable_properties = self.movable_properties.all().aggregate(
-            Sum('value'))
-        total_movable_properties = (total_movable_properties['value__sum'] or 0)
+            Sum('value')
+        )
+        total_movable_properties = (
+            total_movable_properties['value__sum'] or 0
+        )
         salable_total = self.real_estates.filter(
-            salable=True).aggregate(Sum('value'))
+            salable=True
+        ).aggregate(Sum('value'))
         salable_total = (salable_total['value__sum'] or 0)
 
         total = total_movable_properties + salable_total

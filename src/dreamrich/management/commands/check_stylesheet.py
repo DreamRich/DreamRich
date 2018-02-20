@@ -1,20 +1,10 @@
 import subprocess
-from django.core.management.base import BaseCommand, CommandError
-from .utils.general import apply_to_all_modules, get_script_name
+from .utils.general import Checker
 
 
-class Command(BaseCommand):
+class Command(Checker):
 
-    @staticmethod
-    def _call_pycodestyle(module):
+    def checker_method(self, module):  # pylint: disable=arguments-differ
         returncode = subprocess.call(['pycodestyle', '--statistics', '--count',
                                       '--exclude', 'migrations', module])
         return returncode
-
-    def handle(self, *args, **unused_kwargs):
-        script_name = get_script_name(__file__)
-
-        try:
-            apply_to_all_modules(self._call_pycodestyle, script_name)
-        except CommandError:
-            raise CommandError("There are stylesheet problems in your code")

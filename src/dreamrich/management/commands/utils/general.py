@@ -1,6 +1,6 @@
 import os
 import subprocess
-from django.core.management.base import CommandError
+from django.core.management.base import BaseCommand, CommandError
 from dreamrich.settings import BASE_DIR
 
 
@@ -58,7 +58,6 @@ def apply_to_all_modules(function, script_name):
     """ Apply a function to all modules.
     :param function: Must receive just one parameter, the module name and
     the module that must be located on src folder
-    on
     """
     print("\nApplying {}...\n".format(script_name))
 
@@ -77,3 +76,18 @@ def apply_to_all_modules(function, script_name):
 
     if has_error:
         raise CommandError("Error while applying {}".format(script_name))
+
+
+class Checker(BaseCommand):
+
+    def checker_method(self):
+        raise NotImplemented('This method must be implemented'
+                             ' on children classes')
+
+    def handle(self, *args, **unused_kwargs):
+        script_name = get_script_name(__file__)
+
+        try:
+            apply_to_all_modules(self.checker_method, script_name)
+        except CommandError:
+            raise CommandError("Pylint found errors in your code")
