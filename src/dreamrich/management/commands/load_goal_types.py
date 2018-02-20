@@ -1,16 +1,11 @@
-from django.core.management.base import BaseCommand
 from goal.models import GoalType
-from .utils.load_general import load_seed
+from .utils.general import Seeder
 
 
-class Command(BaseCommand):
+class Command(Seeder):
+    seed_file_path = 'goal_types_seed.yml'
 
-    @staticmethod
-    def _seed_goal_types(goal_types):
-        for goal_type in goal_types:
+    def seeder_function(self, data):
+        for goal_type in data:
             GoalType.objects.create(**goal_type)
-            print('\tGoal {name} was registered'
-                  .format(**goal_type))
-
-    def handle(self, *args, **unused_kwargs):
-        load_seed('goal_types_seed.yml', self._seed_goal_types)
+            print("\tGoal '{name}' was registered".format(**goal_type))

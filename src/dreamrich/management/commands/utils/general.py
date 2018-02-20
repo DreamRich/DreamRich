@@ -1,5 +1,6 @@
 import os
 import subprocess
+import yaml
 from django.core.management.base import BaseCommand, CommandError
 from dreamrich.settings import BASE_DIR
 
@@ -80,7 +81,7 @@ def apply_to_all_modules(function, script_name):
 
 class Checker(BaseCommand):
 
-    def checker_method(self):
+    def checker_method(self, module):
         raise NotImplemented('This method must be implemented'
                              ' on children classes')
 
@@ -91,3 +92,34 @@ class Checker(BaseCommand):
             apply_to_all_modules(self.checker_method, script_name)
         except CommandError:
             raise CommandError("Pylint found errors in your code")
+
+
+class Seeder(BaseCommand):
+    seed_file_path = ''
+
+    def seeder_function(self, data):
+        raise NotImplemented('This method must be implemented'
+                             ' on child classes')
+
+    def load_seed(self, seed_file_name, seed_function):
+        file_path = os.path.join(BASE_DIR, 'src', 'dreamrich',
+                                 'seeds', seed_file_name)
+
+        print("Processing seed from '{}'...".format(file_path))
+        with open(file_path) as load_file:
+            try:
+                data = yaml.load(load_file)
+                seed_function(data)
+            except (yaml.parser.ParserError, yaml.scanner.ScannerError):
+                raise CommandError(
+                    "Couldn't process seed '{}'".format(file_path)
+                )
+
+        print('Finish processing seed')
+
+    def handle(self, *args, **unused_kwargs):
+        if self.seed_file_path:
+            self.load_seed(self.seed_file_path, self.seeder_function)
+        else:
+            raise AttributeError("'seed_file_path' must be filled on child"
+                                 " classes")

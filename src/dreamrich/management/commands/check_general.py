@@ -6,7 +6,7 @@ from .utils.general import Checker
 
 class Command(Checker):
 
-    def checker_method(self, module):  # pylint: disable=arguments-differ
+    def checker_method(self, module):
         '''
         Check for generals erros using pylint
         '''
