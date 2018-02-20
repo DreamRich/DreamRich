@@ -11,7 +11,6 @@ from client.factories import ActiveClientFactory
 from client.serializers import ActiveClientSerializer
 from financial_planning.serializers import FinancialPlanningSerializer
 from financial_planning.factories import FinancialPlanningFactory
-from dreamrich.requests import RequestTypes
 from dreamrich.utils import Relationship
 from .utils import authenticate_user
 
@@ -28,6 +27,15 @@ class PermissionsTests(TestCase):
     related_name = ''
     related_names = ('',)
 
+    httpmethod_by_action = dict(
+        retrieve='get',
+        create='post',
+        update='put',
+        partial_update='patch',
+        destroy='delete',
+        list='get'
+    )
+
     def setUp(self):
         # pylint: disable=not-callable
         self.user = self.factory_user()
@@ -37,33 +45,29 @@ class PermissionsTests(TestCase):
         self._check_attributes()
         self.handle_related()
 
-    def user_test_request(self, request_method, status_code):
+    def user_test_request(self, action, status_code):
         self.authenticated_user = authenticate_user(self.user)
-        response_status_code = self.make_request(request_method)
+        response_status_code = self.make_request(action)
 
         self.assertEqual(response_status_code, status_code)
 
-    def user_test_not_authenticated_request(self, request_method):
+    def user_test_not_authenticated_request(self, action):
         self.authenticated_user = APIClient()
-        response_status_code = self.make_request(request_method)
+        response_status_code = self.make_request(action)
 
         self.assertEqual(response_status_code, HTTPStatus.UNAUTHORIZED)
 
-    def make_request(self, request_method, route=None):
-        route = self._get_route(request_method) if not route else route
+    def make_request(self, action, route=None):
+        route = self._get_route(action) if not route else route
 
-        http_method = self._handle_request_method(request_method)
-        api_client_method = getattr(self.authenticated_user, http_method)
-
-        required_data_methods = (RequestTypes.PUT,
-                                 RequestTypes.PATCH,
-                                 RequestTypes.POST)
+        api_client_method = getattr(self.authenticated_user,
+                                    self.httpmethod_by_action[action])
 
         # Prepare data and make request
-        if request_method in required_data_methods:
-            response = self._make_required_data_request(request_method,
-                                                        api_client_method,
-                                                        route)
+        if action in ('create', 'update', 'partial_update'):
+            response = self._make_required_data_request(
+                action, api_client_method, route
+            )
         else:
             response = api_client_method(route)
 
@@ -103,17 +107,16 @@ class PermissionsTests(TestCase):
                                  "tests hierarchy. Missing: '{}'."
                                  .format(', '.join(missing)))
 
-    def _make_required_data_request(self, request_method,
-                                    api_client_method, route):
+    def _make_required_data_request(self, action, api_client_method, route):
         # pylint: disable=not-callable
         data_serialized = self.serializer_consulted(self.consulted)
         data = self._remove_read_only_fields(data_serialized)
         # pylint: enable=not-callable
 
-        if request_method == RequestTypes.PATCH:
+        if action == 'partial_update':
             field = (data.popitem(),)
             data = dict(field)
-        elif request_method == RequestTypes.POST:
+        elif action == 'create':
             self.consulted.delete()
 
         data = json.dumps(data)
@@ -122,28 +125,14 @@ class PermissionsTests(TestCase):
 
         return response
 
-    def _get_route(self, request_method):
-        general_routes_tests = (RequestTypes.POST, RequestTypes.GETLIST)
+    def _get_route(self, action):
 
-        if request_method not in general_routes_tests:
-            route = '{}{}/'.format(self.base_route, self.consulted.pk)
-        else:
+        if action in ('create', 'list'):
             route = self.base_route
+        else:
+            route = '{}{}/'.format(self.base_route, self.consulted.pk)
 
         return route
-
-    @staticmethod
-    def _handle_request_method(request_method):
-        if request_method not in RequestTypes:
-            raise AttributeError('Invalid test type')
-
-        # Handle request_methods that are not http_methods
-        if request_method == RequestTypes.GETLIST:
-            http_method = RequestTypes.GET.value
-        else:
-            http_method = request_method.value
-
-        return http_method
 
     def _remove_read_only_fields(self, serialized_data):
         read_only_fields = self._get_read_only_fields(serialized_data)

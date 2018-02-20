@@ -11,7 +11,6 @@ from dr_auth.common_tests_permissions import (
     NotAuthenticatedToItselfTests
 )
 from dr_auth.permissions_tests_utils import PermissionsTests
-from dreamrich.requests import RequestTypes
 from dreamrich.complete_factories import ActiveClientCompleteFactory
 
 
@@ -20,16 +19,16 @@ class ClientToItself(UserToClient,
                      NotAuthenticatedToItselfTests):
 
     def test_client_get_itself(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
+        self.user_test_request('retrieve', HTTPStatus.OK)
 
     def test_client_delete_itself(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
     def test_client_put_itself(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.OK)
+        self.user_test_request('update', HTTPStatus.OK)
 
     def test_client_patch_itself(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.OK)
+        self.user_test_request('partial_update', HTTPStatus.OK)
 
 
 class ClientToClient(UserToClient,
@@ -39,22 +38,22 @@ class ClientToClient(UserToClient,
     factory_user = ActiveClientCompleteFactory
 
     def test_client_get_clients_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
     def test_client_get_client(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+        self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
     def test_client_post_client(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_client(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
     def test_client_put_client(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
     def test_client_patch_client(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
 class ClientToEmployee(UserToEmployee,
@@ -64,22 +63,22 @@ class ClientToEmployee(UserToEmployee,
     factory_user = ActiveClientCompleteFactory
 
     def test_clients_get_employees_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
     def test_client_get_employee(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+        self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
     def test_client_post_employee(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_employee(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
     def test_client_put_employee(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
     def test_client_patch_employee(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
 class ClientToFinancialAdviser(UserToFinancialAdviser,
@@ -89,22 +88,22 @@ class ClientToFinancialAdviser(UserToFinancialAdviser,
     factory_user = ActiveClientCompleteFactory
 
     def test_clients_get_financial_advisers_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
     def test_client_get_financial_adviser(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+        self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
     def test_client_post_financial_adviser(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_financial_adviser(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
     def test_client_put_financial_adviser(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
     def test_client_patch_financial_adviser(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
 class ClientToRelatedGeneral(UserToGeneral,
@@ -116,19 +115,19 @@ class ClientToRelatedGeneral(UserToGeneral,
     related_name = 'financial_planning'
 
     def test_client_get_generals_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
     def test_client_get_general(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.OK)
+        self.user_test_request('retrieve', HTTPStatus.OK)
 
     def test_client_delete_general(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
     def test_client_put_general(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
     def test_client_patch_general(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
 class ClientToGeneral(UserToGeneral,
@@ -138,19 +137,19 @@ class ClientToGeneral(UserToGeneral,
     factory_user = ActiveClientCompleteFactory
 
     def test_client_get_generals_list(self):
-        self.user_test_request(RequestTypes.GETLIST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
     def test_client_get_general(self):
-        self.user_test_request(RequestTypes.GET, HTTPStatus.FORBIDDEN)
+        self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
     def test_client_post_general(self):
-        self.user_test_request(RequestTypes.POST, HTTPStatus.FORBIDDEN)
+        self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_general(self):
-        self.user_test_request(RequestTypes.DELETE, HTTPStatus.FORBIDDEN)
+        self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
     def test_client_put_general(self):
-        self.user_test_request(RequestTypes.PUT, HTTPStatus.FORBIDDEN)
+        self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
     def test_client_patch_general(self):
-        self.user_test_request(RequestTypes.PATCH, HTTPStatus.FORBIDDEN)
+        self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
