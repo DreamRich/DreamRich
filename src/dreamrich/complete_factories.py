@@ -86,18 +86,6 @@ class PatrimonyCompleteFactory(PatrimonyFactory):
     )
 
 
-class EmergencyReserveCompleteFactory(EmergencyReserveFactory):
-
-    patrimony = factory.RelatedFactory(
-        PatrimonyCompleteFactory,
-        'emergency_reserve'
-    )
-    cost_manager = factory.RelatedFactory(
-        CostManagerFactory,
-        'emergency_reserve'
-    )
-
-
 class ProtectionManagerCompleteFactory(ProtectionManagerFactory):
 
     reserve_in_lack = factory.RelatedFactory(
