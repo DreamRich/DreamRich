@@ -1,15 +1,17 @@
 import json
 from http import HTTPStatus
 from django.test import TestCase
+from django.urls import reverse
+from rest_framework.routers import SimpleRouter
 from rest_framework.test import APIClient
-from employee.serializers import (
-    EmployeeSerializer,
-    FinancialAdviserSerializer
+from employee.views import (
+    EmployeeViewSet,
+    FinancialAdviserViewSet
 )
 from employee.factories import EmployeeFactory, FinancialAdviserFactory
 from client.factories import ActiveClientFactory
-from client.serializers import ActiveClientSerializer
-from financial_planning.serializers import FinancialPlanningSerializer
+from client.views import ActiveClientViewSet
+from financial_planning.views import FinancialPlanningViewSet
 from financial_planning.factories import FinancialPlanningFactory
 from dreamrich.utils import Relationship
 from .utils import authenticate_user
@@ -28,12 +30,8 @@ class PermissionsTests(TestCase):
     related_names = ('',)
 
     httpmethod_by_action = dict(
-        retrieve='get',
-        create='post',
-        update='put',
-        partial_update='patch',
-        destroy='delete',
-        list='get'
+        retrieve='get', create='post', update='put', partial_update='patch',
+        destroy='delete', list='get'
     )
 
     def setUp(self):
@@ -41,6 +39,8 @@ class PermissionsTests(TestCase):
         self.user = self.factory_user()
         self.consulted = self.factory_consulted()
         # pylint: disable=not-callable
+
+        self.serializer_consulted = self.view_consulted.serializer_class
 
         self._check_attributes()
         self.handle_related()
@@ -96,7 +96,7 @@ class PermissionsTests(TestCase):
             self.consulted: 'factory_consulted',
             self.user: 'factory_user',
             self.serializer_consulted: 'serializer_consulted',
-            self.base_route: 'base_route'
+            self.view_consulted: 'view_consulted',
         }
 
         missing = [attributes_names[attr] for attr
@@ -108,10 +108,7 @@ class PermissionsTests(TestCase):
                                  .format(', '.join(missing)))
 
     def _make_required_data_request(self, action, api_client_method, route):
-        # pylint: disable=not-callable
-        data_serialized = self.serializer_consulted(self.consulted)
-        data = self._remove_read_only_fields(data_serialized)
-        # pylint: enable=not-callable
+        data = self._get_data()
 
         if action == 'partial_update':
             field = (data.popitem(),)
@@ -120,24 +117,40 @@ class PermissionsTests(TestCase):
             self.consulted.delete()
 
         data = json.dumps(data)
-        response = api_client_method(route, data,
-                                     content_type='application/json')
+        response = api_client_method(
+            route, data, content_type='application/json'
+        )
 
         return response
 
     def _get_route(self, action):
+        router = SimpleRouter()
 
-        if action in ('create', 'list'):
-            route = self.base_route
-        else:
-            route = '{}{}/'.format(self.base_route, self.consulted.pk)
+        try:
+            base_name = router.get_default_base_name(self.view_consulted)
+        except AssertionError:
+            raise AttributeError(
+                "If your routes don't follow the standards given for routers,"
+                " override this method."
+            )
 
-        return route
+        pk_kwarg = {'pk': self.consulted.pk}
 
-    def _remove_read_only_fields(self, serialized_data):
-        read_only_fields = self._get_read_only_fields(serialized_data)
-        data = serialized_data.data
+        return (reverse(base_name + '-list') if action in ('create', 'list')
+                else reverse(base_name + '-detail', kwargs=pk_kwarg))
 
+    def _get_data(self):
+        serialized_class = self.serializer_consulted(self.consulted)
+        fields = serialized_class.get_fields()
+        read_only_fields = self._get_read_only_fields(fields)
+
+        data = serialized_class.data
+        data = self._remove_read_only_fields(data, read_only_fields)
+
+        return data
+
+    @staticmethod
+    def _remove_read_only_fields(data, read_only_fields):
         try:
             for field in read_only_fields:
                 data.pop(field)
@@ -147,13 +160,12 @@ class PermissionsTests(TestCase):
         return data
 
     @staticmethod
-    def _get_read_only_fields(data):
-        all_fields = data.get_fields()
-        all_fields_names = list(all_fields.keys())
+    def _get_read_only_fields(fields):
+        all_fields_names = list(fields.keys())
 
         # Get all fields with read_only == True
         read_only_fields = [name for name in all_fields_names
-                            if all_fields[name].read_only]
+                            if fields[name].read_only]
 
         # Remove id's fields
         read_only_fields = [field for field in read_only_fields
@@ -165,22 +177,19 @@ class PermissionsTests(TestCase):
 class UserToClient:
 
     factory_consulted = ActiveClientFactory
-    serializer_consulted = ActiveClientSerializer
-    base_route = '/api/client/active-client/'
+    view_consulted = ActiveClientViewSet
 
 
 class UserToEmployee:
 
     factory_consulted = EmployeeFactory
-    serializer_consulted = EmployeeSerializer
-    base_route = '/api/employee/employee/'
+    view_consulted = EmployeeViewSet
 
 
 class UserToFinancialAdviser:
 
     factory_consulted = FinancialAdviserFactory
-    serializer_consulted = FinancialAdviserSerializer
-    base_route = '/api/employee/financial-adviser/'
+    view_consulted = FinancialAdviserViewSet
 
 
 # Refer to all others classes which have the same permissions
@@ -188,8 +197,7 @@ class UserToFinancialAdviser:
 class UserToGeneral:
 
     factory_consulted = FinancialPlanningFactory
-    serializer_consulted = FinancialPlanningSerializer
-    base_route = '/api/financial-planning/financial-planning/'
+    view_consulted = FinancialPlanningViewSet
 
 
 class UserToItself(PermissionsTests):
@@ -198,18 +206,19 @@ class UserToItself(PermissionsTests):
         # pylint: disable=not-callable
         self.consulted = self.factory_consulted()
         self.user = self.consulted
+        self.serializer_consulted = self.view_consulted.serializer_class
 
     def _check_attributes(self):
-        missing = ''
+        attributes_names = {
+            self.consulted: 'factory_consulted',
+            self.serializer_consulted: 'serializer_consulted',
+            self.view_consulted: 'view_consulted',
+        }
 
-        if not self.factory_consulted:
-            missing = 'factory_consulted'
-        elif not self.serializer_consulted:
-            missing = 'serializer_consulted'
-        elif not self.base_route:
-            missing = 'base_route'
+        missing = [attributes_names[attr] for attr
+                   in attributes_names if not attr]
 
         if missing:
-            raise AttributeError('There are missing information in'
-                                 ' permissions tests hierarchy,'
-                                 ' {} is missing.'.format(missing))
+            raise AttributeError("There are missing information in permissions"
+                                 "tests hierarchy. Missing: '{}'."
+                                 .format(', '.join(missing)))
