@@ -18,16 +18,16 @@ class ClientToItself(UserToClient,
                      UserToItself,
                      NotAuthenticatedToItselfTests):
 
-    def test_client_get_itself(self):
+    def test_client_retrieve_itself(self):
         self.user_test_request('retrieve', HTTPStatus.OK)
 
     def test_client_delete_itself(self):
         self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
-    def test_client_put_itself(self):
+    def test_client_update_itself(self):
         self.user_test_request('update', HTTPStatus.OK)
 
-    def test_client_patch_itself(self):
+    def test_client_partial_update_itself(self):
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
@@ -37,22 +37,22 @@ class ClientToClient(UserToClient,
 
     factory_user = ActiveClientCompleteFactory
 
-    def test_client_get_clients_list(self):
+    def test_client_retrieve_clients_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
-    def test_client_get_client(self):
+    def test_client_retrieve_client(self):
         self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
-    def test_client_post_client(self):
+    def test_client_create_client(self):
         self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_client(self):
         self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
-    def test_client_put_client(self):
+    def test_client_update_client(self):
         self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
-    def test_client_patch_client(self):
+    def test_client_partial_update_client(self):
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
@@ -62,22 +62,22 @@ class ClientToEmployee(UserToEmployee,
 
     factory_user = ActiveClientCompleteFactory
 
-    def test_clients_get_employees_list(self):
+    def test_clients_retrieve_employees_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
-    def test_client_get_employee(self):
+    def test_client_retrieve_employee(self):
         self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
-    def test_client_post_employee(self):
+    def test_client_create_employee(self):
         self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_employee(self):
         self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
-    def test_client_put_employee(self):
+    def test_client_update_employee(self):
         self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
-    def test_client_patch_employee(self):
+    def test_client_partial_update_employee(self):
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
@@ -87,22 +87,22 @@ class ClientToFinancialAdviser(UserToFinancialAdviser,
 
     factory_user = ActiveClientCompleteFactory
 
-    def test_clients_get_financial_advisers_list(self):
+    def test_clients_retrieve_financial_advisers_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
-    def test_client_get_financial_adviser(self):
+    def test_client_retrieve_financial_adviser(self):
         self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
-    def test_client_post_financial_adviser(self):
+    def test_client_create_financial_adviser(self):
         self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_financial_adviser(self):
         self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
-    def test_client_put_financial_adviser(self):
+    def test_client_update_financial_adviser(self):
         self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
-    def test_client_patch_financial_adviser(self):
+    def test_client_partial_update_financial_adviser(self):
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
@@ -114,19 +114,19 @@ class ClientToRelatedGeneral(UserToGeneral,
 
     related_name = 'financial_planning'
 
-    def test_client_get_generals_list(self):
+    def test_client_retrieve_generals_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
-    def test_client_get_general(self):
+    def test_client_retrieve_general(self):
         self.user_test_request('retrieve', HTTPStatus.OK)
 
     def test_client_delete_general(self):
         self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
-    def test_client_put_general(self):
+    def test_client_update_general(self):
         self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
-    def test_client_patch_general(self):
+    def test_client_partial_update_general(self):
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
@@ -136,20 +136,20 @@ class ClientToGeneral(UserToGeneral,
 
     factory_user = ActiveClientCompleteFactory
 
-    def test_client_get_generals_list(self):
+    def test_client_retrieve_generals_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
 
-    def test_client_get_general(self):
+    def test_client_retrieve_general(self):
         self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
 
-    def test_client_post_general(self):
+    def test_client_create_general(self):
         self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
     def test_client_delete_general(self):
         self.user_test_request('destroy', HTTPStatus.FORBIDDEN)
 
-    def test_client_put_general(self):
+    def test_client_update_general(self):
         self.user_test_request('update', HTTPStatus.FORBIDDEN)
 
-    def test_client_patch_general(self):
+    def test_client_partial_update_general(self):
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
