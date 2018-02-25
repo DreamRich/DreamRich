@@ -35,14 +35,16 @@ class PermissionsTests(TestCase):
     )
 
     def setUp(self):
-        # pylint: disable=not-callable
-        self.user = self.factory_user()
-        self.consulted = self.factory_consulted()
-        # pylint: disable=not-callable
+        try:
+            # pylint: disable=not-callable
+            self.user = self.factory_user()
+            self.consulted = self.factory_consulted()
+        except TypeError:
+            raise AttributeError('Check if the required attributes were filled'
+                                 ' at child class.')
 
         self.serializer_consulted = self.view_consulted.serializer_class
 
-        self._check_attributes()
         self.handle_related()
 
     def user_test_request(self, action, status_code):
@@ -91,22 +93,6 @@ class PermissionsTests(TestCase):
             )
             self.consulted = relationship.get_nested_related(*related_metas)
 
-    def _check_attributes(self):
-        attributes_names = {
-            self.consulted: 'factory_consulted',
-            self.user: 'factory_user',
-            self.serializer_consulted: 'serializer_consulted',
-            self.view_consulted: 'view_consulted',
-        }
-
-        missing = [attributes_names[attr] for attr
-                   in attributes_names if not attr]
-
-        if missing:
-            raise AttributeError("There are missing information in permissions"
-                                 "tests hierarchy. Missing: '{}'."
-                                 .format(', '.join(missing)))
-
     def _make_required_data_request(self, action, api_client_method, route):
         data = self._get_data()
 
@@ -151,11 +137,8 @@ class PermissionsTests(TestCase):
 
     @staticmethod
     def _remove_read_only_fields(data, read_only_fields):
-        try:
-            for field in read_only_fields:
-                data.pop(field)
-        except KeyError:
-            pass
+        for field in read_only_fields:
+            data.pop(field, None)
 
         return data
 
@@ -207,18 +190,3 @@ class UserToItself(PermissionsTests):
         self.consulted = self.factory_consulted()
         self.user = self.consulted
         self.serializer_consulted = self.view_consulted.serializer_class
-
-    def _check_attributes(self):
-        attributes_names = {
-            self.consulted: 'factory_consulted',
-            self.serializer_consulted: 'serializer_consulted',
-            self.view_consulted: 'view_consulted',
-        }
-
-        missing = [attributes_names[attr] for attr
-                   in attributes_names if not attr]
-
-        if missing:
-            raise AttributeError("There are missing information in permissions"
-                                 "tests hierarchy. Missing: '{}'."
-                                 .format(', '.join(missing)))
