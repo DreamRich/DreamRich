@@ -38,10 +38,14 @@ class PermissionsTests(TestCase):
         try:
             # pylint: disable=not-callable
             self.user = self.factory_user()
+        except TypeError:
+            raise AttributeError("Fill 'factory_user' at child class.")
+
+        try:
+            # pylint: disable=not-callable
             self.consulted = self.factory_consulted()
         except TypeError:
-            raise AttributeError('Check if the required attributes were filled'
-                                 ' at child class.')
+            self.consulted = self.user
 
         self.serializer_consulted = self.view_consulted.serializer_class
 
@@ -181,12 +185,3 @@ class UserToGeneral:
 
     factory_consulted = FinancialPlanningFactory
     view_consulted = FinancialPlanningViewSet
-
-
-class UserToItself(PermissionsTests):
-
-    def setUp(self):
-        # pylint: disable=not-callable
-        self.consulted = self.factory_consulted()
-        self.user = self.consulted
-        self.serializer_consulted = self.view_consulted.serializer_class

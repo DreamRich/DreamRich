@@ -4,7 +4,6 @@ from dr_auth.permissions_tests_utils import (
     UserToEmployee,
     UserToFinancialAdviser,
     UserToGeneral,
-    UserToItself,
     PermissionsTests
 )
 from dr_auth.common_tests_permissions import (
@@ -19,7 +18,6 @@ from .factories import (
 
 
 class EmployeeToItself(UserToEmployee,
-                       UserToItself,
                        NotAuthenticatedToItselfTests):
 
     def test_employee_retrieve_itself(self):
@@ -133,7 +131,6 @@ class EmployeeToGeneral(UserToGeneral,
 
 
 class FinanicalAdviserToItself(UserToFinancialAdviser,
-                               UserToItself,
                                NotAuthenticatedToItselfTests):
 
     def test_financial_adviser_retrieve_itself(self):

@@ -4,7 +4,6 @@ from dr_auth.permissions_tests_utils import (
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,
-    UserToItself
 )
 from dr_auth.common_tests_permissions import (
     NotAuthenticatedTests,
@@ -15,7 +14,6 @@ from dreamrich.complete_factories import ActiveClientCompleteFactory
 
 
 class ClientToItself(UserToClient,
-                     UserToItself,
                      NotAuthenticatedToItselfTests):
 
     def test_client_retrieve_itself(self):
