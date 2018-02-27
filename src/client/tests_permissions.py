@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from dr_auth.permissions_tests_utils import (
+    ClientToModel,
     UserToGeneral,
     UserToClient,
     UserToEmployee,
@@ -10,11 +11,12 @@ from dr_auth.common_tests_permissions import (
     NotAuthenticatedToItselfTests
 )
 from dr_auth.permissions_tests_utils import PermissionsTests
-from dreamrich.complete_factories import ActiveClientCompleteFactory
 
 
-class ClientToItself(UserToClient,
+class ClientToItself(ClientToModel, UserToClient, PermissionsTests,
                      NotAuthenticatedToItselfTests):
+
+    to_itself = True
 
     def test_client_retrieve_itself(self):
         self.user_test_request('retrieve', HTTPStatus.OK)
@@ -29,11 +31,8 @@ class ClientToItself(UserToClient,
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
-class ClientToClient(UserToClient,
-                     PermissionsTests,
+class ClientToClient(ClientToModel, UserToClient, PermissionsTests,
                      NotAuthenticatedTests):
-
-    factory_user = ActiveClientCompleteFactory
 
     def test_client_retrieve_clients_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
@@ -54,11 +53,8 @@ class ClientToClient(UserToClient,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class ClientToEmployee(UserToEmployee,
-                       PermissionsTests,
+class ClientToEmployee(ClientToModel, UserToEmployee, PermissionsTests,
                        NotAuthenticatedTests):
-
-    factory_user = ActiveClientCompleteFactory
 
     def test_clients_retrieve_employees_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
@@ -79,11 +75,8 @@ class ClientToEmployee(UserToEmployee,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class ClientToFinancialAdviser(UserToFinancialAdviser,
-                               PermissionsTests,
-                               NotAuthenticatedTests):
-
-    factory_user = ActiveClientCompleteFactory
+class ClientToFinancialAdviser(ClientToModel, UserToFinancialAdviser,
+                               PermissionsTests, NotAuthenticatedTests):
 
     def test_clients_retrieve_financial_advisers_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
@@ -104,11 +97,8 @@ class ClientToFinancialAdviser(UserToFinancialAdviser,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class ClientToRelatedGeneral(UserToGeneral,
-                             PermissionsTests,
+class ClientToRelatedGeneral(ClientToModel, UserToGeneral, PermissionsTests,
                              NotAuthenticatedTests):
-
-    factory_user = ActiveClientCompleteFactory
 
     related_name = 'financial_planning'
 
@@ -128,11 +118,8 @@ class ClientToRelatedGeneral(UserToGeneral,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class ClientToGeneral(UserToGeneral,
-                      PermissionsTests,
+class ClientToGeneral(ClientToModel, UserToGeneral, PermissionsTests,
                       NotAuthenticatedTests):
-
-    factory_user = ActiveClientCompleteFactory
 
     def test_client_retrieve_generals_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)

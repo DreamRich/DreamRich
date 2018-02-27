@@ -14,6 +14,10 @@ from client.views import ActiveClientViewSet
 from financial_planning.views import FinancialPlanningViewSet
 from financial_planning.factories import FinancialPlanningFactory
 from dreamrich.utils import Relationship
+from dreamrich.complete_factories import (
+    ActiveClientCompleteFactory,
+    FinancialAdviserCompleteFactory
+)
 from .utils import authenticate_user
 
 
@@ -34,21 +38,28 @@ class PermissionsTests(TestCase):
         destroy='delete', list='get'
     )
 
+    to_itself = False
+
     def setUp(self):
+        def get_fill_attr_exception(attr):
+            return AttributeError("Fill '{}' at child class.".format(attr))
+
         try:
             # pylint: disable=not-callable
             self.user = self.factory_user()
         except TypeError:
-            raise AttributeError("Fill 'factory_user' at child class.")
+            raise get_fill_attr_exception('factory_user')
 
-        try:
-            # pylint: disable=not-callable
-            self.consulted = self.factory_consulted()
-        except TypeError:
+        if self.to_itself:
             self.consulted = self.user
+        else:
+            try:
+                # pylint: disable=not-callable
+                self.consulted = self.factory_consulted()
+            except TypeError:
+                raise get_fill_attr_exception('factory_consulted')
 
         self.serializer_consulted = self.view_consulted.serializer_class
-
         self.handle_related()
 
     def user_test_request(self, action, status_code):
@@ -159,6 +170,21 @@ class PermissionsTests(TestCase):
                             if field[-3:] != '_id']
 
         return read_only_fields
+
+
+class ClientToModel:
+
+    factory_user = ActiveClientCompleteFactory
+
+
+class EmployeeToModel:
+
+    factory_user = EmployeeFactory
+
+
+class FinancialAdviserToModel:
+
+    factory_user = FinancialAdviserCompleteFactory
 
 
 class UserToClient:

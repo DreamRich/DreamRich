@@ -1,5 +1,7 @@
 from http import HTTPStatus
 from dr_auth.permissions_tests_utils import (
+    EmployeeToModel,
+    FinancialAdviserToModel,
     UserToClient,
     UserToEmployee,
     UserToFinancialAdviser,
@@ -10,15 +12,12 @@ from dr_auth.common_tests_permissions import (
     NotAuthenticatedTests,
     NotAuthenticatedToItselfTests
 )
-from dreamrich.complete_factories import FinancialAdviserCompleteFactory
-from .factories import (
-    EmployeeFactory,
-    FinancialAdviserFactory
-)
 
 
-class EmployeeToItself(UserToEmployee,
+class EmployeeToItself(EmployeeToModel, UserToEmployee, PermissionsTests,
                        NotAuthenticatedToItselfTests):
+
+    to_itself = True
 
     def test_employee_retrieve_itself(self):
         self.user_test_request('retrieve', HTTPStatus.OK)
@@ -33,11 +32,8 @@ class EmployeeToItself(UserToEmployee,
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
-class EmployeeToEmployee(UserToEmployee,
-                         PermissionsTests,
+class EmployeeToEmployee(EmployeeToModel, UserToEmployee, PermissionsTests,
                          NotAuthenticatedTests):
-
-    factory_user = EmployeeFactory
 
     def test_employee_retrieve_employees_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
@@ -58,11 +54,8 @@ class EmployeeToEmployee(UserToEmployee,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToClient(UserToClient,
-                       PermissionsTests,
+class EmployeeToClient(EmployeeToModel, UserToClient, PermissionsTests,
                        NotAuthenticatedTests):
-
-    factory_user = EmployeeFactory
 
     def test_employee_retrieve_clients_list(self):
         self.user_test_request('list', HTTPStatus.OK)
@@ -83,11 +76,8 @@ class EmployeeToClient(UserToClient,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToFinancialAdviser(UserToFinancialAdviser,
-                                 PermissionsTests,
-                                 NotAuthenticatedTests):
-
-    factory_user = EmployeeFactory
+class EmployeeToFinancialAdviser(EmployeeToModel, UserToFinancialAdviser,
+                                 PermissionsTests, NotAuthenticatedTests):
 
     def test_employee_retrieve_financial_advisers_list(self):
         self.user_test_request('list', HTTPStatus.FORBIDDEN)
@@ -108,11 +98,8 @@ class EmployeeToFinancialAdviser(UserToFinancialAdviser,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class EmployeeToGeneral(UserToGeneral,
-                        PermissionsTests,
+class EmployeeToGeneral(EmployeeToModel, UserToGeneral, PermissionsTests,
                         NotAuthenticatedTests):
-
-    factory_user = EmployeeFactory
 
     def test_employee_retrieve_general(self):
         self.user_test_request('retrieve', HTTPStatus.FORBIDDEN)
@@ -130,7 +117,8 @@ class EmployeeToGeneral(UserToGeneral,
         self.user_test_request('create', HTTPStatus.FORBIDDEN)
 
 
-class FinanicalAdviserToItself(UserToFinancialAdviser,
+class FinanicalAdviserToItself(FinancialAdviserToModel, UserToFinancialAdviser,
+                               PermissionsTests,
                                NotAuthenticatedToItselfTests):
 
     def test_financial_adviser_retrieve_itself(self):
@@ -146,11 +134,10 @@ class FinanicalAdviserToItself(UserToFinancialAdviser,
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
-class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
+class FinanicalAdviserToFinanicalAdviser(FinancialAdviserToModel,
+                                         UserToFinancialAdviser,
                                          PermissionsTests,
                                          NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserFactory
 
     def test_retrieve_financial_advisers_list(self):
         self.user_test_request('list', HTTPStatus.OK)
@@ -171,11 +158,8 @@ class FinanicalAdviserToFinanicalAdviser(UserToFinancialAdviser,
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
-class FinancialAdviserToRelatedClient(UserToClient,
-                                      PermissionsTests,
-                                      NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserCompleteFactory
+class FinancialAdviserToRelatedClient(FinancialAdviserToModel, UserToClient,
+                                      PermissionsTests, NotAuthenticatedTests):
 
     related_name = 'clients'
 
@@ -195,11 +179,8 @@ class FinancialAdviserToRelatedClient(UserToClient,
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
-class FinancialAdviserToClient(UserToClient,
-                               PermissionsTests,
-                               NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserFactory
+class FinancialAdviserToClient(FinancialAdviserToModel, UserToClient,
+                               PermissionsTests, NotAuthenticatedTests):
 
     def test_financial_adviser_retrieve_clients_list(self):
         self.user_test_request('list', HTTPStatus.OK)
@@ -220,11 +201,8 @@ class FinancialAdviserToClient(UserToClient,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class FinancialAdviserToEmployee(UserToEmployee,
-                                 PermissionsTests,
-                                 NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserFactory
+class FinancialAdviserToEmployee(FinancialAdviserToModel, UserToEmployee,
+                                 PermissionsTests, NotAuthenticatedTests):
 
     def test_financial_adviser_retrieve_employees_list(self):
         self.user_test_request('list', HTTPStatus.OK)
@@ -245,11 +223,9 @@ class FinancialAdviserToEmployee(UserToEmployee,
         self.user_test_request('partial_update', HTTPStatus.FORBIDDEN)
 
 
-class FinancialAdviserToRelatedGeneral(UserToGeneral,
+class FinancialAdviserToRelatedGeneral(FinancialAdviserToModel, UserToGeneral,
                                        PermissionsTests,
                                        NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserCompleteFactory
 
     related_names = ('clients', 'financial_planning')
 
@@ -269,11 +245,8 @@ class FinancialAdviserToRelatedGeneral(UserToGeneral,
         self.user_test_request('partial_update', HTTPStatus.OK)
 
 
-class FinancialAdviserToGeneral(UserToGeneral,
-                                PermissionsTests,
-                                NotAuthenticatedTests):
-
-    factory_user = FinancialAdviserFactory
+class FinancialAdviserToGeneral(FinancialAdviserToModel, UserToGeneral,
+                                PermissionsTests, NotAuthenticatedTests):
 
     def test_financial_adviser_retrieve_generals_list(self):
         self.user_test_request('list', HTTPStatus.OK)
