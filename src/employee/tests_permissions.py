@@ -10,12 +10,12 @@ from dr_auth.permissions_tests_utils import (
 )
 from dr_auth.common_tests_permissions import (
     AuthenticatedTests,
-    NotAuthenticatedTests
+    UnauthenticatedTests
 )
 
 
 class EmployeeToItself(EmployeeToModel, UserToEmployee, PermissionsTests,
-                       AuthenticatedTests, NotAuthenticatedTests):
+                       AuthenticatedTests, UnauthenticatedTests):
 
     to_itself = True
     expected_status_codes = (
@@ -27,7 +27,7 @@ class EmployeeToItself(EmployeeToModel, UserToEmployee, PermissionsTests,
 
 
 class EmployeeToEmployee(EmployeeToModel, UserToEmployee, PermissionsTests,
-                         AuthenticatedTests, NotAuthenticatedTests):
+                         AuthenticatedTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.FORBIDDEN),
@@ -40,7 +40,7 @@ class EmployeeToEmployee(EmployeeToModel, UserToEmployee, PermissionsTests,
 
 
 class EmployeeToClient(EmployeeToModel, UserToClient, PermissionsTests,
-                       AuthenticatedTests, NotAuthenticatedTests):
+                       AuthenticatedTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.OK),
@@ -55,7 +55,7 @@ class EmployeeToClient(EmployeeToModel, UserToClient, PermissionsTests,
 class EmployeeToFinancialAdviser(EmployeeToModel, UserToFinancialAdviser,
                                  PermissionsTests,
                                  AuthenticatedTests,
-                                 NotAuthenticatedTests):
+                                 UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.FORBIDDEN),
@@ -68,7 +68,7 @@ class EmployeeToFinancialAdviser(EmployeeToModel, UserToFinancialAdviser,
 
 
 class EmployeeToGeneral(EmployeeToModel, UserToGeneral, PermissionsTests,
-                        AuthenticatedTests, NotAuthenticatedTests):
+                        AuthenticatedTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('retrieve', HTTPStatus.FORBIDDEN),
@@ -81,7 +81,7 @@ class EmployeeToGeneral(EmployeeToModel, UserToGeneral, PermissionsTests,
 
 class FinanicalAdviserToItself(FinancialAdviserToModel, UserToFinancialAdviser,
                                PermissionsTests, AuthenticatedTests,
-                               NotAuthenticatedTests):
+                               UnauthenticatedTests):
 
     expected_status_codes = (
         ('retrieve', HTTPStatus.OK),
@@ -95,7 +95,7 @@ class FinanicalAdviserToFinanicalAdviser(FinancialAdviserToModel,
                                          UserToFinancialAdviser,
                                          PermissionsTests,
                                          AuthenticatedTests,
-                                         NotAuthenticatedTests):
+                                         UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.OK),
@@ -110,7 +110,7 @@ class FinanicalAdviserToFinanicalAdviser(FinancialAdviserToModel,
 class FinancialAdviserToRelatedClient(FinancialAdviserToModel, UserToClient,
                                       PermissionsTests,
                                       AuthenticatedTests,
-                                      NotAuthenticatedTests):
+                                      UnauthenticatedTests):
 
     related_name = 'clients'
     expected_status_codes = (
@@ -124,7 +124,7 @@ class FinancialAdviserToRelatedClient(FinancialAdviserToModel, UserToClient,
 
 class FinancialAdviserToClient(FinancialAdviserToModel, UserToClient,
                                PermissionsTests, AuthenticatedTests,
-                               NotAuthenticatedTests):
+                               UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.OK),
@@ -137,7 +137,7 @@ class FinancialAdviserToClient(FinancialAdviserToModel, UserToClient,
 
 
 class FinancialAdviserToEmployee(FinancialAdviserToModel, UserToEmployee,
-                                 PermissionsTests, NotAuthenticatedTests):
+                                 PermissionsTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.OK),
@@ -151,7 +151,7 @@ class FinancialAdviserToEmployee(FinancialAdviserToModel, UserToEmployee,
 
 class FinancialAdviserToRelatedGeneral(FinancialAdviserToModel, UserToGeneral,
                                        PermissionsTests,
-                                       NotAuthenticatedTests):
+                                       UnauthenticatedTests):
 
     related_names = ('clients', 'financial_planning')
     expected_status_codes = (
@@ -165,7 +165,7 @@ class FinancialAdviserToRelatedGeneral(FinancialAdviserToModel, UserToGeneral,
 
 class FinancialAdviserToGeneral(FinancialAdviserToModel, UserToGeneral,
                                 PermissionsTests, AuthenticatedTests,
-                                NotAuthenticatedTests):
+                                UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.OK),

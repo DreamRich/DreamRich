@@ -8,13 +8,13 @@ from dr_auth.permissions_tests_utils import (
 )
 from dr_auth.common_tests_permissions import (
     AuthenticatedTests,
-    NotAuthenticatedTests
+    UnauthenticatedTests
 )
 from dr_auth.permissions_tests_utils import PermissionsTests
 
 
 class ClientToItself(ClientToModel, UserToClient, PermissionsTests,
-                     AuthenticatedTests, NotAuthenticatedTests):
+                     AuthenticatedTests, UnauthenticatedTests):
 
     to_itself = True
     expected_status_codes = (
@@ -25,9 +25,8 @@ class ClientToItself(ClientToModel, UserToClient, PermissionsTests,
     )
 
 
-class ClientToClient(ClientToModel, UserToClient,
-                     AuthenticatedTests, PermissionsTests,
-                     NotAuthenticatedTests):
+class ClientToClient(ClientToModel, UserToClient, PermissionsTests,
+                     AuthenticatedTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.FORBIDDEN),
@@ -40,7 +39,7 @@ class ClientToClient(ClientToModel, UserToClient,
 
 
 class ClientToEmployee(ClientToModel, UserToEmployee, PermissionsTests,
-                       AuthenticatedTests, NotAuthenticatedTests):
+                       AuthenticatedTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.FORBIDDEN),
@@ -54,7 +53,7 @@ class ClientToEmployee(ClientToModel, UserToEmployee, PermissionsTests,
 
 class ClientToFinancialAdviser(ClientToModel, UserToFinancialAdviser,
                                PermissionsTests, AuthenticatedTests,
-                               NotAuthenticatedTests):
+                               UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.FORBIDDEN),
@@ -67,8 +66,7 @@ class ClientToFinancialAdviser(ClientToModel, UserToFinancialAdviser,
 
 
 class ClientToRelatedGeneral(ClientToModel, UserToGeneral, PermissionsTests,
-                             AuthenticatedTests,
-                             NotAuthenticatedTests):
+                             AuthenticatedTests, UnauthenticatedTests):
 
     related_name = 'financial_planning'
     expected_status_codes = (
@@ -81,7 +79,7 @@ class ClientToRelatedGeneral(ClientToModel, UserToGeneral, PermissionsTests,
 
 
 class ClientToGeneral(ClientToModel, UserToGeneral, PermissionsTests,
-                      AuthenticatedTests, NotAuthenticatedTests):
+                      AuthenticatedTests, UnauthenticatedTests):
 
     expected_status_codes = (
         ('list', HTTPStatus.FORBIDDEN),
