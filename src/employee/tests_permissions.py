@@ -8,7 +8,7 @@ from dr_auth.permissions_tests_utils import (
     UserToGeneral,
     PermissionsTests
 )
-from dr_auth.common_tests_permissions import (
+from dr_auth.permissions_tests_suites import (
     AuthenticatedTests,
     UnauthenticatedTests
 )
